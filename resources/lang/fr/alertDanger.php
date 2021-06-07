@@ -36,4 +36,6 @@ return [
     'cashtobank' => 'Transaction non éffectué',
     'ocin' => 'Transaction non éffectué',
     'ocout' => 'Transaction non éffectué',
+
+    'oldpasserror' => 'L\'ancien mot de passe est invalide',
 ];

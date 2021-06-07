@@ -1,4 +1,4 @@
-<li class="treeview">
+<li class="treeview {{ active(['cash_open', 'cash_situation', 'cash_reconciliation', 'temp_journal', 'money_exchange']) }}">
     <a href="">
         <i class="fa fa-opera"></i>
         <span>OPERATIONS</span>
@@ -7,7 +7,7 @@
                     </span>
     </a>
     <ul class="treeview-menu">
-        <li class="treeview">
+        <li class="treeview {{ active(['cash_open', 'cash_situation', 'cash_reconciliation', 'temp_journal', 'money_exchange']) }}">
             <a href="">
                 <i class="fa fa-toggle-on"></i>
                 <span>Front Office</span>
@@ -16,10 +16,14 @@
                                 </span>
             </a>
             <ul class="treeview-menu">
-                <li><a href=""><i class="fa fa-plus"></i> Cash Opening</a></li>
-                <li><a href=""><i class="fa fa-close"></i> Cash Closing</a></li>
-                <li><a href=""><i class="ion ion-stats-bars"></i> Cash Situation</a></li>
-                <li><a href=""><i class="fa fa-signal"></i> Cash Reconciliation</a></li>
+                <li class="{{ active('cash_open') }}"><a href="{{ url('cash_open') }}"><i
+                            class="fa fa-folder-open-o"></i> @lang('sidebar.opencash')</a></li>
+                <li class="{{ active('cash_situation') }}"><a href="{{ url('cash_situation') }}"><i
+                            class="fa fa-signal"></i> @lang('sidebar.situatcash')</a></li>
+                <li class="{{ active('cash_reconciliation') }}"><a href="{{ url('cash_reconciliation') }}"><i
+                            class="fa fa-bars"></i>@lang('sidebar.reconcash')</a></li>
+                <li class="{{ active('money_exchange') }}"><a href="{{ url('money_exchange') }}"><i
+                            class="fa fa-exchange"></i> @lang('sidebar.monexc')</a></li>
             </ul>
         </li>
         <li class="treeview">
@@ -55,14 +59,13 @@
                             <a href=""><i class="fa fa-hourglass-start"></i>
                                 <span>Initialisation</span>
                                 <span class="pull-right-container">
-                                                <i class="fa fa-angle-right pull-right"></i>
-                                            </span>
+                                    <i class="fa fa-angle-right pull-right"></i>
+                                </span>
                             </a>
                             <ul class="treeview-menu">
                                 <li><a href=""><i class="fa fa-product-hunt"></i> Product</a></li>
                                 <li><a href=""><i class="fa fa-user-o"></i> Client</a></li>
-                                <li><a href=""><i class="fa fa-repeat"></i> Representative</a>
-                                </li>
+                                <li><a href=""><i class="fa fa-repeat"></i> Representative</a></li>
                             </ul>
                         </li>
                         <li class="treeview">

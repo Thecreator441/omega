@@ -1,21 +1,18 @@
-<?php $emp = session()->get('employee');
+<?php
+$emp = Session::get('employee');
 
 if ($emp->lang == 'fr')
-    $title = 'Régions';
-else
-    $title = 'Regions';
+    App::setLocale('fr');
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', $title)
+@section('title', trans('sidebar.region'))
 
 @section('content')
-    {{--    Insert and Update Region Box--}}
     <div class="box box-info" id="newForm" style="display: none;">
         <div class="box-header with-border">
-            <h3 class="box-title text-bold">@if($emp->lang == 'fr') Nouvelle Région @else New
-                Region @endif</h3>
+            <h3 class="box-title text-bold" id="title">@lang('label.newreg')</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-alert bg-red btn-sm pull-right" id="exitForm">
                     <i class="fa fa-close"></i>
@@ -23,114 +20,180 @@ else
             </div>
         </div>
         <div class="box-body">
-            <div class="container-fluid">
-                <form action="{{ route('admin/region/store') }}" method="post" role="form">
-                    {{ csrf_field() }}
-                    <input type="hidden" name="id" id="id">
+            <form action="{{ route('admin/region/store') }}" method="post" role="form" id="regForm" class="needs-validation">
+                {{ csrf_field() }}
+
+                <div id="fillform">
+                    <input type="hidden" name="idregion" id="idregion">
+
                     <div class="row">
-                        @if($emp->lang == 'fr')
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labelfr">@if($emp->lang == 'fr') NOMS EN FRANÇAIS @else NAME IN
-                                        FRENCH @endif</label>
-                                    <input type="text" class="form-control" name="labelfr" id="labelfr"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Français' : 'Enter the Name in French'; ?>">
+                        <div class="col-md-4 col-sm-12 col-xs-12">
+                            <div class="form-group has-error">
+                                <label for="country" class="col-md-3 control-label">@lang('label.country')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-9">
+                                    <select class="form-control select2" id="country" name="country" required>
+                                        <option value=""></option>
+                                        @foreach($countries as $country)
+                                            <option value="{{ $country->idcountry }}">@if($emp->lang == 'fr') {{ $country->labelfr }} @else {{ $country->labeleng }} @endif</option>
+                                        @endforeach
+                                    </select>
+                                    <span class="help-block">@lang('placeholder.country')</span>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labeleng">@if($emp->lang == 'fr') NOMS EN ANGLAIS @else NAME IN
-                                        ENGLISH @endif</label>
-                                    <input type="text" class="form-control" name="labeleng" id="labeleng"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Anglais' : 'Enter the Name in English'; ?>">
+                        </div>
+                        <div class="col-md-4 col-sm-6 col-xs-6">
+                            <div class="form-group has-error">
+                                <label for="labeleng" class="col-md-4 control-label">@lang('label.regioneng')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" name="labeleng" id="labeleng" required>
+                                    <span class="help-block">@lang('placeholder.nameeng')</span>
                                 </div>
                             </div>
-                        @else
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labeleng">@if($emp->lang == 'fr') NOMS EN ANGLAIS @else NAME IN
-                                        ENGLISH @endif</label>
-                                    <input type="text" class="form-control" name="labeleng" id="labeleng"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Anglais' : 'Enter the Name in English'; ?>">
+                        </div>
+                        <div class="col-md-4 col-sm-6 col-xs-6">
+                            <div class="form-group has-error">
+                                <label for="labelfr" class="col-md-4 control-label">@lang('label.regionfr')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" name="labelfr" id="labelfr" required>
+                                    <span class="help-block">@lang('placeholder.namefr')</span>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labelfr">@if($emp->lang == 'fr') NOMS EN FRANÇAIS @else NAME IN
-                                        FRENCH @endif</label>
-                                    <input type="text" class="form-control" name="labelfr" id="labelfr"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Français' : 'Enter the Name in French'; ?>">
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="country">@if($emp->lang == 'fr') PAYS @else COUNTRY @endif</label>
-                                <select class="form-control" id="country" name="country">
-                                    <option>@if($emp->lang == 'fr') Selectionez le Pays @else Select
-                                        Country @endif</option>
-                                    @foreach($countries as $country)
-                                        <option value="{{ $country->idcountry }}">@if($emp->lang == 'fr') {{ $country->labelfr }} @else {{ $country->labeleng }} @endif</option>
-                                    @endforeach
-                                </select>
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary bg-primary pull-right btn-raised">Save</button>
-                </form>
-            </div>
+                </div>
+
+                <div class="col-md-12">
+                    <button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
+                </div>
+            </form>
         </div>
     </div>
-    {{--    Insert and Update Region Box--}}
 
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title">@if($emp->lang == 'fr') Régions @else Regions @endif</h3>
+            <h3 class="box-title text-bold">@lang('sidebar.region')</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-success bg-green btn-sm pull-right" id="insertForm">
-                    <i class="oin ion-plus"></i>&nbsp;@if($emp->lang == 'fr') Nouvelle Région @else New
-                    Region @endif
+                    <i class="fa fa-plus"></i>&nbsp;@lang('label.newreg')
                 </button>
             </div>
         </div>
         <div class="box-body">
-            <table id="bootstrap-data-table" class="table table-striped table-hover table-responsive-xl">
-                <thead>
-                <tr>
-                    <th>@if($emp->lang == 'fr') Région @else Region @endif</th>
-                    <th>@if($emp->lang == 'fr') Pays @else Country @endif</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($regions as $region)
-                    <tr>
-                        <td>@if($emp->lang == 'fr') {{ $region->labelfr }} @else {{ $region->labeleng }} @endif</td>
-                        <td>
-                            @foreach($countries as $country)
-                                @if($region->idcountry == $country->idcountry)
-                                    @if($emp->lang == 'fr') {{ $country->labelfr }} @else {{ $country->labeleng }} @endif
-                                @endif
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-12">
+                        <table id="admin-data-table" class="table table-bordered table-striped table-hover table-responsive-xl">
+                            <thead>
+                            <tr>
+                                <th>@if($emp->lang == 'fr') Région @else Region @endif</th>
+                                <th>@if($emp->lang == 'fr') Pays @else Country @endif</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($regions as $region)
+                                <tr>
+                                    <td>@if($emp->lang == 'fr') {{ $region->labelfr }} @else {{ $region->labeleng }} @endif</td>
+                                    <td>@if($emp->lang == 'fr') {{ $region->cou_fr }} @else {{ $region->cou_en }} @endif</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-info bg-aqua btn-sm fa fa-edit" onclick="edit('{{$region->idregi}}')"></button>
+                                        <button type="button" class="btn bg-red btn-sm delete fa fa-trash" onclick="remove('{{$region->idregi}}')"></button>
+                                    </td>
+                                </tr>
                             @endforeach
-                        </td>
-                        <td>
-                            <button class="btn btn-info bg-aqua btn-sm" onclick="edit()">
-                                <i class="ion ion-edit"></i>&nbsp; @if($emp->lang == 'fr') Modifier @else
-                                    Edit @endif
-                            </button>
-                            <button class="btn bg-red btn-sm" data-toggle="modal" data-target="#delete"
-                                    onclick="setData('admin', 'region', '{{ $region->idregi }}')">
-                                <i class="ion ion-trash-b"></i>&nbsp; @if($emp->lang == 'fr') Effacer @else
-                                    Delete @endif
-                            </button>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
+                            </tbody>
+                        </table>
+                        <form action="{{route('admin/region/delete')}}" method="post" role="form" id="delForm" style="display: none">
+                            {{ csrf_field() }}
+                            <input type="hidden" name="region" id="region" value="">
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+@stop
 
+@section('script')
+    <script>
+        $('#insertForm').click(function () {
+            in_out_form();
+            $('#newForm').show();
+        });
+
+        function edit(idregion) {
+            $.ajax({
+                url: "{{ url('getRegion') }}",
+                method: 'get',
+                data: {
+                    id: idregion
+                },
+                success: function (region) {
+                    $('#title').text('@lang('label.edit') @if($emp->lang === 'fr')' + region.labelfr + ' @else ' + region.labeleng + '@endif');
+                    $('#idregion').val(region.idregi);
+                    $('#labelfr').val(region.labelfr);
+                    $('#labeleng').val(region.labeleng);
+                    $('#country').val(region.country).trigger('change');
+
+                    $('#save').replaceWith('<button type="submit" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit"></button>');
+
+                    $('#newForm').show();
+                }
+            });
+        }
+
+        function remove(idregion) {
+            swal({
+                icon: 'warning',
+                title: '@lang('sidebar.region')',
+                text: '@lang('confirm.regdel_text')',
+                closeOnClickOutside: false,
+                allowOutsideClick: false,
+                closeOnEsc: false,
+                buttons: {
+                    cancel: {
+                        text: ' @lang('confirm.no')',
+                        value: false,
+                        visible: true,
+                        closeModal: true,
+                        className: "btn bg-red fa fa-close"
+                    },
+                    confirm: {
+                        text: ' @lang('confirm.yes')',
+                        value: true,
+                        visible: true,
+                        closeModal: true,
+                        className: "btn bg-green fa fa-check"
+                    },
+                },
+            }).then(function (isConfirm) {
+                if (isConfirm) {
+                    $('#region').val(idregion);
+                    $('#delForm').submit();
+                }
+            });
+        }
+
+        $('#exitForm').click(function () {
+            $('#newForm').hide();
+            in_out_form();
+        });
+
+        function submitForm() {
+            let text = '@lang('confirm.regsave_text')';
+            if ($('#idregion').val() !== '') {
+                text = '@lang('confirm.regedit_text')';
+            }
+
+            mySwal('@lang('sidebar.region')', text, '@lang('confirm.no')', '@lang('confirm.yes')', '#regForm');
+        }
+
+        function in_out_form() {
+            $('#title').text('@lang('label.newreg')');
+            $('#idregion').val('');
+            $('#fillform :input').val('');
+            $('#country').val('').trigger('change');
+            $('#edit').replaceWith('<button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>');
+        }
+    </script>
 @stop

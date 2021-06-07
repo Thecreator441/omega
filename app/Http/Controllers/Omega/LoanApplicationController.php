@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Omega;
 
 use App\Http\Controllers\Controller;
-use App\Models\DemComakers;
+use App\Models\DemComaker;
 use App\Models\DemLoan;
 use App\Models\DemMortgage;
 use App\Models\Employee;
@@ -30,7 +30,7 @@ class LoanApplicationController extends Controller
                 'members' => $members,
                 'ltypes' => $ltypes,
                 'lpurs' => $lpurs,
-                'employees' => $employees
+                'emprofs' => $employees
             ]);
         }
         return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
@@ -54,7 +54,7 @@ class LoanApplicationController extends Controller
         try {
             $loan = DemLoan::getLast();
             if ($loan !== null) {
-                $loanno = $loan->loanno + 1;
+                $loanno = $loan->demloanno + 1;
             }
             $loanMan = LoanMan::getLoanMan((int)$member);
 
@@ -86,11 +86,11 @@ class LoanApplicationController extends Controller
             if (($guarantee === 'F') && isset($comakers)) {
                 foreach ($comakers as $key => $demComaker) {
                     if (!empty($amounts[$key]) || $amounts[$key] !== null) {
-                        $demComaker = new DemComakers();
+                        $demComaker = new DemComaker();
                         $demComaker->demloan = $demLoan->iddemloan;
                         $demComaker->member = $comakers[$key];
                         $demComaker->account = $accounts[$key];
-                        $demComaker->gauramt = $amounts[$key];
+                        $demComaker->guaramt = $amounts[$key];
                         $demComaker->save();
                     }
                 }
@@ -118,11 +118,11 @@ class LoanApplicationController extends Controller
                 if (isset($comakers)) {
                     foreach ($comakers as $key => $demComaker) {
                         if (!empty($amounts[$key]) || $amounts[$key] !== null) {
-                            $demComaker = new DemComakers();
+                            $demComaker = new DemComaker();
                             $demComaker->demloan = $demLoan->iddemloan;
                             $demComaker->member = $comakers[$key];
                             $demComaker->account = $accounts[$key];
-                            $demComaker->gauramt = $amounts[$key];
+                            $demComaker->guaramt = $amounts[$key];
                             $demComaker->save();
                         }
                     }

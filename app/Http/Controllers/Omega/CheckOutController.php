@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Omega;
 
 use App\Http\Controllers\Controller;
 use App\Models\AccDate;
+use App\Models\Balance;
 use App\Models\Bank;
 use App\Models\Cash;
 use App\Models\Check;
@@ -56,7 +57,7 @@ class CheckOutController extends Controller
             $bank = Bank::getBank($idbank);
 
             foreach ($accounts as $key => $account) {
-                if (!empty($amounts[$key]) || $amounts[$key] !== null) {
+                if (!empty($amounts[$key]) && $amounts[$key] !== null && $amounts[$key] !== '0') {
                     $writing = new Writing();
                     $writing->writnumb = $writnumb;
                     $writing->account = $account;
@@ -71,6 +72,10 @@ class CheckOutController extends Controller
                     $writing->institution = $emp->institution;
                     $writing->branch = $emp->branch;
                     $writing->save();
+
+                    $memBal = Balance::getMemAcc($member, $account);
+                    $memBal->available -= trimOver($amounts[$key], ' ');
+                    $memBal->update((array)$memBal);
                 }
             }
 

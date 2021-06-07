@@ -10,13 +10,15 @@ if ($emp->lang == 'fr')
 @section('title', trans('sidebar.appro'))
 
 @section('content')
-
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.appro') </h3>
         </div>
+        {{--        <div class="box-header">--}}
+        {{--            <div class="box-tools">--}}
+        {{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+        {{--            </div>--}}
+        {{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('loan_approval/store') }}" method="POST" role="form" id="lappForm">
                 {{csrf_field()}}
@@ -120,8 +122,8 @@ if ($emp->lang == 'fr')
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="numb_inst" class="col-md-5 control-label">@lang('label.noinstal')</label>
-                                <div class="col-md-7">
+                                <label for="numb_inst" class="col-md-4 control-label">@lang('label.noinstal')</label>
+                                <div class="col-md-8">
                                     <input type="text" id="numb_inst" class="form-control text-right" disabled>
                                 </div>
                             </div>
@@ -137,10 +139,10 @@ if ($emp->lang == 'fr')
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-group">
-                                <label for="tax_rate" class="col-md-7 control-label">@lang('label.taxrate')</label>
-                                <div class="col-md-5">
+                                <label for="tax_rate" class="col-md-5 control-label">@lang('label.taxrate')</label>
+                                <div class="col-md-7">
                                     <input type="text" id="tax_rate" class="form-control text-right" disabled>
                                 </div>
                             </div>
@@ -153,12 +155,13 @@ if ($emp->lang == 'fr')
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <div class="form-group">
-                                <button type="button" id="print"
-                                        class="btn btn-sm bg-default pull-right btn-raised fa fa-print"></button>
-                                <button type="button" id="display"
-                                        class="btn btn-sm bg-green pull-right btn-raised fa fa-eye"></button>
+                                <div class="row">
+                                    <button type="button" id="print"
+                                            class="btn btn-sm bg-default pull-right btn-raised fa fa-print"></button>
+                                    <button type="button" id="display" class="btn btn-sm bg-green pull-right btn-raised fa fa-eye"></button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -216,6 +219,8 @@ if ($emp->lang == 'fr')
         });
 
         $('#loan').change(function () {
+            $('#amount').val('');
+            $('#transacc').val('').trigger('change');
             $.ajax({
                 url: "{{ url('getDemLoan') }}",
                 method: 'get',
@@ -238,14 +243,15 @@ if ($emp->lang == 'fr')
                             }
                         }
                     });
+
                     $('#loanamt').val(money(parseInt(loan.amount)));
                     $('#period').val(loan.periodicity).trigger('change');
                     $('#amorti').val(loan.amortype).trigger('change');
                     $('#grace').val(loan.grace).trigger('change');
                     $('#numb_inst').val(loan.nbrinst);
-                    $('#tax_rate').val();
+                    $('#tax_rate').val(loan.vat);
                     $('#int_rate').val(loan.intrate);
-                    $('#date').val(formDate(loan.grace));
+                    $('#date').val(loan.instdate1);
                 }
             });
         });

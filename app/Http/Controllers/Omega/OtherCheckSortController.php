@@ -53,14 +53,15 @@ class OtherCheckSortController extends Controller
             $writing->account = $bank->theiracc;
             $writing->operation = $check->operation;
             $writing->debitamt = trimOver(Request::input('totrans'), ' ');
-            $writing->accdate = $accdate->idaccdate;
-            $writing->employee = $emp->idemp;
+            $writing->accdate = $accdate->accdate;
+            $writing->employee = $emp->iduser;
             $writing->cash = $cash->idcash;
             $writing->network = $emp->network;
             $writing->zone = $emp->zone;
             $writing->institution = $emp->institution;
             $writing->branch = $emp->branch;
             $writing->represent = $check->carrier;
+            $writing->writ_type = 'I';
             $writing->save();
 
             if (isset($accounts)) {
@@ -72,14 +73,15 @@ class OtherCheckSortController extends Controller
                         $writing->aux = $check->member;
                         $writing->operation = $operations[$key];
                         $writing->creditamt = trimOver($amounts[$key], ' ');
-                        $writing->accdate = $accdate->idaccdate;
-                        $writing->employee = $emp->idemp;
+                        $writing->accdate = $accdate->accdate;
+                        $writing->employee = $emp->iduser;
                         $writing->cash = $cash->idcash;
                         $writing->network = $emp->network;
                         $writing->zone = $emp->zone;
                         $writing->institution = $emp->institution;
                         $writing->branch = $emp->branch;
                         $writing->represent = $check->carrier;
+                        $writing->writ_type = 'I';
                         $writing->save();
                     }
                 }

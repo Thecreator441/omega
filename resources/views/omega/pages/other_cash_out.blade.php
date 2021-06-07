@@ -11,10 +11,8 @@ if ($emp->lang == 'fr')
 
 @section('content')
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.ocout') </h3>
         </div>
         <div class="box-body">
             <form action="{{ url('other_cash_out/store') }}" method="post" role="form" id="ocoutForm">
@@ -77,27 +75,12 @@ if ($emp->lang == 'fr')
                     <div class="row">
                         <div class="box-header with-border">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="opera" class="col-md-3 control-label">@lang('label.opera')</label>
-                                        <div class="col-md-9">
-                                            @foreach ($operas as $opera)
-                                                @if ($opera->opercode == 34)
-                                                    <input type="text" class="form-control" disabled
-                                                           value="{{pad($opera->opercode, 3)}} : @if ($emp->lang == 'fr') {{$opera->labelfr}}@else {{$opera->labeleng}} @endif">
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="row">
-                                        <div class="form-group">
-                                            <label for="represent"
-                                                   class="col-md-4 control-label">@lang('label.represent')</label>
-                                            <div class="col-md-8">
-                                                <input type="text" class="form-control" name="represent" id="represent">
-                                            </div>
+                                        <label for="represent"
+                                               class="col-md-2 control-label">@lang('label.represent')</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control" name="represent" id="represent">
                                         </div>
                                     </div>
                                 </div>
@@ -106,8 +89,7 @@ if ($emp->lang == 'fr')
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="account"
-                                               class="col-md-5 control-label">@lang('label.account')</label>
+                                        <label for="account" class="col-md-5 control-label">@lang('label.account')</label>
                                         <div class="col-md-7">
                                             <select class="form-control select2" id="account">
                                                 <option></option>
@@ -122,62 +104,39 @@ if ($emp->lang == 'fr')
                                     </div>
                                 </div>
                                 <div class="col-md-8">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" name="acc_name" id="acc_name"
-                                               disabled>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" name="acc_name" id="acc_name" disabled>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="row">
-                                <div class="col-md-8">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="desc" class="col-md-3 control-label">@lang('label.desc')</label>
                                         <div class="col-md-9">
-                                            <div class="row">
-                                                <input type="text" class="form-control" id="desc">
-                                            </div>
+                                            <input type="text" class="form-control" id="desc">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="col-md-7">
-                                        <div class="row">
-                                        <div class="row">
-                                            <div class="form-group">
-                                                <input type="text" class="form-control text-right text-bold" id="amount"
-                                                       placeholder="@lang('label.amount')">
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <div class="row">
-                                            <div class="form-group">
-                                                <button type="button" id="minus"
-                                                        class="btn btn-sm bg-red pull-right btn-raised fa fa-minus"></button>
-                                                <button type="button" id="plus"
-                                                        class="btn btn-sm bg-green pull-right btn-raised fa fa-plus"></button>
-                                            </div>
+                                    <div class="form-group">
+                                        <label for="amount" class="col-md-4 control-label">@lang('label.amount')</label>
+                                        <div class="col-md-8">
+                                            <input type="text" class="form-control text-right text-bold" id="amount">
                                         </div>
                                     </div>
                                 </div>
-{{--                                <div class="col-md-3">--}}
-{{--                                    <div class="form-group">--}}
-{{--                                        <label for="amount" class="col-md-4 control-label">@lang('label.amount')</label>--}}
-{{--                                        <div class="col-md-8">--}}
-{{--                                            <input type="text" class="form-control text-right text-bold" id="amount">--}}
-{{--                                        </div>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
-{{--                                <div class="col-md-2">--}}
-{{--                                    <div class="form-group">--}}
-{{--                                        <button type="button" id="minus"--}}
-{{--                                                class="btn btn-sm bg-red pull-right btn-raised fa fa-minus"></button>--}}
-{{--                                        <button type="button" id="plus"--}}
-{{--                                                class="btn btn-sm bg-green pull-right btn-raised fa fa-plus"></button>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button" id="minus"
+                                                class="btn btn-sm bg-red pull-right btn-raised fa fa-minus"></button>
+                                        <button type="button" id="plus"
+                                                class="btn btn-sm bg-green pull-right btn-raised fa fa-plus"></button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

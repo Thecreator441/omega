@@ -12,30 +12,6 @@ class Installment extends Model
 
     protected $fillable = ['installments'];
 
-    private $idinstall;
-
-    private $loan;
-
-    private $installno;
-
-    private $capital;
-
-    private $amort;
-
-    private $interest;
-
-    private $annuity;
-
-    private $tax;
-
-    private $total;
-
-    private $instdate;
-
-    private $created_at;
-
-    private $updated_at;
-
     /**
      * @param int $loan
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection

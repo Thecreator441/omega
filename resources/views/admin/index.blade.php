@@ -1,17 +1,19 @@
-﻿<?php $emp = session()->get('employee');
+﻿<?php
 
-if ($emp->lang == 'fr')
-    $title = 'Administrateur';
-else
-    $title = 'Administrator';
+use Illuminate\Support\Facades\Session;
+
+$emp = Session::get('employee');
+
+if ($emp->lang === 'fr')
+    App::setLocale('fr');
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', $title)
+@section('title', trans('sidebar.home'))
 
 @section('content')
-    <h1>Index Page</h1>
+    <h1>Admin Dashboard</h1>
 {{--    @foreach($users as $user)--}}
 {{--        <h2>@if ($emp->lang == 'fr') {{ $user->labelfr }} @else {{ $user->labeleng }} @endif</h2>--}}
 {{--    @endforeach--}}

@@ -3,48 +3,104 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
+use App\Models\Division;
+use App\Models\Network;
+use App\Models\Region;
+use App\Models\SubDiv;
+use App\Models\Town;
 use App\Models\Zone;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
 
 class ZoneController extends Controller
 {
     public function index()
     {
+        $networks = Network::getNetworks();
+        $zones = Zone::getZones();
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
+        $towns = Town::getTowns();
+        $subdivs = SubDiv::getSubDivs();
 
-        $zone = DB::table('zones')->orderBy('idzone', 'desc')->get();
-        $network = DB::table('networks')->get();
+        foreach ($zones as $zone) {
+            $network = Network::getNetwork($zone->network);
 
-        return view('admin.pages.zone', ['zones' => $zone, 'networks' => $network]);
+            $zone->net = $network->abbr;
+        }
 
+        return view('admin.pages.zone', compact(
+            'networks', 'zones', 'countries',
+            'regions', 'divisions', 'subdivs', 'towns'
+        ));
     }
 
     public function store()
     {
-        $zone = new Zone();
+//        dd(Request::all());
+        DB::beginTransaction();
+        try {
+            $idzone = Request::input('idzone');
+            $zone = null;
 
-        $zone->name = Request::input('name');
-        $zone->phone1 = Request::input('phone1');
-        $zone->phone2 = Request::input('phone2');
-        $zone->email = Request::input('email');
-        $zone->country = Request::input('country');
-        $zone->idnetwork = Request::input('network');
-        $zone->region = Request::input('region');
-        $zone->town = Request::input('town');
-        $zone->address = Request::input('address');
-        $zone->postcode = Request::input('postcode');
+            if ($idzone === null) {
+                $zone = new Zone();
+            } else {
+                $zone = Zone::getZone($idzone);
+            }
 
-        $zone->save();
+            $zone->network = Request::input('network');
+            $zone->name = Request::input('name');
+            $zone->phone1 = Request::input('phone1');
+            $zone->phone2 = Request::input('phone2');
+            $zone->email = Request::input('email');
+            $zone->country = Request::input('country');
+            $zone->region = Request::input('region');
+            $zone->division = Request::input('division');
+            $zone->subdivision = Request::input('subdiv');
+            $zone->town = Request::input('town');
+            $zone->address = Request::input('address');
+            $zone->postcode = Request::input('postal');
 
-        return Redirect::back();
+            if ($idzone === null) {
+                $zone->save();
+            } else {
+                $zone->update((array)$zone);
+            }
+
+            DB::commit();
+            if ($idzone === null) {
+                return Redirect::back()->with('success', trans('alertSuccess.zonesave'));
+            }
+            return Redirect::back()->with('success', trans('alertSuccess.zoneedit'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            if ($idzone === null) {
+                return Redirect::back()->with('danger', trans('alertDanger.zonesave'));
+            }
+            return Redirect::back()->with('danger', trans('alertDanger.zoneedit'));
+        }
     }
 
-    public function delete(Request $request): \Illuminate\Http\RedirectResponse
+    public function delete()
     {
-        DB::table('zones')->where('idzone', $request->id)->delete();
+//        dd(Request::all());
+        $idzone = Request::input('zone');
 
-        return Redirect::back();
+        DB::beginTransaction();
+        try {
+            Zone::getZone($idzone)->delete();
+
+            DB::commit();
+            return Redirect::back()->with('success', trans('alertSuccess.zonedel'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            return Redirect::back()->with('danger', trans('alertDanger.zonedel'));
+        }
     }
 }

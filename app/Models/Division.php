@@ -7,61 +7,30 @@ use Illuminate\Support\Facades\DB;
 
 class Division extends Model
 {
-    private $iddiv;
+    protected $table = 'divisions';
 
-    private $label;
+    protected $primaryKey = 'iddiv';
 
-    private $region;
-
-    private $updated_at;
-
-    private $created_at;
-
+    protected $fillable = ['divisions'];
 
     /**
-     * @param array $data
-     * @return bool
+     * @param int $iddivision
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    private static function insertData(array $data): bool
+    public static function getDivision(int $iddivision)
     {
-//        $country = self::getData(['isocode' => $data['isocode']]);
-//        if ($country === null) {
-        DB::table('divisions')->insert($data);
-        return true;
-//        }
-//        return false;
+        return self::query()->where('iddiv', $iddivision)->first();
     }
 
     /**
      * @param array $where
-     * @return \Illuminate\Support\Collection
+     * @return Branch[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    private static function getData(array $where = []): \Illuminate\Support\Collection
+    public static function getDivisions(array $where = [])
     {
-        if (!empty($where)) {
-            return DB::table('divisions')->where($where)->get();
+        if ($where !== null) {
+            return self::query()->where($where)->orderBy('label')->get();
         }
-        return DB::table('divisions')->get();
-    }
-
-    /**
-     * @param int $id
-     * @param array $data
-     * @return bool
-     */
-    private static function updateData(int $id, array $data): bool
-    {
-        DB::table('divisions')->where('iddiv', $id)->update($data);
-        return true;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    private static function deleteData(int $id): bool
-    {
-        DB::table('divisions')->where('iddiv', $id)->delete();
-        return true;
+        return self::query()->orderBy('label')->get();
     }
 }

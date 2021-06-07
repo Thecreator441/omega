@@ -496,7 +496,7 @@ CREATE TABLE IF NOT EXISTS privileges
     DEFAULT CHARACTER SET = utf8;
 
 -- -----------------------------------------------------
--- Table employees
+-- Table emprofs
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS employees
 (

@@ -1,21 +1,18 @@
-<?php $emp = session()->get('employee');
+<?php
+$emp = Session::get('employee');
 
 if ($emp->lang == 'fr')
-    $title = 'Pays';
-else
-    $title = 'Countries';
+    App::setLocale('fr');
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', $title)
+@section('title', trans('sidebar.country'))
 
 @section('content')
-    {{--    Insert and Update Country Box--}}
     <div class="box box-info" id="newForm" style="display: none;">
         <div class="box-header with-border">
-            <h3 class="box-title text-bold">@if($emp->lang == 'fr') Nouveau Pays @else New
-                Country @endif</h3>
+            <h3 class="box-title text-bold" id="title">@lang('label.newcoun')</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-alert bg-red btn-sm pull-right" id="exitForm">
                     <i class="fa fa-close"></i>
@@ -23,135 +20,237 @@ else
             </div>
         </div>
         <div class="box-body">
-            <div class="container-fluid">
-                <form action="{{ route('admin/country/store') }}" method="post" role="form">
-                    {{ csrf_field() }}
-                    <input type="hidden" name="id" id="id">
+            <form action="{{ route('admin/country/store') }}" method="post" role="form" id="counForm" class="needs-validation">
+                {{ csrf_field() }}
+
+                <div id="fillform">
+                    <input type="hidden" name="idcountry" id="idcountry">
+
                     <div class="row">
-                        @if($emp->lang == 'fr')
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labelfr">@if($emp->lang == 'fr') NOMS EN FRANÇAIS @else NAME IN
-                                        FRENCH @endif</label>
-                                    <input type="text" class="form-control" name="labelfr" id="labelfr"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Français' : 'Enter the Name in French'; ?>">
+                        <div class="row">
+                            <div class="col-md-2 col-sm-2 col-xs-12">
+                                <div class="form-group has-info">
+                                    <label for="code" class="col-md-4 col-sm-5 col-xs-5 control-label">@lang('label.code')</label>
+                                    <div class="col-md-8 col-sm-7 col-xs-7">
+                                        <input type="text" class="form-control" name="code" id="code">
+                                        <div class="help-block">@lang('placeholder.code')</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labeleng">@if($emp->lang == 'fr') NOMS EN ANGLAIS @else NAME IN
-                                        ENGLISH @endif</label>
-                                    <input type="text" class="form-control" name="labeleng" id="labeleng"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Anglais' : 'Enter the Name in English'; ?>">
+                            <div class="col-md-5 col-sm-5 col-xs-12">
+                                <div class="form-group has-error">
+                                    <label for="labeleng" class="col-md-3 col-xs-5 control-label">@lang('label.countryeng')<span class="text-red text-bold">*</span></label>
+                                    <div class="col-md-9 col-xs-7">
+                                        <input type="text" class="form-control" name="labeleng" id="labeleng" required>
+                                        <div class="help-block">@lang('placeholder.nameeng')</div>
+                                    </div>
                                 </div>
                             </div>
-                        @else
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labeleng">@if($emp->lang == 'fr') NOMS EN ANGLAIS @else NAME IN
-                                        ENGLISH @endif</label>
-                                    <input type="text" class="form-control" name="labeleng" id="labeleng"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Anglais' : 'Enter the Name in English'; ?>">
+                            <div class="col-md-5 col-sm-5 col-xs-12">
+                                <div class="form-group has-error">
+                                    <label for="labelfr" class="col-md-3 col-xs-5 control-label">@lang('label.countryfr')<span class="text-red text-bold">*</span></label>
+                                    <div class="col-md-9 col-xs-7">
+                                        <input type="text" class="form-control" name="labelfr" id="labelfr" required>
+                                        <div class="help-block">@lang('placeholder.namefr')</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labelfr">@if($emp->lang == 'fr') NOMS EN FRANÇAIS @else NAME IN
-                                        FRENCH @endif</label>
-                                    <input type="text" class="form-control" name="labelfr" id="labelfr"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Français' : 'Enter the Name in French'; ?>">
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="isocode">@if($emp->lang == 'fr') CODE ISO @else ISO CODE @endif</label>
-                                <input type="text" class="form-control" name="isocode" id="isocode"
-                                       placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Code ISO' : 'Enter ISO Code'; ?>">
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="phonecode">@if($emp->lang == 'fr') CODE TÉLÉPHONNIQUE @else PHONE
-                                    CODE @endif</label>
-                                <input type="text" class="form-control" name="phonecode" id="phonecode"
-                                       placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Code Téléphonique' : 'Enter Phone Code'; ?>">
+
+                        <div class="row">
+                            <div class="col-md-3 col-sm-3 col-xs-6">
+                                <div class="form-group has-error">
+                                    <label for="iso" class="col-md-4 control-label">@lang('label.iso')<span class="text-red text-bold">*</span></label>
+                                    <div class="col-md-8">
+                                        <input type="text" class="form-control" name="iso" id="iso" required>
+                                        <div class="help-block">@lang('placeholder.iso')</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-3 col-xs-6">
+                                <div class="form-group has-error">
+                                    <label for="iso3" class="col-md-5 control-label">@lang('label.iso3')<span class="text-red text-bold">*</span></label>
+                                    <div class="col-md-7">
+                                        <input type="text" class="form-control" name="iso3" id="iso3" required>
+                                        <div class="help-block">@lang('placeholder.iso3')</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-3 col-xs-6">
+                                <div class="form-group has-error">
+                                    <label for="phonecode" class="col-md-5 control-label">@lang('label.phonecode')<span class="text-red text-bold">*</span></label>
+                                    <div class="col-md-7">
+                                        <input type="text" class="form-control" name="phonecode" id="phonecode" required>
+                                        <div class="help-block">@lang('placeholder.phonec')</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-3 col-xs-6">
+                                <div class="form-group has-error">
+                                    <label for="currency" class="col-md-4 control-label">@lang('label.currency')<span class="text-red text-bold">*</span></label>
+                                    <div class="col-md-8">
+                                        <select class="form-control" id="currency" name="currency" required>
+                                            <option value=""></option>
+                                            @foreach($currencies as $currency)
+                                                <option value="{{ $currency->idcurrency }}">{{ $currency->label }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="help-block">@lang('placeholder.currency')</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="currency">@if($emp->lang == 'fr') DEVISE @else CURRENCY @endif</label>
-                                <select class="form-control" id="currency" name="currency">
-                                    <option>@if($emp->lang == 'fr') Selectionez la Dévise @else Select
-                                        Currency @endif</option>
-                                    @foreach($currencies as $currency)
-                                        <option value="{{ $currency->idcurrency }}">{{ $currency->label }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
                     </div>
-                    <button type="submit" class="btn btn-primary bg-primary pull-right btn-raised">Save</button>
-                </form>
-            </div>
+                </div>
+
+            </form>
         </div>
     </div>
-    {{--    Insert and Update Country Box--}}
-
 
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title text-bold">@if($emp->lang == 'fr') Pays @else Countries @endif</h3>
+            <h3 class="box-title text-bold">@lang('sidebar.country')</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-success bg-green btn-sm pull-right" id="insertForm">
-                    <i class="oin ion-plus"></i>&nbsp;@if($emp->lang == 'fr') Nouveau Pays @else New Country @endif
+                    <i class="oin ion-plus"></i>&nbsp;@lang('label.newcoun')
                 </button>
             </div>
         </div>
         <div class="box-body">
-            <table id="bootstrap-data-table" class="table table-striped table-hover table-responsive-xl">
-                <thead>
-                <tr>
-                    <th>@if($emp->lang == 'fr') Pays @else Country @endif</th>
-                    <th>@if($emp->lang == 'fr') Code ISO @else ISO Code @endif</th>
-                    <th>@if($emp->lang == 'fr') Code Téléphonique @else Phone Code @endif</th>
-                    <th>@if($emp->lang == 'fr') Dévise @else Currency @endif</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($countries as $country)
-                    <tr>
-                        <td>@if($emp->lang == 'fr') {{ $country->labelfr }} @else {{ $country->labeleng }} @endif</td>
-                        <td>{{ $country->isocode }}</td>
-                        <td>+{{ $country->phonecode }}</td>
-                        <td>
-                            @foreach($currencies as $currency)
-                                @if($country->idcurrency == $currency->idcurrency)
-                                    {{ $currency->label }} ({{ $currency->format }})
-                                @endif
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-12">
+                        <table id="admin-data-table" class="table table-bordered table-striped table-hover table-responsive-xl">
+                            <thead>
+                            <tr>
+                                <th>@lang('label.code')</th>
+                                <th>@lang('label.country')</th>
+                                <th>@lang('label.iso')</th>
+                                <th>@lang('label.iso3')</th>
+                                <th>@lang('label.phonecode')</th>
+                                <th>@lang('label.currency')</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($countries as $country)
+                                <tr>
+                                    <td class="text-center">{{$country->code}}</td>
+                                    <td>@if($emp->lang == 'fr') {{ $country->labelfr }} @else {{ $country->labeleng }} @endif</td>
+                                    <td class="text-center">{{$country->iso}}</td>
+                                    <td class="text-center">{{$country->iso3}}</td>
+                                    <td class="text-center">+{{$country->phonecode}}</td>
+                                    <td>{{$country->currency}} ({{$country->cur_format}})</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-info bg-aqua btn-sm fa fa-edit" onclick="edit('{{$country->idcountry}}')"></button>
+                                        <button type="button" class="btn bg-red btn-sm delete fa fa-trash" onclick="remove('{{$country->idcountry}}')"></button>
+                                    </td>
+                                </tr>
                             @endforeach
-                        </td>
-                        <td>
-                            <button class="btn btn-info bg-aqua btn-sm" onclick="edit()">
-                                <i class="ion ion-edit"></i>&nbsp; @if($emp->lang == 'fr') Modifier @else
-                                    Edit @endif
-                            </button>
-                            <button class="btn bg-red btn-sm" data-toggle="modal" data-target="#delete"
-                                    onclick="setData('admin', 'country', '{{ $country->idcountry }}')">
-                                <i class="ion ion-trash-b"></i>&nbsp; @if($emp->lang == 'fr') Effacer @else
-                                    Delete @endif
-                            </button>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
+                            </tbody>
+                        </table>
+                        <form action="{{route('admin/country/delete')}}" method="post" role="form" id="delForm" style="display: none">
+                            {{ csrf_field() }}
+                            <input type="hidden" name="country" id="country" value="">
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+@stop
 
+@section('script')
+    <script>
+        $('#insertForm').click(function () {
+            in_out_form();
+            $('#newForm').show();
+        });
+
+        function edit(idcountry) {
+            $.ajax({
+                url: "{{ url('getCountry') }}",
+                method: 'get',
+                data: {
+                    id: idcountry
+                },
+                success: function (country) {
+                    $('#title').text('@lang('label.edit') @if($emp->lang === 'fr')' + country.labelfr + ' @else ' + country.labeleng + '@endif');
+                    $('#idcountry').val(country.idcountry);
+                    $('#labelfr').val(country.labelfr);
+                    $('#labeleng').val(country.labeleng);
+                    $('#phonecode').val(country.phonecode);
+                    $('#code').val(country.code);
+                    $('#iso').val(country.iso);
+                    $('#iso3').val(country.iso3);
+                    $('#currency').val(country.currency).select2();
+
+                    $('#save').replaceWith('<button type="submit" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit"></button>');
+
+                    $('#newForm').show();
+                }
+            });
+        }
+
+        function remove(idcountry) {
+            swal({
+                icon: 'warning',
+                title: '@lang('sidebar.country')',
+                text: '@lang('confirm.coundel_text')',
+                closeOnClickOutside: false,
+                allowOutsideClick: false,
+                closeOnEsc: false,
+                buttons: {
+                    cancel: {
+                        text: ' @lang('confirm.no')',
+                        value: false,
+                        visible: true,
+                        closeModal: true,
+                        className: "btn bg-red fa fa-close"
+                    },
+                    confirm: {
+                        text: ' @lang('confirm.yes')',
+                        value: true,
+                        visible: true,
+                        closeModal: true,
+                        className: "btn bg-green fa fa-check"
+                    },
+                },
+            }).then(function (isConfirm) {
+                if (isConfirm) {
+                    $('#country').val(idcountry);
+                    $('#delForm').submit();
+                }
+            });
+        }
+
+        $('#exitForm').click(function () {
+            $('#newForm').hide();
+            in_out_form();
+        });
+
+        function submitForm() {
+            let text = '@lang('confirm.counsave_text')';
+            if ($('#idcountry').val() !== '') {
+                text = '@lang('confirm.counedit_text')';
+            }
+
+            mySwal('@lang('sidebar.country')', text, '@lang('confirm.no')', '@lang('confirm.yes')', '#counForm');
+        }
+
+        function in_out_form() {
+            $('#title').text('@lang('label.newcoun')');
+            $('#idcountry').val('');
+            $('#fillform :input').val('');
+            $('#currency').val('').trigger('change');
+            $('#edit').replaceWith('<button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>');
+        }
+    </script>
 @stop

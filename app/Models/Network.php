@@ -3,55 +3,34 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 
 class Network extends Model
 {
-    private $idnetwork;
+    protected $table = 'networks';
 
-    private $name;
+    protected $primaryKey = 'idnetwork';
 
-    private $phone1;
-
-    private $phone2;
-
-    private $email;
-
-    private $country;
-
-    private $region;
-
-    private $town;
-
-    private $address;
-
-    private $postcode;
-
-    private $updated_at;
-
-    private $created_at;
+    protected $fillable = ['networks'];
 
     /**
+     * @param int $id
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getNetwork()
+    public static function getNetwork(int $id)
     {
-        $emp = Session::get('employee');
-        $network = null;
-
-        if ($emp->branch !== null || $emp->institution !== null) {
-            $network = Zone::query()->where('idbranch', $emp->branch)
-                ->orWhere('idinst', $emp->institution)
-                ->join('institutions', 'idzone', '=', 'institutions.zone')
-                ->join('branches', 'idinst', '=', 'branches.institution')
-                ->select('network')->distinct()->first();
-        }
-
-        if ($emp->network !== null) {
-            $network = $emp->network;
-        }
-        return $network;
+        return self::query()->where('idnetwork', $id)->first();
     }
+
+    /**
+     * @param array $where
+     * @return Branch[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getNetworks(array $where = [])
+    {
+        if ($where !== null) {
+            return self::query()->where($where)->orderBy('abbr')->get();
+        }
+        return self::query()->orderBy('abbr')->get();
+    }
+
 }

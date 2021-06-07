@@ -10,13 +10,15 @@ if ($emp->lang == 'fr')
 @section('title', trans('sidebar.sort'))
 
 @section('content')
-
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.sort') </h3>
         </div>
+{{--        <div class="box-header">--}}
+{{--            <div class="box-tools">--}}
+{{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('check_sort/store') }}" method="post" role="form" id="checkSortForm">
                 {{ csrf_field() }}
@@ -85,42 +87,43 @@ if ($emp->lang == 'fr')
                     <table
                         class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
                         <thead>
-                        <tr class="bg-purples">
-                            <th>@lang('label.account')</th>
-                            <th>@lang('label.entitle')</th>
+                        <tr class="text-bold">
+                            <th class="cout">@lang('label.account')</th>
+                            <th style="width: 25%">@lang('label.entitle')</th>
                             <th>@lang('label.opera')</th>
-                            <th>@lang('label.amount')</th>
+                            <th class="cout">@lang('label.amount')</th>
                         </tr>
                         </thead>
-                        <tbody class="text-bold" id="mem_acc">
+                        <tbody id="mem_acc">
                         </tbody>
                     </table>
                 </div>
 
-                <div class="col-md-12">
+                <div class="col-md-12" id="tableInput">
                     <div class="col-md-5 bg-maroon-gradient"></div>
-                    <div
-                        class="col-md-2 text-center text-blue text-bold">@lang('label.memloanacc')</div>
+                    <div class="col-md-2 text-center text-blue text-bold">@lang('label.memloanacc')</div>
                     <div class="col-md-5 bg-maroon-gradient"></div>
 
-                    <table id="simul-data-table"
-                           class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
+                    <table id="simul-data-table2"
+                           class="table table-striped table-hover table-bordered table-condensed table-responsive">
                         <thead>
-                        <tr class="bg-purples">
-                            <th>@lang('label.account')</th>
-                            <th>@lang('label.fines')</th>
-                            <th>@lang('label.late')</th>
-                            <th>@lang('label.amount')</th>
-                            <th>@lang('label.balance')</th>
-                            <th>@lang('label.retint')</th>
-                            <th>@lang('label.totint')</th>
-                            <th>@lang('label.payment')</th>
-                            <th>@lang('label.interest')</th>
-                            <th>@lang('label.diff')</th>
+                        <tr>
+                            <th style="width: 9%">@lang('label.account')</th>
+                            <th style="width: 13%">@lang('label.desc')</th>
+                            <th class="cin">@lang('label.loanamt')</th>
+                            <th class="cin">@lang('label.capital')</th>
+                            <th style="width: 5%">@lang('label.late')</th>
+                            <th class="cin">@lang('label.interest')</th>
+                            <th class="cin">@lang('label.finint')</th>
+                            <th class="cin">@lang('label.accint')</th>
+                            <th class="cin">@lang('label.totint')</th>
+                            <th class="cin">@lang('label.intpay')</th>
+                            <th class="cout">@lang('label.payment')</th>
                         </tr>
                         </thead>
-                        <tbody id="loan_acc">
+                        <tbody id="loanacc">
                         </tbody>
+                        <tfoot></tfoot>
                     </table>
                 </div>
 
@@ -128,17 +131,9 @@ if ($emp->lang == 'fr')
                     <table class="table table-responsive">
                         <thead>
                         <tr class="text-bold text-blue bg-antiquewhite text-right">
-                            @foreach($accounts as $account)
-                                @if ($cash->cashacc == $account->idaccount)
-                                    <td style="width: 25%">
-                                        @if($emp->lang == 'fr') {{$account->labelfr }} @else {{$account->labeleng }} @endif
-                                    </td>
-                                    <td>{{$account->accnumb }}</td>
-                                @endif
-                            @endforeach
                             <td>@lang('label.totrans')</td>
                             <td style="width: 15%">
-                                <input type="text" style="text-align: right" name="totrans" id="totrans" readonly></td>
+                                <input type="text" style="text-align: left" name="totrans" id="totrans" readonly></td>
                         </tr>
                         </thead>
                     </table>
@@ -163,11 +158,11 @@ if ($emp->lang == 'fr')
                 }, success: function (check) {
                     $('#mem_numb').val(pad(parseInt(check.memnumb), 6));
 
-                    let surname = check.surname;
-                    if (check.surname !== null) {
-                        surname = '';
+                    if (check.surname === null) {
+                        $('#mem_name').val(check.name);
+                    } else {
+                        $('#mem_name').val(check.name + ' ' + check.surname);
                     }
-                    $('#mem_name').val(check.name + ' ' + surname);
 
                     $('#bank').val(check.ouracc + ' : ' + check.bname);
                     $('#carrier').val(check.carrier);
@@ -181,33 +176,117 @@ if ($emp->lang == 'fr')
                         },
                         success: function (checkAccs) {
                             let memLine = '';
-                            let loanLine = '';
-
+                            let loanAccLine = '';
                             $.each(checkAccs, function (i, checkAcc) {
+                                $('#mem_acc > tr').remove();
+                                $('#loanacc > tr').remove();
                                 if (checkAcc.type === 'N') {
-                                    memLine += "<tr>" +
-                                        "<td><input type='hidden' name='accounts[]' value='" + checkAcc.account + "'>" + checkAcc.accnumb + "</td>" +
-                                        "<td>@if ($emp->lang == 'fr')" + checkAcc.labelfr + " @else " + checkAcc.labeleng + "@endif</td>" +
-                                        "<td><input type='hidden' name='operations[]' value='" + checkAcc.operation + "'>" +
-                                        "@if ($emp->lang == 'fr')" + checkAcc.credtfr + " @else " + checkAcc.credteng + "@endif</td>" +
-                                        "<td class='text-right' class='amount'><input type='hidden' name='amounts[]' value='" + parseInt(checkAcc.accamt) + "'>" +
-                                        money(parseInt(checkAcc.accamt)) + "</td>" +
-                                        "</tr>";
+                                    memLine += '<tr>' +
+                                        '<td class="cout"><input type="hidden" name="accounts[]" value="' + checkAcc.account + '">' + checkAcc.accnumb + '</td>' +
+                                        '<td style="width: 25%">@if ($emp->lang === 'fr')' + checkAcc.labelfr + ' @else ' + checkAcc.labeleng + '@endif</td>' +
+                                        '<td><input type="hidden" name="operations[]" value="' + checkAcc.operation + '">' +
+                                        '@if ($emp->lang === 'fr')' + checkAcc.credtfr + ' @else ' + checkAcc.credteng + '@endif</td>' +
+                                        '<td class="text-right text-bold cout">' +
+                                        '<input type="hidden" name="amounts[]" class="amount" value="' + parseInt(checkAcc.accamt) + '">' + money(parseInt(checkAcc.accamt)) + '</td>' +
+                                        '</tr>';
                                     $('#mem_acc').html(memLine);
                                 } else if (checkAcc.type === 'L') {
+                                    $.ajax({
+                                        url: "{{ url('getLoan') }}",
+                                        method: 'get',
+                                        data: {loan: checkAcc.loan},
+                                        success: function (loan) {
+                                            let loanamt = parseInt(loan.amount);
+                                            if (parseInt(loan.isRef) > 0) {
+                                                loanamt = parseInt(loan.refamt);
+                                            }
+                                            let paidamt = parseInt(loan.paidamt);
+                                            let remamt = loanamt - paidamt;
+                                            let accramt = parseInt(loan.accramt);
 
+                                            async function pasteLoans() {
+                                                const loanType = await getData('getLoanType?ltype=' + loan.loantype);
+                                                const installs = await getData('getInstalls?loan=' + loan.idloan);
+
+                                                let days = 0;
+                                                let totPaid = 0;
+                                                let diff = 0;
+
+                                                $.each(installs, function (i, install) {
+                                                    const dateInterval = 86400000;
+                                                    let date0 = new Date(loan.instdate1);
+                                                    let date1 = new Date(loan.lastdate);
+                                                    let date2 = new Date(install.instdate);
+                                                    let date3 = new Date();
+
+                                                    if ((date3.getTime() >= date0.getTime())) {
+                                                        totPaid += parseInt(install.amort);
+                                                        diff = paidamt - totPaid;
+
+                                                        if (date1.getTime() <= date2.getTime()) {
+                                                            if (diff > 0) {
+                                                                days = Math.abs(Math.floor((date2.getTime() - date3.getTime()) / dateInterval));
+                                                            } else {
+                                                                if (paidamt > 0) {
+                                                                    days = Math.abs(Math.floor((date3.getTime() - date1.getTime()) / dateInterval));
+                                                                } else {
+                                                                    days = Math.abs(Math.floor((date3.getTime() - date0.getTime()) / dateInterval));
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                });
+
+                                                let inst = Math.round((remamt * loan.intrate) / 100);
+                                                let totints = inst + accramt;
+
+                                                loanAccLine += '<tr>' +
+                                                    '<td style="width: 9%"><input type="hidden" name="loans[]" value="' + checkAcc.loan + '">' + checkAcc.accnumb + '</td>' +
+                                                    '<td style="width: 13%">@if ($emp->lang == 'fr')' + loanType.labelfr + ' @else ' + loanType.labeleng + '@endif</td>' +
+                                                    '<td class="text-right text-bold cin">' + money(loanamt) + '</td>' +
+                                                    '<td class="text-right text-bold cin">' + money(remamt) + '</td>';
+
+                                                if (diff >= 0) {
+                                                    loanAccLine += '<td class="text-center" style="width: 5%">-' + days + '</td>' +
+                                                        '<td class="text-right text-bold cin">' +
+                                                        '<input type="hidden" name="ints[]" value="' + inst + '">' + money(inst) + '</td>' +
+                                                        '<td class="text-right text-bold cin">' +
+                                                        '<input type="hidden" name="pens[]" value="' + 0 + '">' + money(0) + '</td>' +
+                                                        '<td class="text-right text-bold cin">' +
+                                                        '<input type="hidden" name="accrs[]" value="' + accramt + '">' + money(accramt) + '</td>' +
+                                                        '<td class="text-right text-bold cin">' +
+                                                        '<input type="hidden" name="totints[]" value="' + totints + '">' + money(totints) + '</td>';
+                                                } else {
+                                                    let pen = Math.round((remamt * days * loanType.pentax) / 1200);
+                                                    totints += pen;
+
+                                                    loanAccLine += '<td class="text-center" style="width: 5%">+' + days + '</td>' +
+                                                        '<td class="text-right text-bold cin">' +
+                                                        '<input type="hidden" name="ints[]" value="' + inst + '">' + money(inst) + '</td>' +
+                                                        '<td class="text-right text-bold cin">' +
+                                                        '<input type="hidden" name="pens[]" value="' + pen + '">' + money(pen) + '</td>' +
+                                                        '<td class="text-right text-bold cin">' +
+                                                        '<input type="hidden" name="accrs[]" value="' + accramt + '">' + money(accramt) + '</td>' +
+                                                        '<td class="text-right text-bold cin">' +
+                                                        '<input type="hidden" name="totints[]" value="' + totints + '">' + money(totints) + '</td>';
+                                                }
+
+                                                loanAccLine += '<td class="text-right text-bold cin">' +
+                                                    '<input type="hidden" name="intamts[]" class="amount" value="' + checkAcc.intamt + '">' + money(checkAcc.intamt) + '</td>' +
+                                                    '<td class="text-right text-bold cout">' +
+                                                    '<input type="hidden" name="loanamts[]" class="amount" value="' + checkAcc.accamt + '">' + money(checkAcc.accamt) + '</td>' +
+                                                    '</tr>';
+
+                                                $('#loanacc').html(loanAccLine);
+                                            }
+
+                                            pasteLoans();
+                                        }
+                                    });
                                 }
                             });
                             $('#totrans').val(money(check.amount));
-                        }, error: function (errors) {
-                            $.each(errors, function (i, error) {
-                                console.log(error.message);
-                            });
                         }
-                    });
-                }, error: function (errors) {
-                    $.each(errors, function (i, error) {
-                        console.log(error.message);
                     });
                 }
             });

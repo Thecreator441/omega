@@ -1,100 +1,93 @@
 <?php $emp = Session::get('employee');
 
-if ($emp->lang == 'fr')
+$title = $menu->labeleng;
+if ($emp->lang == 'fr') {
+    $title = $menu->labelfr;
     App::setLocale('fr');
+}
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', trans('sidebar.memset'))
+@section('title', $title)
 
 @section('content')
 
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold">{{$title}}</h3>
         </div>
         <div class="box-body">
-            <form action="{{ url('mem_setting/store') }}" method="POST" id="memSetForm" role="form">
+            <form action="{{ route('mem_setting/store') }}" method="post" role="form" id="memSetForm" class="needs-validation">
                 {{csrf_field()}}
+
+                <input type="hidden" name="idmem_set" id="idmem_set" value="@if ($mem_sets->count() > 0) {{ $mem_sets->last()->idmemset }} @endif">
+
                 <div class="box-header with-border">
                     <div class="row">
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <select id="account" class="form-control select2">
-                                    <option value="">@lang('label.account')</option>
-                                    @foreach ($accounts as $account)
-                                        @if ($account->accabbr == 'O')
-                                            <option value="{{$account->idaccount}}">{{$account->accnumb}}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <input type="text" id="acc_name" class="form-control" placeholder="@lang('label.desc')"
-                                       disabled>
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="row">
-                                <div class="form-group">
-                                    <select id="opera" class="form-control select2">
-                                        <option value="">@lang('label.opera')</option>
-                                        @foreach ($operas as $opera)
-                                            <option value="{{$opera->idoper}}">{{pad($opera->opercode, 3)}}</option>
-                                        @endforeach
-                                    </select>
+                        <div class="row">
+                            <div class="col-md-2 col-xs-12">
+                                <div class="form-group has-infos">
+                                    <label for="chart_acc" class="text-center col-md-4 col-xs-4 control-label">@lang('label.chart')</label>
+                                    <div class="col-md-8 col-xs-8">
+                                        <select id="chart_acc" class="form-control select2">
+                                            <option value=""></option>
+                                            @foreach ($acc_plans as $acc_plan)
+                                                @if ($acc_plan->accabbr == 'Or')
+                                                    <option value="{{$acc_plan->idaccplan}}">{{substrWords($acc_plan->plan_code, 4)}}</option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <div class="help-block">@lang('placeholder.chart_acc')</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <input type="text" id="opera_name" class="form-control"
-                                       placeholder="@lang('label.desc')" disabled>
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group has-infos">
+                                    <label for="chart_acc_name" class="text-center col-md-2 col-xs-2 control-label">@lang('label.label')</label>
+                                    <div class="col-md-10 col-xs-10">
+                                        <input type="text" id="chart_acc_name" class="form-control" disabled>
+                                        <div class="help-block">@lang('placeholder.chart_acc_name')</div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <input type="text" id="amount" placeholder="@lang('label.amount')"
-                                       class="form-control text-right text-bold">
+                            <div class="col-md-3 col-xs-10">
+                                <div class="form-group has-infos">
+                                    <label for="chart_amt" class="text-center col-md-4 col-xs-4 control-label">@lang('label.amount')</label>
+                                    <div class="col-md-8 col-xs-8">
+                                        <input type="text" id="chart_amt" class="form-control text-right text-bold">
+                                        <div class="help-block">@lang('placeholder.chart_amt')</div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="row">
+                            <div class="col-md-1 col-xs-2">
                                 <div class="form-group">
-                                    <button type="button" id="minus"
-                                            class="btn btn-sm bg-red pull-right fa fa-minus"></button>
-                                    <button type="button" id="plus"
-                                            class="btn btn-sm bg-green pull-right fa fa-plus"></button>
+                                    <button type="button" id="chart_minus" class="btn btn-sm bg-red pull-right fa fa-minus"></button>
+                                    <button type="button" id="chart_plus" class="btn btn-sm bg-green pull-right fa fa-plus"></button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
-                        <table class="table table-hover-table-condensed table-bordered table-striped table-responsive">
+                        <table  id="billet-data-table" class="table table-hover-table-condensed table-bordered table-striped table-responsive">
                             <thead>
                             <tr>
-                                <th colspan="2">@lang('label.account')</th>
+                                <th style="width: 5%;"></th>
+                                <th>@lang('label.chart')</th>
+                                {{-- <th colspan="2">@lang('label.chart')</th> --}}
                                 <th>@lang('label.opera')</th>
                                 <th>@lang('label.amount')</th>
                             </tr>
                             </thead>
-                            <tbody id="ordSet">
+                            <tbody id="chart_rows">
                             @foreach ($mem_sets as $memset)
-                                @if ($memset->accabbr == 'O')
+                                @if ($memset->accabbr === 'Or')
                                     <tr>
-                                        <td style="width: 5%; text-align: center">
-                                            <input type="checkbox" class="check" name="classes[]"
-                                                   value="{{$memset->idmemset}}">&nbsp;
-                                        </td>
-                                        <td>{{$memset->accnumb}}</td>
-                                        <td>@if($emp->lang === 'fr') {{$memset->operlabelfr}} @else {{$memset->operlabeleng}} @endif</td>
-                                        <td class="text-right text-bold">{{money((int)$memset->amount)}}</td>
+                                        <td class="text-center" style="width: 5%;"><input type="hidden" name="memsets[]" value="{{ $memset->idmemset }}"><input type="checkbox" class="gl_checks"></td>
+                                        <td class="text-center"><input type="hidden" name="accounts[]" value="{{ $memset->account }}"> {{ $memset->accnumb }}</td>
+                                        <td>@if($emp->lang === 'fr') {{$memset->acclabelfr}} @else {{$memset->acclabeleng}} @endif</td>
+                                        <td class="text-right text-bold"><input type="hidden" name="amounts[]" value="{{ (int)$memset->amount }}">{{ money((int)$memset->amount) }}</td>
                                     </tr>
                                 @endif
                             @endforeach
@@ -105,81 +98,69 @@ if ($emp->lang == 'fr')
 
                 <div class="box-header with-border">
                     <div class="row">
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <select id="account2" class="form-control select2">
-                                    <option value="">@lang('label.account')</option>
-                                    @foreach ($accounts as $account)
-                                        @if ($account->accabbr != 'O')
-                                            <option value="{{$account->idaccount}}">{{$account->accnumb}}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <input type="text" id="acc_name2" class="form-control" placeholder="@lang('label.desc')"
-                                       disabled>
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="row">
-                                <div class="form-group">
-                                    <select id="opera2" class="form-control select2">
-                                        <option value="">@lang('label.opera')</option>
-                                        @foreach ($operas as $opera)
-                                            <option value="{{$opera->idoper}}">{{pad($opera->opercode, 3)}}</option>
-                                        @endforeach
-                                    </select>
+                        <div class="row">
+                            <div class="col-md-3 col-xs-12">
+                                <div class="form-group has-infos">
+                                    <label for="gl_acc" class="text-center col-md-3 col-xs-3 control-label">@lang('label.gl_account')</label>
+                                    <div class="col-md-9 col-xs-9">
+                                        <select id="gl_acc" class="form-control select2">
+                                            <option value=""></option>
+                                            @foreach ($acc_plans as $acc_plan)
+                                                @if ($acc_plan->accabbr != 'Or')
+                                                    <option value="{{$acc_plan->idaccplan}}">{{pad($acc_plan->plan_code, 9, 'right')}}</option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <div class="help-block">@lang('placeholder.gl_acc')</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <input type="text" id="opera_name2" class="form-control"
-                                       placeholder="@lang('label.desc')"
-                                       disabled>
+                            <div class="col-md-5 col-xs-12">
+                                <div class="form-group has-infos">
+                                    <label for="gl_acc_name" class="text-center col-md-2 col-xs-2 control-label">@lang('label.label')</label>
+                                    <div class="col-md-10 col-xs-10">
+                                        <input type="text" id="gl_acc_name" class="form-control" disabled>
+                                        <div class="help-block">@lang('placeholder.gl_acc_name')</div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <input type="text" id="amount2" placeholder="@lang('label.amount')"
-                                       class="form-control text-right text-bold">
+                            <div class="col-md-3 col-xs-10">
+                                <div class="form-group has-infos">
+                                    <label for="gl_amt" class="text-center col-md-4 col-xs-4 control-label">@lang('label.amount')</label>
+                                    <div class="col-md-8 col-xs-8">
+                                        <input type="text" id="gl_amt" class="form-control text-right text-bold">
+                                        <div class="help-block">@lang('placeholder.amount')</div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="row">
+                            <div class="col-md-1 col-xs-2">
                                 <div class="form-group">
-                                    <button type="button" id="minus2"
-                                            class="btn btn-sm bg-red pull-right fa fa-minus"></button>
-                                    <button type="button" id="plus2"
-                                            class="btn btn-sm bg-green pull-right fa fa-plus"></button>
+                                    <button type="button" id="gl_minus" class="btn btn-sm bg-red pull-right fa fa-minus"></button>
+                                    <button type="button" id="gl_plus" class="btn btn-sm bg-green pull-right fa fa-plus"></button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
-                        <table class="table table-hover-table-condensed table-bordered table-striped table-responsive">
+                        <table  id="billet-data-table" class="table table-hover-table-condensed table-bordered table-striped table-responsive">
                             <thead>
                             <tr>
-                                <th colspan="2">@lang('label.account')</th>
+                                <th style="width: 5%;"></th>
+                                <th>@lang('label.account')</th>
+                                {{-- <th colspan="2">@lang('label.account')</th> --}}
                                 <th>@lang('label.opera')</th>
                                 <th>@lang('label.amount')</th>
                             </tr>
                             </thead>
-                            <tbody id="genSet">
+                            <tbody id="gl_rows">
                             @foreach ($mem_sets as $memset)
-                                @if ($memset->accabbr != 'O')
+                                @if ($memset->accabbr !== 'Or')
                                     <tr>
-                                        <td style="width: 5%; text-align: center">
-                                            <input type="checkbox" class="check2" name="classes2[]"
-                                                   value="{{$memset->idmemset}}">&nbsp;
-                                        </td>
-                                        <td>{{$memset->accnumb}}</td>
-                                        <td>@if($emp->lang === 'fr') {{$memset->operlabelfr}} @else {{$memset->operlabeleng}} @endif</td>
-                                        <td class="text-right text-bold">{{money((int)$memset->amount)}}</td>
+                                        <td class="text-center" style="width: 5%;"><input type="hidden" name="memsets[]" value="{{ $memset->idmemset }}"><input type="checkbox" class="gl_checks"></td>
+                                        <td class="text-center"><input type="hidden" name="accounts[]" value="{{ $memset->account }}"> {{ $memset->accnumb }}</td>
+                                        <td>@if($emp->lang === 'fr') {{$memset->acclabelfr}} @else {{$memset->acclabeleng}} @endif</td>
+                                        <td class="text-right text-bold"><input type="hidden" name="amounts[]" value="{{ (int)$memset->amount }}">{{ money((int)$memset->amount) }}</td>
                                     </tr>
                                 @endif
                             @endforeach
@@ -188,10 +169,15 @@ if ($emp->lang == 'fr')
                     </div>
                 </div>
 
-                <div class="col-md-12">
-                    <button type="button" id="save"
-                            class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
-                </div>
+                @if ($mem_sets->count() > 0)
+                    <div class="col-md-12">
+                        <button type="button" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit .edit"></button>
+                    </div>
+                @else
+                    <div class="col-md-12">
+                        <button type="button" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
+                    </div>
+                @endif
             </form>
         </div>
     </div>
@@ -200,175 +186,130 @@ if ($emp->lang == 'fr')
 @section('script')
     <script>
         $(document).ready(function () {
-            if ($('#ordSet tr, #genSet tr').length === 0) {
-                $('#minus, #minus2').attr('disabled', true);
+            if ($('#chart_rows tr, #gl_rows tr').length === 0) {
+                $('#chart_minus, #gl_minus').prop('disabled', true);
             }
         });
 
-        $('#amount, #amount2').on('input', function () {
+        $('#chart_amt, #gl_amt').on('input', function () {
             $(this).val(money($(this).val()));
         });
 
-        $('#account').change(function () {
+        $('#chart_acc').change(function () {
             if ($(this).val() !== '') {
                 $.ajax({
-                    url: "{{ url('getAccount') }}",
+                    url: "{{ url('getAccPlan') }}",
                     method: 'get',
                     data: {
-                        account: $(this).val()
+                        id: $(this).val()
                     },
-                    success: function (account) {
-                        $('#acc_name').val("@if($emp->lang == 'fr')" + account.labelfr + " @else" + account.labeleng + " @endif");
+                    success: function (acc_plan) {
+                        $('#chart_acc_name').val("@if($emp->lang == 'fr')" + acc_plan.labelfr + " @else" + acc_plan.labeleng + " @endif");
                     }
                 });
             } else {
-                $('#acc_name').val('');
+                $('#chart_acc_name').val('');
             }
         });
 
-        $('#opera').change(function () {
-            if ($(this).val() !== '') {
-                $.ajax({
-                    url: "{{ url('getOperation') }}",
-                    method: 'get',
-                    data: {
-                        operation: $(this).val()
-                    },
-                    success: function (opera) {
-                        $('#opera_name').val("@if($emp->lang == 'fr')" + opera.labelfr + " @else" + opera.labeleng + " @endif");
-                    }
-                });
-            } else {
-                $('#opera_name').val('');
-            }
-        });
+        $('#chart_plus').click(function () {
+            var chart_acc = $('#chart_acc');
+            var chart_acc_name = $('#chart_acc_name');
+            var chart_amt = $('#chart_amt');
 
-        $('#plus').click(function () {
-            let acc = $('#account');
-            let opera = $('#opera');
-            let operaName = $('#opera_name');
-            let amount = $('#amount');
+            var chart_acc_code = pad(chart_acc.select2('data')[0]['text'], 9, 'right') + '' + pad("{{ $emp->institution }}", 3) + '' + pad("{{ $emp->branch }}", 3);
 
-            let accText = acc.select2('data')[0]['text'];
-
-            let line = '<tr>' +
-                '<td style="text-align: center; width: 5%"><input type="checkbox" class="check"></td>' +
-                '<td><input type="hidden" name="accounts[]" value="' + acc.val() + '">' + accText + '</td>' +
-                '<td><input type="hidden" name="operations[]" value="' + opera.val() + '">' + operaName.val() + '</td>' +
-                '<td class="text-right text-bold amount"><input type="hidden" name="amounts[]" value="' + trimOver(amount.val(), null) + '">' + money(amount.val()) + '</td>' +
+            var row = '<tr>' +
+                    '<td class="text-center" style="width: 5%"><input type="checkbox" class="chart_check"></td>' +
+                    '<td class="text-center" style="text-align: center"><input type="hidden" name="accplans[]" value="' + chart_acc.val() + '">' + chart_acc_code + '</td>' +
+                    '<td><input type="hidden" name="accounts[]" value="">' + chart_acc_name.val() + '</td>' +
+                    '<td class="text-right text-bold amount"><input type="hidden" name="amounts[]" value="' + trimOver(chart_amt.val(), null) + '">' + money(chart_amt.val()) + '</td>' +
                 '</tr>';
 
-            $('#ordSet').append(line);
-            $('#minus').removeAttr('disabled');
+            $('#chart_rows').append(row);
+            $('#chart_minus').removeAttr('disabled');
 
-            acc.val('').trigger('change');
-            opera.val('').trigger('change');
-            amount.val('');
-            operaName.val('');
+            chart_acc.val('').select2();
+            chart_acc_name.val('');
+            chart_amt.val('');
         });
 
-        $('#minus').click(function () {
-            $('.check').each(function () {
+        $('#chart_minus').click(function () {
+            $('.chart_check').each(function () {
                 if ($(this).is(':checked'))
                     $(this).closest('tr').remove();
             });
         });
 
-        $('#minus').hover(function () {
-            if ($('#ordSet tr').length === 0)
-                $(this).attr('disabled', true);
+        $('#chart_minus').hover(function () {
+            if ($('#chart_rows tr').length === 0)
+                $(this).prop('disabled', true);
         });
 
-        $('#account2').change(function () {
+        $('#gl_acc').change(function () {
             if ($(this).val() !== '') {
                 $.ajax({
-                    url: "{{ url('getAccount') }}",
+                    url: "{{ url('getAccPlan') }}",
                     method: 'get',
                     data: {
-                        account: $(this).val()
+                        id: $(this).val()
                     },
-                    success: function (account) {
-                        $('#acc_name2').val("@if($emp->lang == 'fr')" + account.labelfr + " @else" + account.labeleng + " @endif");
+                    success: function (acc_plan) {
+                        $('#gl_acc_name').val("@if($emp->lang == 'fr')" + acc_plan.labelfr + " @else" + acc_plan.labeleng + " @endif");
                     }
                 });
             } else {
-                $('#acc_name2').val('');
+                $('#gl_acc_name').val('');
             }
         });
 
-        $('#opera2').change(function () {
-            2
-            if ($(this).val() !== '') {
-                $.ajax({
-                    url: "{{ url('getOperation') }}",
-                    method: 'get',
-                    data: {
-                        operation: $(this).val()
-                    },
-                    success: function (opera) {
-                        $('#opera_name2').val("@if($emp->lang == 'fr')" + opera.labelfr + " @else" + opera.labeleng + " @endif");
-                    }
-                });
-            } else {
-                $('#opera_name2').val('');
-            }
-        });
+        $('#gl_plus').click(function () {
+            var gl_acc = $('#gl_acc');
+            var gl_acc_name = $('#gl_acc_name');
+            var gl_amt = $('#gl_amt');
 
-        $('#plus2').click(function () {
-            let acc = $('#account2');
-            let opera = $('#opera2');
-            let operaName = $('#opera_name2');
-            let amount = $('#amount2');
+            var gl_acc_code = pad(gl_acc.select2('data')[0]['text'], 9, 'right') + '' + pad("{{ $emp->institution }}", 3) + '' + pad("{{ $emp->branch }}", 3);
 
-            let accText = acc.select2('data')[0]['text'];
-
-            let line = '<tr>' +
-                '<td style="text-align: center; width: 5%"><input type="checkbox" class="check2"></td>' +
-                '<td><input type="hidden" name="accounts2[]" value="' + acc.val() + '">' + accText + '</td>' +
-                '<td><input type="hidden" name="operations2[]" value="' + opera.val() + '">' + operaName.val() + '</td>' +
-                '<td class="text-right text-bold amount"><input type="hidden" name="amounts2[]" value="' + trimOver(amount.val(), null) + '">' + money(amount.val()) + '</td>' +
+            var row = '<tr>' +
+                    '<td class="text-center" style="width: 5%"><input type="checkbox" class="gl_check"></td>' +
+                    '<td class="text-center"><input type="hidden" name="accplans[]" value="' + gl_acc.val() + '">' + gl_acc_code + '</td>' +
+                    '<td><input type="hidden" name="accounts[]" value="">' + gl_acc_name.val() + '</td>' +
+                    '<td class="text-right text-bold amount"><input type="hidden" name="amounts[]" value="' + trimOver(gl_amt.val(), null) + '">' + money(gl_amt.val()) + '</td>' +
                 '</tr>';
 
-            $('#genSet').append(line);
-            $('#minus2').removeAttr('disabled');
+            $('#gl_rows').append(row);
+            $('#gl_minus').removeAttr('disabled');
 
-            acc.val('').trigger('change');
-            opera.val('').trigger('change');
-            amount.val('');
-            operaName.val('');
+            gl_acc.val('').select2();
+            gl_acc_name.val('');
+            gl_amt.val('');
         });
 
-        $('#minus2').click(function () {
-            $('.check2').each(function () {
+        $('#gl_minus').click(function () {
+            $('.gl_check').each(function () {
                 if ($(this).is(':checked'))
                     $(this).closest('tr').remove();
             });
         });
 
-        $('#minus2').hover(function () {
-            if ($('#genSet tr').length === 0)
-                $(this).attr('disabled', true);
+        $('#gl_minus').hover(function () {
+            if ($('#gl_rows tr').length === 0)
+                $(this).prop('disabled', true);
         });
 
-        $(document).on('click', '#save', function () {
-            swal({
-                    title: '@lang('sidebar.memset')',
-                    text: '@lang('confirm.memset_text')',
-                    type: 'info',
-                    showCancelButton: true,
-                    cancelButtonClass: 'bg-red',
-                    confirmButtonClass: 'bg-green',
-                    confirmButtonText: '@lang('confirm.yes')',
-                    cancelButtonText: '@lang('confirm.no')',
-                    closeOnConfirm: true,
-                    closeOnCancel: true
-                },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        $('#memSetForm').submit();
-                    }
-                }
-            );
+        $(document).on('click', '#save, #edit', function () {
+            let text = "@lang('confirm.mem_set_save_text')";
+            if ($('#idmem_set').val() !== '') {
+                text = "@lang('confirm.mem_set_edit_text')";
+            }
+
+            var len = $('#chart_rows tr, #gl_rows tr').length;
+
+            if ($('#chart_rows tr, #gl_rows tr').length > 0) {
+                mySwal("{{$title}}", text, "@lang('confirm.no')", "@lang('confirm.yes')", '#memSetForm');
+            } else {
+                myOSwal("{{$title}}", text, 'error');
+            }
         });
     </script>
 @stop

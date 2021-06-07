@@ -7,71 +7,35 @@ use Illuminate\Support\Facades\DB;
 
 class Branch extends Model
 {
-    private $idbranch;
+    protected $table = 'branches';
 
-    private $name;
+    protected $primaryKey = 'idbranch';
 
-    private $phone1;
+    protected $fillable = ['branches'];
 
-    private $phone2;
-
-    private $email;
-
-    private $region;
-
-    private $town;
-
-    private $address;
-
-    private $postcode;
-
-    private $institution;
-
-    private $updated_at;
-
-    private $created_at;
+    /**
+     * @param int $idbranch
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getBranch(int $idbranch)
+    {
+        return self::query()->where('idbranch', $idbranch)->first();
+    }
 
     /**
      * @param array $where
-     * @return \Illuminate\Support\Collection
+     * @return Branch[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    private static function getData(array $where = []): \Illuminate\Support\Collection
+    public static function getBranches(array $where = [])
     {
-        if (!empty($where)) {
-            return DB::table('branches')->where($where)->get();
+        if ($where !== null) {
+         return self::query()->select('branches.*', 'I.abbr')
+             ->join('institutions AS I', 'institution', '=', 'I.idinst')
+             ->where($where)->orderBy('name')->get();
         }
-        return DB::table('branches')->get();
-//        "SELECT B.idbillet, B.value, B.labaeleng, B.labelfr, B.format, C.label, C.format FROM billetings B, currencies C WHERE B.idcurrency = C.idcurrency"
+        return self::query()->select('branches.*', 'I.abbr')
+            ->join('institutions AS I', 'institution', '=', 'I.idinst')
+            ->orderBy('name')->get();
     }
 
-    /**
-     * @param array $data
-     * @return bool
-     */
-    private static function insertData(array $data): bool
-    {
-        DB::table('branches')->insert($data);
-        return true;
-    }
-
-    /**
-     * @param int $id
-     * @param array $data
-     * @return bool
-     */
-    private static function updateData(int $id, array $data): bool
-    {
-        DB::table('branches')->where('idbranch', $id)->update($data);
-        return true;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    private static function deleteData(int $id): bool
-    {
-        DB::table('branches')->where('idbranch', $id)->delete();
-        return true;
-    }
 }

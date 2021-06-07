@@ -1,65 +1,19 @@
-<?php $emp = session()->get('employee');
+<?php
+$emp = Session::get('employee');
 
 if ($emp->lang == 'fr')
-    $title = 'Monnaies';
-else
-    $title = 'Dévise';
+    App::setLocale('fr');
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', $title)
-
-@section('edit')
-    {{--    Insert and Update Currency Box--}}
-    <div class="box" id="editForm" style="display: none;">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right" id="exitEditForm">
-                    <i class="fa fa-close"></i>
-                </button>
-            </div>
-        </div>
-        <div class="box-body">
-            <div class="container-fluid">
-                <form action="{{ url('admin/currency/store') }}" method="post" role="form">
-                    {{ csrf_field() }}
-                    <input type="hidden" name="id" id="id">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group @error('label') has-error @enderror">
-                                <label for="label">@if($emp->lang == 'fr') NOMS @else NAME @endif</label>
-                                <input type="text" class="form-control @error('label') is-invalid @enderror"
-                                       value="{{ old('label') }}" name="label" id="label"
-                                       placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms' : 'Enter the Name'; ?>">
-                                <span class="form-control-feedback"></span>
-                                @error('label')<span class="invalid-feedback text-red" id="name_text"
-                                                     role="alert">{{ $message }}</span>@enderror
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="format">FORMAT</label>
-                                <input type="text" class="form-control" name="format" id="format"
-                                       placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Format' : 'Enter the Format'; ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary bg-primary pull-right btn-raised">Update</button>
-                </form>
-            </div>
-        </div>
-    </div>
-    {{--    Insert and Update Currency Box--}}
-@stop
+@section('title', trans('sidebar.currency'))
 
 @section('content')
-
-    @yield('edit')
-
-    {{--    Insert and Update Currency Box--}}
     <div class="box box-info" id="newForm" style="display: none;">
-        <div class="box-header">
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold" id="title">@if($emp->lang == 'fr') Nouvelle Dévise @else New
+                Currency @endif</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-alert bg-red btn-sm pull-right" id="exitForm">
                     <i class="fa fa-close"></i>
@@ -67,81 +21,164 @@ else
             </div>
         </div>
         <div class="box-body">
-            <div class="container-fluid">
-                <form action="{{ url('admin/currency/store') }}" method="post" role="form">
-                    {{ csrf_field() }}
-                    <input type="hidden" name="id" id="id">
+            <form action="{{ route('admin/currency/store') }}" class="needs-validation" method="post" role="form" id="curForm">
+                {{ csrf_field() }}
+
+                <div id="fillform">
+                    <input type="hidden" name="idcurrency" id="idcurrency">
+
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group @error('label') has-error @enderror">
-                                <label for="label">@if($emp->lang == 'fr') Noms @else Name @endif</label>
-                                <input type="text" class="form-control @error('label') is-invalid @enderror"
-                                       value="{{ old('label') }}" name="label" id="label"
-                                       placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms' : 'Enter the Name'; ?>">
-                                <span class="form-control-feedback"></span>
-                                @error('label')<span class="invalid-feedback text-red" id="name_text"
-                                                     role="alert">{{ $message }}</span>@enderror
+                        <div class="col-md-6 col-xs-6">
+                            <div class="form-group has-error">
+                                <label for="name" class="col-md-3 control-label">@lang('label.name') <sup class="text-red text-bold">*</sup></label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" value="" name="name" id="name" required>
+                                    <div class="help-block">@lang('placeholder.name')</div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="format">FORMAT</label>
-                                <input type="text" class="form-control" name="format" id="format"
-                                       placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Format' : 'Enter the Format'; ?>">
+                        <div class="col-md-6 col-xs-6">
+                            <div class="form-group has-error">
+                                <label for="format" class="col-md-3 control-label">@lang('label.format') <sup class="text-red text-bold">*</sup></label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" value="" name="format" id="format" required>
+                                    <div class="help-block">@lang('placeholder.format')</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary bg-primary pull-right btn-raised"><i
-                            class="fa fa-save"></i>@if($emp->lang == 'fr') Enregistrer @else Save @endif
-                    </button>
-                </form>
-            </div>
+                </div>
+
+                <div class="col-md-12">
+                    <button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
+                </div>
+            </form>
         </div>
     </div>
-    {{--    Insert and Update Currency Box--}}
 
-    {{--    Currencies List Box--}}
     <div class="box">
-        <div class="box-header">
+        <div class="box-header  with-border">
+            <h3 class="box-title text-bold">@lang('sidebar.currency')</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-success bg-green btn-sm pull-right" id="insertForm">
-                    <i class="oin ion-plus"></i>&nbsp;@if($emp->lang == 'fr') Nouvelle Dévise @else New
-                    Currency @endif
+                    <i class="oin ion-plus"></i>&nbsp;@lang('label.newcur')
                 </button>
             </div>
         </div>
         <div class="box-body">
-            <table id="bootstrap-data-table" class="table table-striped table-responsive-xl table-condensed">
-                <thead>
-                <tr>
-                    <th>@if($emp->lang == 'fr') Dévise @else Currency @endif</th>
-                    <th>Format</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($currencies as $currency)
-                    <tr>
-                        <td>{{ $currency->label }}</td>
-                        <td>{{ $currency->format }}</td>
-                        <td>
-                            <button class="btn btn-info bg-aqua btn-sm" id="updateForm"
-                                    onclick="updateData('currency', '{{ $currency->idcurrency }}')">
-                                <i class="ion ion-edit"></i>&nbsp; @if($emp->lang == 'fr') Modifier @else
-                                    Edit @endif
-                            </button>
-                            <button class="btn bg-red btn-sm" data-toggle="modal" data-target="#delete"
-                                    onclick="setData('currency', '{{ $currency->idcurrency }}')">
-                                <i class="ion ion-trash-b"></i>&nbsp; @if($emp->lang == 'fr') Effacer @else
-                                    Delete @endif
-                            </button>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-12">
+                        <table id="admin-data-table" class="table table-bordered table-striped table-hover table-responsive-xl">
+                            <thead>
+                            <tr>
+                                <th>@if($emp->lang == 'fr') Dévise @else Currency @endif</th>
+                                <th>Format</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($currencies as $currency)
+                                <tr>
+                                    <td>{{ $currency->label }}</td>
+                                    <td>{{ $currency->format }}</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-info bg-aqua btn-sm fa fa-edit" onclick="edit('{{$currency->idcurrency}}')"></button>
+                                        <button type="button" class="btn bg-red btn-sm delete fa fa-trash" onclick="remove('{{$currency->idcurrency}}')"></button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                        <form action="{{route('admin/currency/delete')}}" method="post" role="form" id="delForm" style="display: none">
+                            {{ csrf_field() }}
+                            <input type="hidden" name="currency" id="currency" value="">
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    {{--    Currencies List Box --}}
+@stop
 
+@section('script')
+    <script>
+        $('#insertForm').click(function () {
+            in_out_form();
+            $('#newForm').show();
+        });
+
+        function edit(idcurrency) {
+            $.ajax({
+                url: "{{ url('getCurrency') }}",
+                method: 'get',
+                data: {
+                    id: idcurrency
+                },
+                success: function (currency) {
+                    $('#title').text('@lang('label.edit') ' + currency.label);
+                    $('#idcurrency').val(currency.idcurrency);
+                    $('#name').val(currency.label);
+                    $('#format').val(currency.format);
+
+                    $('#save').replaceWith('<button type="submit" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit"></button>');
+
+                    $('#newForm').show();
+                }
+            });
+        }
+
+        function remove(idcurrency) {
+            swal({
+                icon: 'warning',
+                title: '@lang('sidebar.currency')',
+                text: '@lang('confirm.curdel_text')',
+                closeOnClickOutside: false,
+                allowOutsideClick: false,
+                closeOnEsc: false,
+                buttons: {
+                    cancel: {
+                        text: ' @lang('confirm.no')',
+                        value: false,
+                        visible: true,
+                        closeModal: true,
+                        className: "btn bg-red fa fa-close"
+                    },
+                    confirm: {
+                        text: ' @lang('confirm.yes')',
+                        value: true,
+                        visible: true,
+                        closeModal: true,
+                        className: "btn bg-green fa fa-check"
+                    },
+                },
+            }).then(function (isConfirm) {
+                if (isConfirm) {
+                    $('#currency').val(idcurrency);
+                    $('#delForm').submit();
+                }
+            });
+        }
+
+        $('#exitForm').click(function () {
+            $('#newForm').hide();
+            in_out_form();
+        });
+
+        function submitForm() {
+            let text = '@lang('confirm.cursave_text')';
+            if ($('#idcurrency').val() !== '') {
+                text = '@lang('confirm.curedit_text')';
+            }
+
+            mySwal('@lang('sidebar.currency')', text, '@lang('confirm.no')', '@lang('confirm.yes')', '#curForm');
+        }
+
+        function in_out_form() {
+            $('#title').text('@lang('label.newcur')');
+            $('#idcurrency').val('');
+            $('#fillform :input').val('');
+            $('#edit').replaceWith('<button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>');
+        }
+    </script>
 @stop

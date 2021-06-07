@@ -3,40 +3,85 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
 use App\Models\Division;
-use Illuminate\Http\Request;
+use App\Models\Region;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
 
 class DivisionController extends Controller
 {
     public function index()
     {
-        $countries = DB::table('countries')->get();
-        $regions = DB::table('regions')->get();
-        $divisions = DB::table('divisions')->get();
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
 
-        return view('admin.pages.division', ['divisions' => $divisions, 'regions' => $regions, 'countries' => $countries]);
+        foreach ($divisions as $division) {
+            $region = Region::getRegion($division->region);
+            $country = Country::getCountry($region->country);
+
+            $division->reg_fr = $region->labelfr;
+            $division->reg_en = $region->labeleng;
+            $division->cou_fr = $country->labelfr;
+            $division->cou_en = $country->labeleng;
+        }
+
+        return view('admin.pages.division', compact('countries', 'regions', 'divisions'));
     }
 
     public function store()
     {
-        $division = new Division();
+        DB::beginTransaction();
+        try {
+            $iddivision = Request::input('iddivision');
+            $division = null;
 
-        $division->labelfr = Request::input('labelfr');
-        $division->labeleng = Request::input('labeleng');
-        $division->idregi = Request::input('region');
+            if ($iddivision === null) {
+                $division = new Division();
+            } else {
+                $division = Division::getDivision($iddivision);
+            }
 
-        $division->save();
+            $division->label = Request::input('label');
+            $division->region = Request::input('region');
 
-        return Redirect::back();
+            if ($iddivision === null) {
+                $division->save();
+            } else {
+                $division->update((array)$division);
+            }
+
+            DB::commit();
+            if ($iddivision === null) {
+                return Redirect::back()->with('success', trans('alertSuccess.divsave'));
+            }
+            return Redirect::back()->with('success', trans('alertSuccess.divedit'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            if ($iddivision === null) {
+                return Redirect::back()->with('danger', trans('alertDanger.divsave'));
+            }
+            return Redirect::back()->with('danger', trans('alertDanger.divedit'));
+        }
     }
 
-    public function delete(Request $request): \Illuminate\Http\RedirectResponse
+    public function delete(): \Illuminate\Http\RedirectResponse
     {
-        DB::table('divisions')->where('iddiv', '=', $request->id)->delete();
+        $iddivision = Request::input('division');
 
-        return Redirect::back();
+        DB::beginTransaction();
+        try {
+            Division::getDivision($iddivision)->delete();
+
+            DB::commit();
+            return Redirect::back()->with('success', trans('alertSuccess.divdel'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            return Redirect::back()->with('danger', trans('alertDanger.divdel'));
+        }
     }
 }

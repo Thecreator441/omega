@@ -14,20 +14,6 @@ class LoanPur extends Model
 
     protected $fillable = ['loan_purs'];
 
-    private $idloanpur;
-
-    private $purcode;
-
-    private $labeleng;
-
-    private $labelfr;
-
-    private $institution;
-
-    private $updated_at;
-
-    private $created_at;
-
     /**
      * @param int $id
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
@@ -46,9 +32,9 @@ class LoanPur extends Model
         $emp = Session::get('employee');
 
         if ($where !== null) {
-            return self::query()->where($where)->where('institution', $emp->institution)->orderBy('purcode')->get();
+            return self::query()->where($where)->get();
         }
-        return self::query()->where('institution', $emp->institution)->orderBy('purcode')->get();
+        return self::query()->get();
     }
 
     /**
@@ -56,10 +42,15 @@ class LoanPur extends Model
      */
     public static function getPaginates()
     {
-        $emp = Session::get('employee');
+        return self::query()->distinct('idloanpur')->orderBy('purcode')->paginate(1);
+    }
 
-        return self::query()->where('institution', $emp->institution)
-            ->distinct('idloanpur')->orderBy('purcode')->paginate(1);
+    /**
+     * @return string
+     */
+    public static function getLast()
+    {
+        return self::query()->orderByDesc('purcode')->first();
     }
 
 }

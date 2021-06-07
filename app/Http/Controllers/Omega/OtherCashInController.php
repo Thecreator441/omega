@@ -24,13 +24,13 @@ class OtherCashInController extends Controller
                 $cash = Cash::getEmpCashOpen();
                 $moneys = Money::getMoneys();
                 $accounts = Account::getAccounts();
-                $operas = Operation::all();
+//                $operas = Operation::all();
 
                 return view('omega.pages.other_cash_in', [
                     'cash' => $cash,
                     'moneys' => $moneys,
-                    'accounts' => $accounts,
-                    'operas' => $operas
+                    'accounts' => $accounts
+//                    'operas' => $operas
                 ]);
             }
             return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
@@ -66,74 +66,76 @@ class OtherCashInController extends Controller
             $cash = Cash::getEmpCashOpen();
             $opera = Operation::getByCode(32);
 
-            if (!empty($mon1) || $mon1 !== null) {
+            if ($mon1 !== null) {
                 $cash->mon1 += trimOver($mon1, ' ');
             }
-            if (!empty($mon2) || $mon2 !== null) {
+            if ($mon2 !== null) {
                 $cash->mon2 += trimOver($mon2, ' ');
             }
-            if (!empty($mon3) || $mon3 !== null) {
+            if ($mon3 !== null) {
                 $cash->mon3 += trimOver($mon3, ' ');
             }
-            if (!empty($mon4) || $mon4 !== null) {
+            if ($mon4 !== null) {
                 $cash->mon4 += trimOver($mon4, ' ');
             }
-            if (!empty($mon5) || $mon5 !== null) {
+            if ($mon5 !== null) {
                 $cash->mon5 += trimOver($mon5, ' ');
             }
-            if (!empty($mon6) || $mon6 !== null) {
+            if ($mon6 !== null) {
                 $cash->mon6 += trimOver($mon6, ' ');
             }
-            if (!empty($mon7) || $mon7 !== null) {
+            if ($mon7 !== null) {
                 $cash->mon7 += trimOver($mon7, ' ');
             }
-            if (!empty($mon8) || $mon8 !== null) {
+            if ($mon8 !== null) {
                 $cash->mon8 += trimOver($mon8, ' ');
             }
-            if (!empty($mon9) || $mon9 !== null) {
+            if ($mon9 !== null) {
                 $cash->mon9 += trimOver($mon9, ' ');
             }
-            if (!empty($mon10) || $mon10 !== null) {
+            if ($mon10 !== null) {
                 $cash->mon10 += trimOver($mon10, ' ');
             }
-            if (!empty($mon11) || $mon11 !== null) {
+            if ($mon11 !== null) {
                 $cash->mon11 += trimOver($mon11, ' ');
             }
-            if (!empty($mon12) || $mon12 !== null) {
+            if ($mon12 !== null) {
                 $cash->mon12 += trimOver($mon12, ' ');
             }
-            $cash->save();
+            $cash->update((array)$cash);
 
             $writing = new Writing();
             $writing->writnumb = $writnumb;
             $writing->account = $cash->cashacc;
             $writing->operation = $opera->idoper;
             $writing->debitamt = trimOver(Request::input('totrans'), ' ');
-            $writing->accdate = $accdate->idaccdate;
-            $writing->employee = $emp->idemp;
+            $writing->accdate = $accdate->accdate;
+            $writing->employee = $emp->iduser;
             $writing->cash = $cash->idcash;
             $writing->network = $emp->network;
             $writing->zone = $emp->zone;
             $writing->institution = $emp->institution;
             $writing->branch = $emp->branch;
             $writing->represent = $represent;
+            $writing->writ_type = 'I';
             $writing->save();
 
             foreach ($accounts as $key => $account) {
-                if (!empty($amounts[$key]) || $amounts[$key] !== null) {
+                if (!empty($amounts[$key]) && $amounts[$key] !== null && $amounts[$key] !== '0') {
                     $writing = new Writing();
                     $writing->writnumb = $writnumb;
                     $writing->account = $account;
                     $writing->operation = $operations[$key];
                     $writing->creditamt = trimOver($amounts[$key], ' ');
-                    $writing->accdate = $accdate->idaccdate;
-                    $writing->employee = $emp->idemp;
+                    $writing->accdate = $accdate->accdate;
+                    $writing->employee = $emp->iduser;
                     $writing->cash = $cash->idcash;
                     $writing->network = $emp->network;
                     $writing->zone = $emp->zone;
                     $writing->institution = $emp->institution;
                     $writing->branch = $emp->branch;
                     $writing->represent = $represent;
+                    $writing->writ_type = 'I';
                     $writing->save();
                 }
             }

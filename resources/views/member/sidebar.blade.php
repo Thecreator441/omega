@@ -25,7 +25,7 @@
                     <ul class="treeview-menu">
                         <li class="{{ active('registration') }}">
                             <a href="{{ url('registration') }}"><i
-                                    class="fa fa-user-plus"></i>@lang('sidebar.registration')</a></li>
+                                    class="fa fa-user-plus"></i> @lang('sidebar.registration')</a></li>
                     </ul>
                 </li>
                 <li class="treeview {{ active('mem_situation') }}">

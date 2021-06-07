@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Cash;
 use App\Models\Money;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
 class CashOpenController extends Controller
@@ -20,13 +20,12 @@ class CashOpenController extends Controller
             }
 
             if (CashReOpen()) {
-                $cashs = Cash::getEmpCash();
+                $emp = Session::get('employee');
+
+                $cash = Cash::getEmpCash($emp->iduser);
                 $moneys = Money::getMoneys();
 
-                return view('omega.pages.cash_open', [
-                    'cash' => $cashs,
-                    'moneys' => $moneys,
-                ]);
+                return view('omega.pages.cash_open', compact('cash', 'moneys'));
             }
             return Redirect::route('omega')->with('danger', trans('alertDanger.accalert'));
         }
@@ -35,25 +34,39 @@ class CashOpenController extends Controller
 
     public function store()
     {
-        $idcash = Request::input('idcash');
+        $toke = Request::input('_token');
 
         DB::beginTransaction();
-        try {
-            $cash = Cash::getCash($idcash);
+        if ($toke === null) {
+            try {
+                $cash = Cash::getEmpCash(Request::input('collector'));
 
-            if (getsDate(now()) === $cash->closed_at) {
-                $cash->status = 'R';
-            } else {
                 $cash->status = 'O';
+
+                $cash->update((array)$cash);
+
+                DB::commit();
+                return ['success' => trans('alertSuccess.cashopened')];
+            } catch (\Exception $ex) {
+                DB::rollBack();
+                return ['danger' => trans('alertDanger.cashopened')];
             }
+        } else {
+            try {
+                $emp= Session::get('employee');
 
-            $cash->save();
+                $cash = Cash::getEmpCash($emp->iduser);
 
-            DB::commit();
-            return Redirect::route('omega')->with('success', trans('alertSuccess.cashopened'));
-        } catch (\Exception $ex) {
-            DB::rollBack();
-            return Redirect::back()->with('danger', trans('alertDanger.cashopened'));
+                $cash->status = 'O';
+
+                $cash->update((array)$cash);
+
+                DB::commit();
+                return Redirect::route('omega')->with('success', trans('alertSuccess.cashopened'));
+            } catch (\Exception $ex) {
+                DB::rollBack();
+                return Redirect::back()->with('danger', trans('alertDanger.cashopened'));
+            }
         }
     }
 }

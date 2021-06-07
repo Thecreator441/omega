@@ -1,27 +1,26 @@
 <?php
 $emp = Session::get('employee');
 
-if ($emp->lang == 'fr') {
+if ($emp->lang == 'fr')
     App::setLocale('fr');
-    $title = 'Situation Caisse';
-} else {
-    $title = 'Cash Situation';
-}
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', $title)
+@section('title', trans('sidebar.situatcash'))
 
 @section('content')
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.situatcash') </h3>
         </div>
+        {{--        <div class="box-header">--}}
+        {{--            <div class="box-tools">--}}
+        {{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+        {{--            </div>--}}
+        {{--        </div>--}}
         <div class="box-body">
-            @if ($emp->privilege == 5)
+            @if ($emp->privilege === 5)
                 <div class="row">
                     <div class="col-md-12">
                         <div class="col-md-12">
@@ -37,7 +36,7 @@ if ($emp->lang == 'fr') {
                         <div class="box-header with-border" id="form">
                             <input type="hidden" id="idcash" name="idcash" value="{{$cash->idcash}}">
                             <div class="row">
-                                <div class="col-md-2"></div>
+                                <div class="col-md-1"></div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="cash" class="col-md-3 control-label">@lang('label.cash')</label>
@@ -50,14 +49,23 @@ if ($emp->lang == 'fr') {
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         @foreach($employees as $employee)
-                                            @if ($cash->employee == $employee->idemp)
+                                            @if ($cash->employee == $employee->iduser)
                                                 <input type="text" name="employee" id="employee" class="form-control"
-                                                       disabled value="{{$employee->name}} {{$employee->surname}}">
+                                                       disabled value="{{$employee->username}}">
                                             @endif
                                         @endforeach
                                     </div>
                                 </div>
-                                <div class="col-md-2"></div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label for="status" class="col-md-5 control-label">@lang('label.status')</label>
+                                        <div class="col-md-7">
+                                            <input type="text" class="form-control" name="status" id="status" disabled
+                                                   value="{{$cash->status}}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-1"></div>
                             </div>
                         </div>
 
@@ -83,7 +91,8 @@ if ($emp->lang == 'fr') {
                                             <td id="mon{{$money->idmoney}}">{{money($cash->{'mon'.$money->idmoney}) }}</td>
                                             <td class="sum text-right"
                                                 id="{{$money->moncode}}Sum">{{money($money->value * $cash->{'mon'.$money->idmoney} )}}</td>
-                                            <td class="text-light-blue">{{digitToWord($money->value * $cash->{'mon'.$money->idmoney}) }}</td>
+                                            <td class="text-light-blue text-bold"></td>
+                                            {{--                                            <td class="text-light-blue">{{digitToWord($money->value * $cash->{'mon'.$money->idmoney}) }}</td>--}}
                                         </tr>
                                     @endif
                                 @endforeach
@@ -102,7 +111,8 @@ if ($emp->lang == 'fr') {
                                             <td id="mon{{$money->idmoney}}">{{money($cash->{'mon'.$money->idmoney}) }}</td>
                                             <td class="sum text-right"
                                                 id="{{$money->moncode}}Sum">{{money($money->value * $cash->{'mon'.$money->idmoney} )}}</td>
-                                            <td class="text-light-blue">{{digitToWord($money->value * $cash->{'mon'.$money->idmoney}) }}</td>
+                                            <td class="text-light-blue text-bold"></td>
+                                            {{--                                            <td class="text-light-blue">{{digitToWord($money->value * $cash->{'mon'.$money->idmoney}) }}</td>--}}
                                         </tr>
                                     @endif
                                 @endforeach
@@ -121,7 +131,7 @@ if ($emp->lang == 'fr') {
                 @else
                     <div class="box-header with-border" id="form">
                         <div class="row">
-                            <div class="col-md-2"></div>
+                            <div class="col-md-1"></div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="cash" class="col-md-3 control-label">@lang('label.cash')</label>
@@ -137,7 +147,16 @@ if ($emp->lang == 'fr') {
                                            disabled value="{{$emp->name}} {{$emp->surname}}">
                                 </div>
                             </div>
-                            <div class="col-md-2"></div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="status" class="col-md-5 control-label">@lang('label.status')</label>
+                                    <div class="col-md-7">
+                                        <input type="text" class="form-control" name="status" id="status" disabled
+                                               value="{{$cashes->status}}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1"></div>
                         </div>
                     </div>
 
@@ -163,7 +182,7 @@ if ($emp->lang == 'fr') {
                                         <td id="mon{{$money->idmoney}}">{{money($cashes->{'mon'.$money->idmoney}) }}</td>
                                         <td class="sum text-right"
                                             id="{{$money->moncode}}Sum">{{money($money->value * $cashes->{'mon'.$money->idmoney} )}}</td>
-                                        <td class="text-light-blue">{{digitToWord($money->value * $cashes->{'mon'.$money->idmoney}) }}</td>
+                                        {{--                            {{digitToWord($money->value * $cashes->{'mon'.$money->idmoney}) }}--}}
                                     </tr>
                                 @endif
                             @endforeach
@@ -182,7 +201,7 @@ if ($emp->lang == 'fr') {
                                         <td id="mon{{$money->idmoney}}">{{money($cashes->{'mon'.$money->idmoney}) }}</td>
                                         <td class="sum text-right"
                                             id="{{$money->moncode}}Sum">{{money($money->value * $cashes->{'mon'.$money->idmoney} )}}</td>
-                                        <td class="text-light-blue">{{digitToWord($money->value * $cashes->{'mon'.$money->idmoney}) }}</td>
+                                        {{--                            {{digitToWord($money->value * $cashes->{'mon'.$money->idmoney}) }}--}}
                                     </tr>
                                 @endif
                             @endforeach
@@ -215,8 +234,10 @@ if ($emp->lang == 'fr') {
 
             $('.sum').each(function () {
                 let input = trimOver($(this).text(), null);
-                if (parseInt(input))
+                if (parseInt(input)) {
+                    $(this).after("<td class='text-light-blue text-bold'>" + toWord(input, '{{$emp->lang}}') + "</td>");
                     sumIn += parseInt(input);
+                }
             });
             $('#totbil').text(money(sumIn));
             $('#totopera').text(toWord(sumIn, '{{$emp->lang}}'));

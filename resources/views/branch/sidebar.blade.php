@@ -1,4 +1,4 @@
-<li class="treeview">
+<li class="treeview {{ active(['mem_situation', 'acc_history', 'mem_history', 'indiv_bal_history', 'acc_class_bal_history']) }}">
     <a href="">
         <i class="fa fa-opera"></i>
         <span>@lang('sidebar.operation')</span>
@@ -7,6 +7,58 @@
         </span>
     </a>
     <ul class="treeview-menu">
+        <li class="treeview {{ active(['mem_situation', 'acc_history', 'mem_history', 'indiv_bal_history', 'acc_class_bal_history']) }}">
+            <a href=""><i class="fa fa-dashboard"></i>
+                <span>@lang('sidebar.back')</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-right pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li class="treeview {{ active(['acc_situation', 'mem_situation']) }}">
+                    <a href=""><i class="fa fa-balance-scale"></i>
+                        <span> @if($emp->lang == 'fr') Situation des Comptes @else Accounts Situation @endif</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-right pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{{ active('acc_situation') }}"><a
+                                href="{{ url('acc_situation') }}"><i
+                                    class="fa fa-address-book"></i> @lang('sidebar.account')</a></li>
+                        <li class="{{ active('mem_situation') }}"><a
+                                href="{{ url('mem_situation') }}"><i
+                                    class="fa fa-user"></i> @lang('sidebar.member')</a></li>
+                    </ul>
+                </li>
+                <li class="treeview {{ active(['acc_history', 'mem_history', 'indiv_bal_history', 'acc_class_bal_history']) }}">
+                    <a href=""><i class="fa fa-history"></i>
+                        <span>@if($emp->lang == 'fr') Historique des Comptes @else Accounts
+                            History @endif</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-right pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{{ active('acc_history') }}"><a
+                                href="{{ url('acc_history') }}"><i
+                                    class="fa fa-address-book"></i> @lang('sidebar.account')</a></li>
+                        <li class="{{ active('mem_history') }}"><a
+                                href="{{ url('mem_history') }}"><i
+                                    class="fa fa-user"></i> @lang('sidebar.member')</a></li>
+                        <li class="{{ active('indiv_bal_history') }}"><a
+                                href="{{ url('indiv_bal_history') }}"><i
+                                    class="fa fa-balance-scale"></i>@if($emp->lang == 'fr') Balance
+                                Individuelle @else Individual Balance @endif</a></li>
+                        <li class="{{ active('acc_class_bal_history') }}"><a
+                                href="{{ url('acc_class_bal_history') }}"><i
+                                    class="fa fa-balance-scale"></i>@if($emp->lang == 'fr')  @else Account
+                                Class Balance @endif</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
         <li class="treeview">
             <a href=""><i class="fa fa-opera"></i>
                 <span>Other Operations</span>

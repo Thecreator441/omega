@@ -14,86 +14,6 @@ class Cash extends Model
 
     protected $fillable = ['cashes'];
 
-    private $idcash;
-
-    private $cashcode;
-
-    private $labelfr;
-
-    private $labeleng;
-
-    private $cashacc;
-
-    private $status;
-
-    private $employee;
-
-    private $institution;
-
-    private $branch;
-
-    private $mon1;
-
-    private $mon2;
-
-    private $mon3;
-
-    private $mon4;
-
-    private $mon5;
-
-    private $mon6;
-
-    private $mon7;
-
-    private $mon8;
-
-    private $mon9;
-
-    private $mon10;
-
-    private $mon11;
-
-    private $mon12;
-
-    private $closed_at;
-
-    private $updated_at;
-
-    private $created_at;
-
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    public static function getCashes()
-    {
-        $emp = Session::get('employee');
-
-        return DB::table(DB::raw('branches AS B, cashes AS C, institutions AS I'))
-            ->select('C.*')
-            ->where(static function ($query) use ($emp) {
-                if ($emp->level === 'B') {
-                    $query->where('C.branch', $emp->branch);
-                }
-                if ($emp->level === 'I') {
-                    $query->whereRaw('(branches.institution = institutions.idinst)');
-                }
-            })->distinct('idcash')->orderBy('idcash', 'ASC')->get();
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
-     */
-    public static function getCashDetail()
-    {
-        $emp = Session::get('employee');
-
-        return self::query()->where('employee', $emp->idemp)
-            ->join('accounts', 'cashes.cashacc', '=', 'accounts.idaccount')
-            ->select('cashes.*', 'accounts.accnumb', 'accounts.labelfr AS acclabelfr', 'accounts.labeleng AS acclabeleng')
-            ->first();
-    }
-
     /**
      * @param int $id
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
@@ -106,23 +26,131 @@ class Cash extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getEmpCash()
+    public static function getEmpCash(int $iduser)
     {
-        $emp = Session::get('employee');
-
-        return self::query()->where('employee', $emp->idemp)->where(static function ($query) use ($emp) {
-            $query->orWhere(['status' => 'O', 'cashes.status' => 'R'])->orWhere('status', 'C');
-        })->first();
+        return self::query()->where('employee', $iduser)->first();
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     * @return \Illuminate\Support\Collection
      */
-    public static function getEmpCashOpen()
+    public static function getCashes(array $where = [])
     {
         $emp = Session::get('employee');
 
-        return self::query()->where('employee', $emp->idemp)->where(static function ($query) {
+        if ($where !== null) {
+            return self::query()->where(static function ($query) use ($emp) {
+                if ($emp->level === 'N') {
+                    $query->where('cashes.network ', $emp->network);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('cashes.zone ', $emp->zone);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('cashes.institution', $emp->institution);
+                }
+                if ($emp->level === 'B') {
+                    $query->where('cashes.branch', $emp->branch);
+                }
+            })->where($where)->orderBy('cashcode')->get();
+        }
+
+        return self::query()->where(static function ($query) use ($emp) {
+            if ($emp->level === 'N') {
+                $query->where('cashes.network ', $emp->network);
+            }
+            if ($emp->level === 'Z') {
+                $query->where('cashes.zone ', $emp->zone);
+            }
+            if ($emp->level === 'I') {
+                $query->where('cashes.institution', $emp->institution);
+            }
+            if ($emp->level === 'B') {
+                $query->where('cashes.branch', $emp->branch);
+            }
+        })->orderBy('cashcode')->get();
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getCashesExcept(array $where = [])
+    {
+        $emp = Session::get('employee');
+
+        if ($where !== null) {
+            return self::query()->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('cashes.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('cashes.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('cashes.zone ', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('cashes.network ', $emp->network);
+                }
+            })->where('cashcode', '!=', 'PC')->where($where)->orderBy('cashcode')->get();
+        }
+
+        return self::query()->where(static function ($query) use ($emp) {
+            if ($emp->level === 'B') {
+                $query->where('cashes.branch', $emp->branch);
+            }
+            if ($emp->level === 'I') {
+                $query->where('cashes.institution', $emp->institution);
+            }
+            if ($emp->level === 'Z') {
+                $query->where('cashes.zone ', $emp->zone);
+            }
+            if ($emp->level === 'N') {
+                $query->where('cashes.network ', $emp->network);
+            }
+        })->where('cashcode', '!=', 'PC')->orderBy('cashcode')->get();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getCashiers()
+    {
+        $emp = Session::get('employee');
+
+        return self::query()->select('cashes.*', 'U.name', 'U.surname')
+            ->join('users AS U', 'cashes.employee', '=', 'U.iduser')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('cashes.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('cashes.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('cashes.zone ', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('cashes.network ', $emp->network);
+                }
+            })->orderBy('cashcode')->get();
+    }
+
+    /**
+     * @param int|null $collector
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getEmpCashOpen(int $collector = null)
+    {
+        $emp = Session::get('employee');
+
+        if ($collector === null) {
+            return self::query()->where('employee', $emp->iduser)->where(static function ($query) {
+                $query->orWhere(['status' => 'O', 'cashes.status' => 'R']);
+            })->first();
+        }
+
+        return self::query()->where('employee', $collector)->where(static function ($query) {
             $query->orWhere(['status' => 'O', 'cashes.status' => 'R']);
         })->first();
     }
@@ -141,85 +169,31 @@ class Cash extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getCloseCash()
-    {
-        $emp = Session::get('employee');
-
-        return self::query()->where('status', 'C')
-            ->where(static function ($query) use ($emp) {
-                if ($emp->level === 'B') {
-                    $query->where('branch', $emp->branch);
-                }
-                if ($emp->level === 'I') {
-                    $query->where('institution ', $emp->institution);
-                }
-            })->orderBy('idcash', 'ASC')->get();
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
-     */
     public static function getOpenCash()
     {
         $emp = Session::get('employee');
 
-        return self::query()->orWhere(['status' => 'O', 'cashes.status' => 'R'])
-            ->where(static function ($query) use ($emp) {
-                if ($emp->level === 'B') {
-                    $query->where('branch', $emp->branch);
-                }
-                if ($emp->level === 'I') {
-                    $query->where('institution ', $emp->institution);
-                }
-            })->orderBy('idcash', 'ASC')->get();
-    }
-
-    /**
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public static function getPaginate(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
-    {
-        $emp = Session::get('employee');
-
-        return self::query()->orWhere('status', 'C')
-            ->join('institutions AS I', 'cashes.institution', '=', 'I.idinst')
-            ->join('branches AS B', 'cashes.branch', '=', 'B.idbranch')
+        return self::query()->where('status', 'O')
             ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'B') {
                     $query->where('cashes.branch', $emp->branch);
                 }
                 if ($emp->level === 'I') {
-                    $query->where('cashes.institution ', $emp->institution);
+                    $query->where('cashes.institution', $emp->institution);
                 }
-            })
-            ->distinct('idcash')->orderBy('idcash')->paginate(1);
+                if ($emp->level === 'Z') {
+                    $query->where('cashes.zone ', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('cashes.network ', $emp->network);
+                }
+            })->orderBy('cashcode')->get();
     }
 
     /**
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getPaginateOpen(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
-    {
-        $emp = Session::get('employee');
-
-        return self::query()->orWhere(['status' => 'O', 'cashes.status' => 'R'])
-            ->join('institutions AS I', 'cashes.institution', '=', 'I.idinst')
-            ->join('branches AS B', 'cashes.branch', '=', 'B.idbranch')
-            ->where(static function ($query) use ($emp) {
-                if ($emp->level === 'B') {
-                    $query->where('cashes.branch', $emp->branch);
-                }
-                if ($emp->level === 'I') {
-                    $query->where('cashes.institution ', $emp->institution);
-                }
-            })
-            ->distinct('idcash')->orderBy('idcash', 'ASC')->paginate(1);
-    }
-
-    /**
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public static function getPaginateAll(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public static function getPaginate()
     {
         $emp = Session::get('employee');
 
@@ -230,20 +204,25 @@ class Cash extends Model
                     $query->where('cashes.branch', $emp->branch);
                 }
                 if ($emp->level === 'I') {
-                    $query->where('cashes.institution ', $emp->institution);
+                    $query->where('cashes.institution', $emp->institution);
                 }
-            })
-            ->distinct('idcash')->orderBy('idcash', 'ASC')->paginate(1);
+                if ($emp->level === 'Z') {
+                    $query->where('cashes.zone ', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('cashes.network ', $emp->network);
+                }
+            })->paginate(1);
     }
 
     /**
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getReopenPaginate()
+    public static function getPaginateOpen()
     {
         $emp = Session::get('employee');
 
-        return self::query()->where(['C.status' => 'C', 'C.closed_at' => getsDate(now())])
+        return self::query()->orWhere(['status' => 'O', 'cashes.status' => 'R'])
             ->join('institutions AS I', 'cashes.institution', '=', 'I.idinst')
             ->join('branches AS B', 'cashes.branch', '=', 'B.idbranch')
             ->where(static function ($query) use ($emp) {
@@ -251,10 +230,40 @@ class Cash extends Model
                     $query->where('cashes.branch', $emp->branch);
                 }
                 if ($emp->level === 'I') {
-                    $query->where('cashes.institution ', $emp->institution);
+                    $query->where('cashes.institution', $emp->institution);
                 }
-            })
-            ->distinct('idcash')->orderBy('idcash', 'ASC')->paginate(1);
+                if ($emp->level === 'Z') {
+                    $query->where('cashes.zone ', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('cashes.network ', $emp->network);
+                }
+            })->distinct('idcash')->paginate(1);
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getPaginateAll()
+    {
+        $emp = Session::get('employee');
+
+        return self::query()->join('institutions AS I', 'cashes.institution', '=', 'I.idinst')
+            ->join('branches AS B', 'cashes.branch', '=', 'B.idbranch')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('cashes.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('cashes.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('cashes.zone ', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('cashes.network ', $emp->network);
+                }
+            })->distinct('idcash')->orderBy('idcash', 'ASC')->paginate(1);
     }
 
     /**
@@ -273,5 +282,15 @@ class Cash extends Model
                     $query->where('institution ', $emp->institution);
                 }
             })->orderBy('idcash')->first();
+    }
+
+    /**
+     * @param int $idcash
+     * @return mixed
+     */
+    public static function getSumBillet(int $idcash)
+    {
+        return self::query()->select(DB::raw('SUM((cashes.mon1*10000) + (cashes.mon2*5000) + (cashes.mon3*2000) + (cashes.mon4*1000) + (cashes.mon5*500) + (cashes.mon6*500) + (cashes.mon7*100) + (cashes.mon8*50) + (cashes.mon9*25) + (cashes.mon10*10) + (cashes.mon11*5) + (cashes.mon12*1)) AS total'))
+            ->where('idcash', $idcash)->first();
     }
 }

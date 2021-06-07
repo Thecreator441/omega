@@ -12,19 +12,6 @@ class CheckAccAmt extends Model
 
     protected $fillable = ['check_acc_amts'];
 
-    private $idcheckamt;
-
-    private $checkno;
-
-    private $account;
-
-    private $operation;
-
-    private $accamt;
-
-    private $updated_at;
-
-    private $created_at;
 
     /**
      * @param array|null $where
@@ -70,6 +57,6 @@ class CheckAccAmt extends Model
      */
     public static function getChecksAcc(int $checkno)
     {
-        return self::query()->where('checkno', $checkno)->distinct('idcheckamt')->get();
+        return self::query()->where('checkno', $checkno)->get();
     }
 }

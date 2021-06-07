@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Omega;
 
-use App\Models\Cash;
-use App\Models\Employee;
-use App\Models\Money;
 use App\Http\Controllers\Controller;
+use App\Models\Cash;
+use App\Models\Money;
+use App\Models\User;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 
@@ -18,13 +18,13 @@ class CashSituationController extends Controller
                 $emp = Session::get('employee');
 
                 $cashes = null;
-                if ($emp->privilege === 5) {
+                if ($emp->collector === null && $emp->coll_mem === null) {
                     $cashes = Cash::getPaginateAll();
                 } else {
                     $cashes = Cash::getEmpCashOpen();
                 }
 
-                $employees = Employee::getEmployees();
+                $employees = User::getCollectors();
                 $moneys = Money::getMoneys();
 
                 return view('omega.pages.cash_situation', [

@@ -11,8 +11,6 @@ else
 @section('title', $title)
 
 @section('content')
-
-    {{--    Insert Privilege--}}
     <div class="box">
         <div class="box box-info" id="newForm" style="display: none;">
             <div class="box-header with-border">
@@ -71,7 +69,6 @@ else
             </div>
         </div>
     </div>
-    {{--    Insert Privilege--}}
 
     <div class="box">
         <div class="box-header with-border">

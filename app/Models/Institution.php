@@ -2,32 +2,57 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Institution extends Model
 {
-    private $institutions;
+    protected $table = 'institutions';
 
-    private $idinst;
+    protected $primaryKey = 'idinst';
 
-    private $name;
+    protected $fillable = ['institutions'];
 
-    private $phone1;
+    /**
+     * @param int $id
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getInstitution(int $id)
+    {
+        return self::query()->where('idinst', $id)->first();
+    }
 
-    private $phone2;
+    /**
+     * @param array $where
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getInstitutions(array $where = null)
+    {
+        if ($where !== null) {
+            return self::query()->where($where)->orderBy('name')->get();
+        }
+        return self::query()->orderBy('name')->get();
+    }
 
-    private $email;
+    /**
+     * @param int $institution
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getParams(int $institution)
+    {
+        return self::query()->select('institutions.strategy', 'N.category')
+            ->join('zones AS Z', 'institutions.zone', '=', 'Z.idzone')
+            ->join('networks AS N', 'Z.network', '=', 'N.idnetwork')
+            ->where('idinst', $institution)
+            ->distinct('idinst')->first();
 
-    private $region;
+    }
 
-    private $town;
-
-    private $address;
-
-    private $postcode;
-
-    private $zone;
-
-    private $updated_at;
-
+    /**
+     * @return Builder|Model|object|null
+     */
+    public static function getLast()
+    {
+        return self::query()->orderByDesc('idinst')->first();
+    }
 }

@@ -1,25 +1,18 @@
 <?php
 $emp = Session::get('employee');
 
-if ($emp->lang == 'fr') {
+if ($emp->lang == 'fr')
     App::setLocale('fr');
-    $title = 'Ouverture Caisse';
-} else {
-    $title = 'Cash Opening';
-}
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', $title)
+@section('title', trans('sidebar.opencash'))
 
 @section('content')
-
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.opencash') </h3>
         </div>
         <div class="box-body">
             <form action="{{ url('cash_open/store') }}" method="post" role="form" id="cashOpenForm">
@@ -27,7 +20,8 @@ if ($emp->lang == 'fr') {
                 <div class="box-header with-border">
                     <input type="hidden" id="idcash" name="idcash" value="{{$cash->idcash}}">
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-5">
                             <div class="form-group">
                                 <label for="cash_key" class="col-md-2 control-label">@lang('label.cash')</label>
                                 <div class="col-md-2">
@@ -41,7 +35,7 @@ if ($emp->lang == 'fr') {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="cashopen" class="col-md-6 control-label">@lang('label.cashopen')</label>
                                 <div class="col-md-6">
@@ -50,6 +44,7 @@ if ($emp->lang == 'fr') {
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-2"></div>
                     </div>
 
                     <div class="form-group"></div>
@@ -75,8 +70,7 @@ if ($emp->lang == 'fr') {
                                             <td id="bil">{{$money->value}}</td>
                                             <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
                                             <td id="mon{{$money->idmoney}}" class="text-right">{{money($cash->{'mon'.$money->idmoney}) }}</td>
-                                            <td class="text-right amount">{{money($money->value * $cash->{'mon'.$money->idmoney} )}}</td>
-                                            <td class="text-blue word">{{digitToWord($money->value * $cash->{'mon'.$money->idmoney}) }}</td>
+                                            <td class="text-right amount text-bold">{{money($money->value * $cash->{'mon'.$money->idmoney} )}}</td>
                                         </tr>
                                     @endif
                                 @endforeach
@@ -93,8 +87,7 @@ if ($emp->lang == 'fr') {
                                             <td id="bil">{{$money->value}}</td>
                                             <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
                                             <td id="mon{{$money->idmoney}}" class="text-right">{{money($cash->{'mon'.$money->idmoney}) }}</td>
-                                            <td class="text-right amount">{{money($money->value * $cash->{'mon'.$money->idmoney} )}}</td>
-                                            <td class="text-blue word">{{digitToWord($money->value * $cash->{'mon'.$money->idmoney}) }}</td>
+                                            <td class="text-right amount text-bold">{{money($money->value * $cash->{'mon'.$money->idmoney} )}}</td>
                                         </tr>
                                     @endif
                                 @endforeach
@@ -128,37 +121,22 @@ if ($emp->lang == 'fr') {
 @section('script')
     <script>
         $(document).ready(function () {
-            $('#cashopen').val(money(parseInt(trim($('#totamt').text()))));
-
-            let sumAmt = 0;
+            let sumIn = 0;
 
             $('.amount').each(function () {
-                if (parseInt(trim($(this).text())))
-                    sumAmt += parseInt(trim($(this).text()));
+                if (parseInt(trimOver($(this).text(), null))) {
+                    $(this).after("<td class='text-light-blue text-bold'>" + toWord(parseInt(trimOver($(this).text(), null)), '{{$emp->lang}}') + "</td>");
+                    sumIn += parseInt(trimOver($(this).text(), null));
+                }
             });
-            $('#totamt').text(money(parseInt(sumAmt)));
-            $('#totinword').text(toWord(sumAmt, '{{$emp->lang}}'));
+            $('#totamt').text(money(parseInt(sumIn)));
+            $('#totinword').text(toWord(sumIn, '{{$emp->lang}}'));
+
+            $('#cashopen').val(money(parseInt(sumIn)));
         });
 
         $('#open').click(function () {
-            swal({
-                    title: '@lang('confirm.open_header')',
-                    text: '@lang('confirm.open_text')',
-                    type: 'info',
-                    showCancelButton: true,
-                    cancelButtonClass: 'bg-red',
-                    confirmButtonClass: 'bg-blue',
-                    confirmButtonText: '@lang('confirm.yes')',
-                    cancelButtonText: '@lang('confirm.no')',
-                    closeOnConfirm: true,
-                    closeOnCancel: true
-                },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        $('#cashOpenForm').submit();
-                    }
-                }
-            );
+            mySwal('@lang('sidebar.opencash')', '@lang('confirm.open_text')', '@lang('confirm.no')', '@lang('confirm.yes')', '#cashOpenForm');
         })
     </script>
 @stop

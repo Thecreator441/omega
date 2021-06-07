@@ -23,7 +23,7 @@
             </a>
             <ul class="treeview-menu">
                 @if ($emp->level != 'Z')
-                    <li class="treeview {{ active(['cash_from', 'replenish']) }}">
+                    <li class="treeview {{ active(['cash_from']) }}">
                         <a href="">
                             <i class="fa fa-indent"></i>
                             <span>@lang('sidebar.deposit')</span>
@@ -34,11 +34,9 @@
                         <ul class="treeview-menu">
                             <li class="{{ active('cash_from') }}"><a href="{{ url('cash_from') }}"><i
                                         class="fa fa-bank"></i> @lang('sidebar.cfbank')</a></li>
-                            <li class="{{ active('replenish') }}"><a href="{{ url('replenish') }}"><i
-                                        class="fa fa-refresh"></i> @lang('sidebar.recfund')</a></li>
                         </ul>
                     </li>
-                    <li class="treeview {{ active(['cash_to', 'check_out', 'other_check_out', 'emission']) }}">
+                    <li class="treeview {{ active(['cash_to', 'check_out', 'other_check_out', 'replenish']) }}">
                         <a href="">
                             <i class="fa fa-outdent"></i>
                             <span>@lang('sidebar.withdraw')</span>
@@ -53,8 +51,8 @@
                                         class="fa fa-check"></i> @lang('sidebar.checkout')</a></li>
                             <li class="{{ active('other_check_out') }}"><a href="{{ url('other_check_out') }}"><i
                                         class="fa fa-resistance"></i> @lang('sidebar.ocheout')</a></li>
-                            <li class="{{ active('emission') }}"><a href="{{ url('emission') }}"><i
-                                        class="fa fa-empire"></i> @lang('sidebar.emifund')</a></li>
+                            <li class="{{ active('replenish') }}"><a href="{{ url('replenish') }}"><i
+                                        class="fa fa-refresh"></i> @lang('sidebar.repfund')</a></li>
                         </ul>
                     </li>
                 @endif
@@ -99,7 +97,7 @@
             </ul>
         </li>
 
-        @if ($emp->level != 'Z')
+        @if ($emp->level !== 'Z')
             <li class="treeview {{ active(['gen_account', 'aux_account', 'permanent', 'banking',
             'acc_to_acc', 'special', 'check_register', 'check_sort', 'other_check_sort', 'check_report', 'pay_deduct_init',
             'pay_deduct_dist', 'pay_deduc_valid', 'share_savings_ins', 'loan_insurance', 'withdrawal_init', 'personalisation',
@@ -292,27 +290,28 @@
         @endif
         <li class="treeview">
             <a href=""><i class="fa fa-opera"></i>
-                <span>@if($emp->lang == 'fr') Autres Opérations @else Other Operations @endif</span>
+                <span>@if($emp->lang === 'fr') Autres Opérations @else Other Operations @endif</span>
                 <span class="pull-right-container">
                     <i class="fa fa-angle-right pull-right"></i>
                 </span>
             </a>
             <ul class="treeview-menu">
-                @if ($emp->level == 'I')
-                    <li class="treeview">
-                        <a href=""><i class="fa fa-bug"></i>
-                            <span>Budget</span>
-                            <span class="pull-right-container">
-                            <i class="fa fa-angle-right pull-right"></i>
-                        </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href=""><i class="fa fa-contao"></i>@if($emp->lang == 'fr') Feuille de
-                                    Contrôle @else Control Sheet @endif</a></li>
-                        </ul>
-                    </li>
-                @endif
-                @if ($emp->level != 'B')
+                <li class="treeview">
+                    <a href=""><i class="fa fa-bug"></i>
+                        <span>Budget</span>
+                        <span class="pull-right-container">
+                                <i class="fa fa-angle-right pull-right"></i>
+                            </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{{url('budget_init')}}"><i class="fa fa-hourglass-start"></i> Initialisation</a></li>
+                        {{--                            @if ($emp->level === 'I')--}}
+                        <li><a href=""><i class="fa fa-contao"></i>@if($emp->lang == 'fr') Feuille de
+                                Contrôle @else Control Sheet @endif</a></li>
+                        {{--                            @endif--}}
+                    </ul>
+                </li>
+                @if ($emp->level !== 'B')
                     <li class="treeview">
                         <a href=""><i class="fa fa-home"></i>
                             <span>@if($emp->lang == 'fr') Gestion des Actifs @else Assets Management @endif</span>
@@ -378,7 +377,7 @@
                                     Report @endif</a></li>
                     </ul>
                 </li>
-                @if ($emp->level == 'Z')
+                @if ($emp->level === 'Z')
                     <li class="treeview">
                         <a href=""><i class="fa fa-users"></i>
                             <span>@if($emp->lang == 'fr') Ressources Humaine @else Human Resources @endif</span>
@@ -392,7 +391,7 @@
                         </ul>
                     </li>
                 @endif
-                @if ($emp->level == 'I')
+                @if ($emp->level === 'I')
                     <li><a href=""><i class="fa fa-mobile"></i>@if($emp->lang == 'fr') Banque Mobile @else Mobile
                             Banking @endif</a></li>
                 @endif

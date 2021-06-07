@@ -1,43 +1,41 @@
 <?php
 $emp = Session::get('employee');
 
-if ($emp->lang == 'fr') {
+if ($emp->lang == 'fr')
     App::setLocale('fr');
-    $title = 'Echange Monnaie';
-} else {
-    $title = 'Currency Exchange';
-}
 ?>
+
 @extends('layouts.dashboard')
 
-@section('title', $title)
+@section('title', trans('sidebar.monexc'))
 
 @section('content')
     <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.monexc') </h3>
+        </div>
         <div class="box-body">
             <form action="{{ url('money_exchange/store') }}" method="post" role="form" id="monExcForm">
                 {{ csrf_field() }}
                 <div class="box-header with-border">
-                    <div class="row">
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="cashcode" class="col-md-3 control-label">@lang('label.cash')</label>
-                                <div class="col-md-9">
-                                    <input type="text" name="cashcode" id="cashcode" class="form-control"
-                                           value="{{$cash->cashcode}} :@if ($emp->lang == 'fr') {{$cash->labelfr}} @else {{$cash->labeleng}} @endif"
-                                           disabled>
-                                </div>
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="cashcode" class="col-md-2 control-label">@lang('label.cash')</label>
+                            <div class="col-md-10">
+                                <input type="text" name="cashcode" id="cashcode" class="form-control"
+                                       value="{{$cash->cashcode}} :@if ($emp->lang == 'fr') {{$cash->labelfr}} @else {{$cash->labeleng}} @endif"
+                                       disabled>
                             </div>
                         </div>
-                        <div class="col-md-4"></div>
                     </div>
+                    <div class="col-md-3"></div>
                 </div>
 
                 <div class="col-md-12">
                     <table id="tableInput"
                            class="table w-auto table-striped table-hover table-condensed table-bordered table-responsive no-padding">
-                        <caption class="text-blue">@lang('label.break')</caption>
+                        <caption class="text-blue text-bold h4"><b>@lang('label.break')</b></caption>
                         <thead>
                         <tr class="text-blue">
                             <th>@lang('label.value')</th>
@@ -53,16 +51,16 @@ if ($emp->lang == 'fr') {
                         @foreach ($moneys as $money)
                             @if ($money->format == 'B')
                                 <tr>
-                                    <td id="billet">{{money($money->value)}}</td>
+                                    <td id="billExc" class="cin">{{money($money->value)}}</td>
                                     <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
                                     <td id="mon{{$money->idmoney}}">{{money($cash->{'mon'.$money->idmoney}) }}</td>
-                                    <td style="width: 10%">
+                                    <td class="cout">
                                         <input type="text" class="tot" name="{{$money->moncode}}Out"
                                                id="{{$money->moncode}}Out"
                                                oninput="sumOut('{{$money->value}}', '#{{$money->moncode}}Out', '#{{$money->moncode}}OutSum')">
                                     </td>
                                     <td class="sumOut text-right" id="{{$money->moncode}}OutSum"></td>
-                                    <td style="width: 10%">
+                                    <td class="cout">
                                         <input type="text" class="tot" name="{{$money->moncode}}In"
                                                id="{{$money->moncode}}In"
                                                oninput="sumIn('{{$money->value}}', '#{{$money->moncode}}In', '#{{$money->moncode}}InSum')">
@@ -81,7 +79,7 @@ if ($emp->lang == 'fr') {
                         @foreach ($moneys as $money)
                             @if ($money->format == 'C')
                                 <tr>
-                                    <td id="billet">{{money($money->value)}}</td>
+                                    <td id="billExc" class="cin">{{money($money->value)}}</td>
                                     <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
                                     <td id="mon{{$money->idmoney}}">{{money($cash->{'mon'.$money->idmoney}) }}</td>
                                     <td>
@@ -150,35 +148,13 @@ if ($emp->lang == 'fr') {
         }
 
         $('#save').click(function () {
-            if (parseInt(trimOver($('#totout').text(), null)) === parseInt(trimOver($('#totin').text(), null))) {
-                swal({
-                        title: '@lang('confirm.monexc_header')',
-                        text: '@lang('confirm.monexc_text')',
-                        type: 'info',
-                        showCancelButton: true,
-                        cancelButtonClass: 'bg-red',
-                        confirmButtonClass: 'bg-green',
-                        confirmButtonText: '@lang('confirm.yes')',
-                        cancelButtonText: '@lang('confirm.no')',
-                        closeOnConfirm: true,
-                        closeOnCancel: true
-                    },
-                    function (isConfirm) {
-                        if (isConfirm) {
-                            $('#monExcForm').submit();
-                        }
-                    }
-                );
+            let totin = parseInt(trimOver($('#totin').text(), null));
+            let totout = parseInt(trimOver($('#totout').text(), null));
+
+            if ((totin === totout) && (totin != 0 || totout != 0)) {
+                mySwal('@lang('sidebar.monexc')', '@lang('confirm.monexc_text')', '@lang('confirm.no')', '@lang('confirm.yes')', '#monExcForm');
             } else {
-                swal({
-                        title: '@lang('confirm.monexc_header')',
-                        text: '@lang('confirm.monexcerror_text')',
-                        type: 'error',
-                        confirmButtonClass: 'bg-blue',
-                        confirmButtonText: 'OK',
-                        closeOnConfirm: true,
-                    }
-                );
+                myOSwal('@lang('sidebar.monexc')', '@lang('confirm.monexcerror_text')', 'error');
             }
         })
     </script>

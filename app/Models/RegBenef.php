@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class RegBenef extends Model
 {
@@ -12,27 +10,13 @@ class RegBenef extends Model
 
     protected $primaryKey = 'idregbene';
 
-    private $idregbene;
-
-    private $fullname;
-
-    private $relation;
-
-    private $register;
-
-    private $ratio;
-
-    private $created_at;
-
-    private $updated_at;
-
     /**
-     * @param array $where
+     * @param int $register
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getRegBenef(array $where)
+    public static function getRegBenefs(int $register)
     {
-        return self::query()->where($where)->get();
+        return self::query()->where('register', $register)->get();
     }
 
 }

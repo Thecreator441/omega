@@ -8,31 +8,46 @@ use Illuminate\Support\Facades\Session;
 
 class Account extends Model
 {
-    private $idaccount;
+    protected $table = 'accounts';
 
-    private $accnumb;
+    protected $primaryKey = 'idaccount';
 
-    private $labelfr;
+    protected $fillable = ['accounts'];
 
-    private $labeleng;
+    /**
+     * @param int $idaccount
+     * @return Builder|Model|object|null
+     */
+    public static function getAccount(int $idaccount)
+    {
+        return self::query()->where('idaccount', $idaccount)->first();
+    }
 
-    private $accplan;
+    /**
+     * @param array $where
+     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getAccountBy(array $where)
+    {
+        $emp = Session::get('employee');
 
-    private $acctype;
-
-    private $initamt;
-
-    private $country;
-
-    private $network;
-
-    private $institution;
-
-    private $branch;
-
-    private $updated_at;
-
-    private $created_at;
+        return self::query()->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
+            ->join('acc_types AS At', 'acctype', '=', 'idacctype')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'N') {
+                    $query->where('accounts.network', $emp->network);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('accounts.zone', $emp->zone);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('accounts.institution', $emp->institution);
+                }
+                if ($emp->level === 'B') {
+                    $query->where('accounts.branch', $emp->branch);
+                }
+            })->where($where)->orderBy('accnumb')->first();
+    }
 
     /**
      * @param array $where
@@ -43,39 +58,40 @@ class Account extends Model
         $emp = Session::get('employee');
 
         if ($where !== null) {
-            return self::query()->where($where)->where('network', $emp->network)
+            return self::query()->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
                 ->join('acc_types AS At', 'acctype', '=', 'idacctype')
-                ->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
-                ->orderBy('accnumb')->get();
+                ->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'N') {
+                        $query->where('accounts.network', $emp->network);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('accounts.zone', $emp->zone);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('accounts.institution', $emp->institution);
+                    }
+                    if ($emp->level === 'B') {
+                        $query->where('accounts.branch', $emp->branch);
+                    }
+                })->where($where)->orderBy('accnumb')->get();
         }
-        return self::query()->where('network', $emp->network)
+
+        return self::query()->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
             ->join('acc_types AS At', 'acctype', '=', 'idacctype')
-            ->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
-            ->orderBy('accnumb')->get();
-    }
-
-    /**
-     * @param int $type
-     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public static function getOrdAccs(int $type)
-    {
-        $emp = Session::get('employee');
-
-        return self::query()->where(['network' => $emp->network, 'acctype' => $type])
-            ->orderBy('accnumb')->get();
-    }
-
-    /**
-     * @param array $where
-     * @return Builder|Model|object|null
-     */
-    public static function getAccount(array $where)
-    {
-        $emp = Session::get('employee');
-
-        return self::query()->where($where)->where('network', $emp->network)
-            ->orderBy('accnumb')->first();
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'N') {
+                    $query->where('accounts.network', $emp->network);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('accounts.zone', $emp->zone);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('accounts.institution', $emp->institution);
+                }
+                if ($emp->level === 'B') {
+                    $query->where('accounts.branch', $emp->branch);
+                }
+            })->orderBy('accnumb')->get();
     }
 
     /**
@@ -96,5 +112,26 @@ class Account extends Model
             ->join('acc_types AS At', 'acctype', '=', 'idacctype')
             ->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
             ->orderBy('accnumb')->get();
+    }
+
+
+    /**
+     * @param int $network
+     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getAccountsMob(int $network)
+    {
+        return self::query()->where('accounts.network', $network)
+            ->join('acc_types AS At', 'acctype', '=', 'idacctype')
+            ->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
+            ->orderBy('accnumb')->get();
+    }
+
+    public static function getCharts(string $select = 'idplan')
+    {
+        $emp = Session::get('employee');
+
+        return self::query()->select("{$select}")->distinct("{$select}")
+            ->where('accounts.network', $emp->network)->orderBy($select)->get();
     }
 }

@@ -71,7 +71,7 @@ class DemLoan extends Model
      * @param int $id
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getloan(int $id)
+    public static function getLoan(int $id)
     {
         return self::query()->where('iddemloan', $id)->first();
     }

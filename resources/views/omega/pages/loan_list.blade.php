@@ -11,11 +11,14 @@ if ($emp->lang == 'fr')
 
 @section('content')
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.list') </h3>
         </div>
+        {{--        <div class="box-header">--}}
+        {{--            <div class="box-tools">--}}
+        {{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+        {{--            </div>--}}
+        {{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('loan_list/store') }}" method="POST" role="form">
                 {{ csrf_field() }}
@@ -92,16 +95,16 @@ if ($emp->lang == 'fr')
                                             @foreach ($employees as $employee)
                                                 @if ($emp->idemp == $employee->idemp)
                                                     <option
-                                                        value="{{$employee->idemp}}">{{$employee->name}} {{$employee->surname}}</option>
+                                                        value="{{$employee->iduser}}">{{$employee->username}} {{$employee->surname}}</option>
                                                 @endif
                                             @endforeach
                                         </select>
                                     @else
                                         <select class="form-control select2" name="loanoff" id="loanoff">
-                                            <option></option>
+                                            <option value="0">@lang('label.all')</option>
                                             @foreach ($employees as $employee)
                                                 <option
-                                                    value="{{$employee->idemp}}">{{$employee->name}} {{$employee->surname}}</option>
+                                                    value="{{$employee->iduser}}">{{$employee->username}} {{$employee->surname}}</option>
                                             @endforeach
                                         </select>
                                     @endif
@@ -118,54 +121,56 @@ if ($emp->lang == 'fr')
                     </div>
                 </div>
 
-                <div class="col-md-12">
-                    <table id="simul-data-table"
-                           class="table table-striped table-hover table-condensed table-bordered table-responsive">
-                        <thead>
-                        <tr>
-                            <th>@lang('label.loanno')</th>
-                            <th>@lang('label.member')</th>
-                            <th>@lang('label.name')</th>
-                            <th>@lang('label.loanty')</th>
-                            <th>@lang('label.loanpur')</th>
-                            <th>@lang('label.amount')</th>
-                            <th>@lang('label.date')</th>
-                        </tr>
-                        </thead>
-                        <tbody id="listReport">
-                        @foreach ($loans as $loan)
+                <div class="row">
+                    <div class="col-md-12">
+                        <table id="admin-data-table"
+                               class="table table-striped table-hover table-condensed table-bordered table-responsive">
+                            <thead>
                             <tr>
-                                <td>{{pad($loan->loanno, 6)}}</td>
-                                @foreach ($members as $member)
-                                    @if ($member->idmember == $loan->member)
-                                        <td>{{pad($member->memnumb, 6)}}</td>
-                                        <td>{{$member->name}} {{$member->surname}}</td>
-                                    @endif
-                                @endforeach
-                                @foreach ($ltypes as $ltype)
-                                    @if ($ltype->idltype == $loan->loantype)
-                                        <td>{{--{{pad($ltype->lcode, 3)}}
-                                            : --}}@if ($emp->lang == 'fr') {{$ltype->labelfr}} @else {{$ltype->labeleng}} @endif</td>
-                                    @endif
-                                @endforeach
-                                @foreach ($lpurs as $lpur)
-                                    @if ($lpur->idloanpur == $loan->loanpur)
-                                        <td>{{--{{pad($lpur->purcode, 3)}}
-                                            : --}}@if ($emp->lang == 'fr') {{$lpur->labelfr}} @else {{$lpur->labeleng}} @endif</td>
-                                    @endif
-                                @endforeach
-                                <td class="text-right text-bold">
-                                    @if ((int)$loan->remamt == 0)
-                                        {{money((int)$loan->amount)}}
-                                    @else
-                                        {{money((int)$loan->remamt)}}
-                                    @endif
-                                </td>
-                                <td class="text-center">{{changeFormat($loan->appdate)}}</td>
+                                <th style="width: 7%">@lang('label.loanno')</th>
+                                <th style="width: 7%">@lang('label.member')</th>
+                                <th style="width: 30%">@lang('label.name')</th>
+                                <th>@lang('label.loanty')</th>
+                                <th>@lang('label.loanpur')</th>
+                                <th class="cin">@lang('label.amount')</th>
+                                <th style="width: 7%">@lang('label.date')</th>
                             </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody id="listReport">
+                            @foreach ($loans as $loan)
+                                <tr>
+                                    <td>{{pad($loan->loanno, 6)}}</td>
+                                    @foreach ($members as $member)
+                                        @if ($member->idmember == $loan->member)
+                                            <td>{{pad($member->memnumb, 6)}}</td>
+                                            <td>{{$member->name}} {{$member->surname}}</td>
+                                        @endif
+                                    @endforeach
+                                    @foreach ($ltypes as $ltype)
+                                        @if ($ltype->idltype == $loan->loantype)
+                                            <td>{{--{{pad($ltype->lcode, 3)}}
+                                            : --}}@if ($emp->lang == 'fr') {{$ltype->labelfr}} @else {{$ltype->labeleng}} @endif</td>
+                                        @endif
+                                    @endforeach
+                                    @foreach ($lpurs as $lpur)
+                                        @if ($lpur->idloanpur == $loan->loanpur)
+                                            <td>{{--{{pad($lpur->purcode, 3)}}
+                                            : --}}@if ($emp->lang == 'fr') {{$lpur->labelfr}} @else {{$lpur->labeleng}} @endif</td>
+                                        @endif
+                                    @endforeach
+                                    <td class="text-right text-bold">
+                                        @if ($loan->isRef > 1)
+                                            {{money((int)$loan->refamt)}}
+                                        @else
+                                            {{money((int)$loan->amount)}}
+                                        @endif
+                                    </td>
+                                    <td class="text-center">{{changeFormat($loan->appdate)}}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="col-md-12">
@@ -226,27 +231,22 @@ if ($emp->lang == 'fr')
                             no = loan.demloanno;
                         }
 
-                        let amt = loan.remamt;
-                        if (loan.remamt === '0.00' || isNaN(loan.remamt)) {
-                            amt = loan.amount;
+                        let amt = loan.amount;
+                        if (loan.isRef > 1) {
+                            amt = loan.refamt;
                         }
 
-                        line += "<tr>" +
-                            "<td>" + pad(no, 6) + "</td>" +
-                            "<td>" + pad(loan.memnumb, 6) + "</td>" +
-                            "<td>" + loan.name + " " + surname + "</td>" +
-                            "<td>@if ($emp->lang == 'fr') " + loan.Ltfr + " @else " + loan.Lteng + " @endif</td>" +
-                            "<td>@if ($emp->lang == 'fr') " + loan.Lpfr + " @else " + loan.Lpeng + " @endif</td>" +
-                            "<td class='text-right text-bold'>" + money(parseInt(amt)) + "</td>" +
-                            "<td class='text-center'>" + userDate(loan.created_at) + "</td>" +
-                            "</tr>";
+                        line += '<tr>' +
+                            '<td style="width: 7%">' + pad(no, 6) + '</td>' +
+                            '<td style="width: 7%">' + pad(loan.memnumb, 6) + '</td>' +
+                            '<td style="width: 30%">' + loan.name + ' ' + surname + '</td>' +
+                            '<td>@if ($emp->lang == 'fr') ' + loan.Ltfr + '@else ' + loan.Lteng + '@endif</td>' +
+                            '<td>@if ($emp->lang == 'fr') ' + loan.Lpfr + '@else ' + loan.Lpeng + ' @endif</td>' +
+                            '<td class="text-right text-bold cin">' + money(parseInt(amt)) + '</td>' +
+                            '<td style="width: 7%" class="text-center">' + userDate(loan.created_at) + '</td>' +
+                            '</tr>';
                     });
                     $('#listReport').html(line);
-                },
-                error: function (errors) {
-                    $.each(errors, function (i, error) {
-                        console.log(error.message);
-                    });
                 }
             });
         }

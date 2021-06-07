@@ -7,31 +7,19 @@ use Illuminate\Support\Facades\Session;
 
 class MemSetting extends Model
 {
-    private $idmemset;
+    protected $table = 'mem_settings';
 
-    private $account;
+    protected $primaryKey = 'idmemset';
 
-    private $operation;
-
-    private $amount;
-
-    private $type;
-
-    private $institution;
-
-    private $branch;
-
-    private $created_at;
-
-    private $updated_at;
+    protected $fillable = ['mem_settings'];
 
     /**
-     * @param int $id
+     * @param int $idmemset
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getMemSetting(int $id)
+    public static function getMemSetting(int $idmemset)
     {
-        return self::query()->where('idmemset', $id)->first();
+        return self::query()->where('idmemset', $idmemset)->first();
     }
 
     /**
@@ -41,12 +29,10 @@ class MemSetting extends Model
     {
         $emp = Session::get('employee');
 
-        return self::query()->orWhere(['mem_settings.institution' => $emp->institution, 'mem_settings.branch' => $emp->branch])
+        return self::query()->select('mem_settings.*', 'A.idaccount', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.accabbr')
             ->join('accounts AS A', 'mem_settings.account', '=', 'A.idaccount')
             ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
-            ->join('operations AS O', 'mem_settings.operation', '=', 'O.idoper')
-            ->select('mem_settings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng',
-                'O.labelfr AS operlabelfr', 'O.labeleng AS operlabeleng', 'O.debtfr', 'O.credtfr', 'O.credtfr', 'O.credteng', 'At.accabbr')
+            ->orWhere('mem_settings.branch', $emp->branch)
             ->orderBy('A.accnumb', 'ASC')->get();
     }
 

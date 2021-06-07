@@ -3,39 +3,81 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
 use App\Models\Region;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
 
 class RegionController extends Controller
 {
     public function index()
     {
-        $countries = DB::table('countries')->get();
-        $regions = DB::table('regions')->get();
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
 
-        return view('admin.pages.region', ['regions' => $regions, 'countries' => $countries]);
+        foreach ($regions as $region) {
+            $country = Country::getCountry($region->country);
+
+            $region->cou_fr = $country->labelfr;
+            $region->cou_en = $country->labeleng;
+        }
+
+        return view('admin.pages.region', compact('regions', 'countries'));
     }
 
     public function store()
     {
-        $region = new Region();
+        DB::beginTransaction();
+        try {
+            $idregion = Request::input('idregion');
+            $region = null;
 
-        $region->labelfr = Request::input('labelfr');
-        $region->labeleng = Request::input('labeleng');
-        $region->idcountry = Request::input('country');
+            if ($idregion === null) {
+                $region = new Region();
+            } else {
+                $region = Region::getRegion($idregion);
+            }
 
-        $region->save();
+            $region->labelfr = Request::input('labelfr');
+            $region->labeleng = Request::input('labeleng');
+            $region->country = Request::input('country');
 
-        return Redirect::back();
+            if ($idregion === null) {
+                $region->save();
+            } else {
+                $region->update((array)$region);
+            }
+
+            DB::commit();
+            if ($idregion === null) {
+                return Redirect::back()->with('success', trans('alertSuccess.regsave'));
+            }
+            return Redirect::back()->with('success', trans('alertSuccess.regedit'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            if ($idregion === null) {
+                return Redirect::back()->with('danger', trans('alertDanger.regsave'));
+            }
+            return Redirect::back()->with('danger', trans('alertDanger.regedit'));
+        }
     }
 
-    public function delete(Request $request): \Illuminate\Http\RedirectResponse
+    public function delete(): \Illuminate\Http\RedirectResponse
     {
-        DB::table('regions')->where('idregi', '=', $request->id)->delete();
+        $idregion = Request::input('region');
 
-        return Redirect::back();
+        DB::beginTransaction();
+        try {
+            Region::getRegion($idregion)->delete();
+
+            DB::commit();
+            return Redirect::back()->with('success', trans('alertSuccess.regdel'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            return Redirect::back()->with('danger', trans('alertDanger.regdel'));
+        }
     }
 }

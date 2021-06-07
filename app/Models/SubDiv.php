@@ -3,64 +3,33 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class SubDiv extends Model
 {
-    private $idsub;
+    protected $table = 'sub_divs';
 
-    private $label;
+    protected $primaryKey = 'idsub';
 
-    private $division;
-
-    private $updated_at;
-
-    private $created_at;
+    protected $fillable = ['sub_divs'];
 
     /**
-     * @param array $data
-     * @return bool
+     * @param int $idsub
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    private static function insertData(array $data): bool
+    public static function getSubDiv(int $idsub)
     {
-//        $country = self::getData(['isocode' => $data['isocode']]);
-//        if ($country === null) {
-        DB::table('sub_divs')->insert($data);
-        return true;
-//        }
-//        return false;
+        return self::query()->where('idsub', $idsub)->first();
     }
 
     /**
      * @param array $where
-     * @return \Illuminate\Support\Collection
+     * @return Branch[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    private static function getData(array $where = []): \Illuminate\Support\Collection
+    public static function getSubDivs(array $where = [])
     {
-        if (!empty($where)) {
-            return DB::table('sub_divs')->where($where)->get();
+        if ($where !== null) {
+            return self::query()->where($where)->orderBy('label')->get();
         }
-        return DB::table('sub_divs')->get();
-    }
-
-    /**
-     * @param int $id
-     * @param array $data
-     * @return bool
-     */
-    private static function updateData(int $id, array $data): bool
-    {
-        DB::table('sub_divs')->where('idsub', $id)->update($data);
-        return true;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    private static function deleteData(int $id): bool
-    {
-        DB::table('sub_divs')->where('idsub', $id)->delete();
-        return true;
+        return self::query()->orderBy('label')->get();
     }
 }

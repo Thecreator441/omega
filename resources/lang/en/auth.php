@@ -14,4 +14,7 @@ return [
 
     'failed'   => 'These credentials do not match our records.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'blocked' => 'Your account has been blocked. Please contact the administrator for more details',
+    'undevice' => 'Unrecognised device. Please contact the administrator for more details',
+    'unauthorised' => 'You are not authorised to view this page'
 ];

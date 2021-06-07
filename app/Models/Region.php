@@ -3,66 +3,57 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class Region extends Model
 {
-    private $idregi;
+    protected $table = 'regions';
 
-    private $labelfr;
+    protected $primaryKey = 'idregi';
 
-    private $labeleng;
-
-    private $country;
-
-    private $updated_at;
-
-    private $created_at;
+    protected $fillable = ['regions'];
 
     /**
-     * @param array $data
-     * @return bool
+     * @param int $idregion
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    private static function insertData(array $data): bool
+    public static function getRegion(int $idregion)
     {
-//        $country = self::getData(['isocode' => $data['isocode']]);
-//        if ($country === null) {
-        DB::table('regions')->insert($data);
-        return true;
-//        }
-//        return false;
+        return self::query()->where('idregi', $idregion)->first();
     }
 
     /**
+     * @param string|null $lang
      * @param array $where
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    private static function getData(array $where = []): \Illuminate\Support\Collection
+    public static function getRegions(string $lang = null, array $where = [])
     {
-        if (!empty($where)) {
-            return DB::table('regions')->where($where)->get();
+        if ($lang === null) {
+            $emp = Session::get('employee');
+
+            if ($where !== null) {
+                if ($emp->lang === 'fr') {
+                    return self::query()->where($where)->orderBy('labelfr')->get();
+                }
+                return self::query()->where($where)->orderBy('labeleng')->get();
+            }
+            if ($emp->lang === 'fr') {
+                return self::query()->orderBy('labelfr')->get();
+            }
+            return self::query()->orderBy('labeleng')->get();
         }
-        return DB::table('regions')->get();
+
+        if ($where !== null) {
+            if ($lang === 'fr') {
+                return self::query()->where($where)->orderBy('labelfr')->get();
+            }
+            return self::query()->where($where)->orderBy('labeleng')->get();
+        }
+        if ($lang === 'fr') {
+            return self::query()->orderBy('labelfr')->get();
+        }
+        return self::query()->orderBy('labeleng')->get();
     }
 
-    /**
-     * @param int $id
-     * @param array $data
-     * @return bool
-     */
-    private static function updateData(int $id, array $data): bool
-    {
-        DB::table('regions')->where('idregi', $id)->update($data);
-        return true;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    private static function deleteData(int $id): bool
-    {
-        DB::table('regions')->where('idregi', $id)->delete();
-        return true;
-    }
 }

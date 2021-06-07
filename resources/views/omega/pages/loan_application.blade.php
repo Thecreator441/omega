@@ -11,20 +11,23 @@ if ($emp->lang == 'fr')
 
 @section('content')
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.appli') </h3>
         </div>
+        {{--        <div class="box-header">--}}
+        {{--            <div class="box-tools">--}}
+        {{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+        {{--            </div>--}}
+        {{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('loan_application/store') }}" method="POST" role="form" id="lappForm">
                 {{ csrf_field() }}
                 <div class="box-header with-border">
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-8">
                             <div class="form-group">
                                 <label for="member" class="col-md-2 control-label">@lang('label.member')</label>
-                                <div class="col-md-4">
+                                <div class="col-md-2">
                                     <select class="form-control select2" name="member" id="member">
                                         <option></option>
                                         @foreach($members as $member)
@@ -33,12 +36,12 @@ if ($emp->lang == 'fr')
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-8">
                                     <input type="text" class="form-control" name="mem_name" id="mem_name" disabled>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <input type="text" id="availsavs" class="form-control text-right text-bold" disabled
@@ -55,7 +58,7 @@ if ($emp->lang == 'fr')
                     </div>
 
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-8">
                             <div class="form-group">
                                 <label for="loanty" class="col-md-2 control-label">@lang('label.loanty')</label>
                                 <div class="col-md-4">
@@ -84,7 +87,7 @@ if ($emp->lang == 'fr')
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="amorti" class="col-md-4 control-label">@lang('label.amort')</label>
                                 <div class="col-md-8">
@@ -99,7 +102,7 @@ if ($emp->lang == 'fr')
                     </div>
 
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-8">
                             <div class="form-group">
                                 <label for="period" class="col-md-2 control-label">@lang('label.periodicity')</label>
                                 <div class="col-md-4">
@@ -132,10 +135,10 @@ if ($emp->lang == 'fr')
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <div class="form-group">
-                                <label for="numb_inst" class="col-md-4 control-label">@lang('label.noinstal')</label>
-                                <div class="col-md-8">
+                                <label for="numb_inst" class="col-md-5 control-label">@lang('label.noinstal')</label>
+                                <div class="col-md-7">
                                     <input type="text" name="numb_inst" id="numb_inst" class="form-control text-right">
                                 </div>
                             </div>
@@ -145,8 +148,8 @@ if ($emp->lang == 'fr')
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="tax_rate" class="col-md-5 control-label">@lang('label.taxrate')</label>
-                                <div class="col-md-7">
+                                <label for="tax_rate" class="col-md-6 control-label">@lang('label.taxrate')</label>
+                                <div class="col-md-6">
                                     <input type="text" name="tax_rate" id="tax_rate" class="form-control text-right">
                                 </div>
                             </div>
@@ -189,14 +192,14 @@ if ($emp->lang == 'fr')
                                     </div>
                                 </div>
                             </div>
-{{--                            <div class="col-md-2">--}}
-{{--                                <div class="radio">--}}
-{{--                                    <label for="none">--}}
-{{--                                        <input type="radio" name="guarantee" id="none" value="N"--}}
-{{--                                               checked>@lang('label.none')--}}
-{{--                                    </label>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
+                            {{--                            <div class="col-md-2">--}}
+                            {{--                                <div class="radio">--}}
+                            {{--                                    <label for="none">--}}
+                            {{--                                        <input type="radio" name="guarantee" id="none" value="N"--}}
+                            {{--                                               checked>@lang('label.none')--}}
+                            {{--                                    </label>--}}
+                            {{--                                </div>--}}
+                            {{--                            </div>--}}
                             <div class="col-md-2">
                                 <div class="radio">
                                     <label for="fin">
@@ -279,7 +282,7 @@ if ($emp->lang == 'fr')
                                 <th colspan="2">@lang('label.comake')</th>
                                 <th>@lang('label.account')</th>
                                 <th>@lang('label.available')</th>
-                                <th>@lang('label.amount')</th>
+                                <th>@lang('label.amount') @lang('label.blocked')</th>
                             </tr>
                             </thead>
                             <tbody id="coMakers">
@@ -373,20 +376,15 @@ if ($emp->lang == 'fr')
                                     <td></td>
                                     <td><input type="text" disabled></td>
                                     <td><input type="text" name="amoAmt" id="amoAmt"
-                                               class="text-bold text-blue text-right"
-                                               readonly></td>
+                                               class="text-bold text-blue text-right" disabled></td>
                                     <td><input type="text" name="intAmt" id="intAmt"
-                                               class="text-bold text-blue text-right"
-                                               readonly></td>
+                                               class="text-bold text-blue text-right" disabled></td>
                                     <td><input type="text" name="annAmt" id="annAmt"
-                                               class="text-bold text-blue text-right"
-                                               readonly></td>
+                                               class="text-bold text-blue text-right" disabled></td>
                                     <td><input type="text" name="taxAmt" id="taxAmt"
-                                               class="text-bold text-blue text-right"
-                                               readonly></td>
+                                               class="text-bold text-blue text-right" disabled></td>
                                     <td><input type="text" name="totAmt" id="totAmt"
-                                               class="text-bold text-blue text-right"
-                                               readonly></td>
+                                               class="text-bold text-blue text-right" disabled></td>
                                     <td></td>
                                 </tr>
                                 </tfoot>
@@ -452,33 +450,8 @@ if ($emp->lang == 'fr')
                         $('#mem_name').val(member.name + ' ' + member.surname);
                     }
 
-                    $.ajax({
-                        url: "{{ url('getAccBalance') }}",
-                        method: 'get',
-                        data: {
-                            member: member.idmember
-                        },
-                        success: function (accounts) {
-                            $.each(accounts, function (i, account) {
-                                if (account.accnumb.toString().slice(0, 6) === '373000') {
-                                    let debit = getDebit(member.idmember, account.account);
-                                    let credit = getCredit(member.idmember, account.account);
-
-                                    let available;
-
-                                    let initbal = parseInt(account.initbal);
-                                    let evebal = parseInt(account.evebal);
-
-                                    if (evebal === 0) {
-                                        available = initbal - debit + credit;
-                                    } else {
-                                        available = evebal - debit + credit;
-                                    }
-                                    $('#availsavs').val(money(parseInt(available)));
-                                }
-                            });
-                        }
-                    });
+                    $('#availsavs').val('');
+                    accBalance(member.idmember, '#availsavs');
                 }
             });
         });
@@ -534,34 +507,8 @@ if ($emp->lang == 'fr')
                         } else {
                             $('#comake_name').val(member.name + ' ' + member.surname);
                         }
-
-                        $.ajax({
-                            url: "{{ url('getAccBalance') }}",
-                            method: 'get',
-                            data: {
-                                member: member.idmember
-                            },
-                            success: function (accounts) {
-                                $.each(accounts, function (i, account) {
-                                    if (account.accnumb.toString().slice(0, 6) === '373000') {
-                                        let debit = getDebit(member.idmember, account.account);
-                                        let credit = getCredit(member.idmember, account.account);
-
-                                        let available;
-
-                                        let initbal = parseInt(account.initbal);
-                                        let evebal = parseInt(account.evebal);
-
-                                        if (evebal === 0) {
-                                            available = initbal - debit + credit;
-                                        } else {
-                                            available = evebal - debit + credit;
-                                        }
-                                        $('#comsavs').val(money(parseInt(available)));
-                                    }
-                                });
-                            }
-                        });
+                        $('#comsavs').val('');
+                        accBalance(member.idmember, '#comsavs');
                     }
                 });
             }
@@ -572,35 +519,30 @@ if ($emp->lang == 'fr')
 
             let comId = com.select2('data')[0]['id'];
             let comText = com.select2('data')[0]['text'];
+            let loanty = $('#loanty').val();
 
-            let line = '<tr>' +
-                '<td class="text-center" style="width: 5%"><input type="checkbox" class="check"></td>' +
-                '<td><input type="hidden" name="coMakers[]" value="' + comId + '">' + comText + '</td>';
+            async function fillComakers() {
+                const loanType = await getData('getLoanType?ltype=' + loanty);
+                const account = await getData('getMemAcc?member=' + comId + '&account=' + loanType.blockacc);
+                let amt = $('#comAmt');
+                let ava = $('#comsavs');
 
-            $.ajax({
-                url: "{{ url('getAccBalance') }}",
-                method: 'get',
-                data: {
-                    member: comId
-                },
-                success: function (accounts) {
-                    let amt = $('#comAmt');
-                    let ava = $('#comsavs');
+                let line = '<tr>' +
+                    '<td class="text-center" style="width: 5%"><input type="checkbox" class="check"></td>' +
+                    '<td><input type="hidden" name="coMakers[]" value="' + comId + '">' + comText + '</td>' +
+                    '<td><input type="hidden" name="coAccs[]" value="' + account.account + '">' + account.accnumb + '</td>' +
+                    '<td class="text-right text-bold">' + ava.val() + '</td>' +
+                    '<td class="text-right text-bold amounts"><input type="hidden" name="coAmts[]" value="' + trimOver(amt.val(), null) + '">' + amt.val() + '</td>' +
+                    '</tr>';
 
-                    $.each(accounts, function (i, account) {
-                        if (account.accnumb.toString().slice(0, 6) === '373000') {
-                            line += '<td><input type="hidden" name="coAccs[]" value="' + account.account + '">' + account.accnumb + '</td>';
-                        }
-                    });
-                    line += '<td class="text-right text-bold">' + ava.val() + '</td>' +
-                        '<td class="text-right text-bold amounts"><input type="hidden" name="coAmts[]" value="' + trimOver(amt.val(), null) + '">' + amt.val() + '</td>' +
-                        '</tr>';
-                    $('#coMakers').append(line);
-                    ava.val('');
-                    amt.val('');
-                    sumAmount();
-                }
-            });
+                $('#coMakers').append(line);
+                ava.val('');
+                amt.val('');
+                sumAmount();
+            }
+
+            fillComakers();
+
             $('#minus').removeAttr('disabled');
 
             com.val('');
@@ -675,71 +617,72 @@ if ($emp->lang == 'fr')
 
             let memId = mem.select2('data')[0]['id'];
             let memText = mem.select2('data')[0]['text'];
+            let loanty = $('#loanty').val();
 
-            let line = '<tr>' +
-                '<td class="text-center" style="width: 5%"><input type="checkbox" class="check" disabled></td>' +
-                '<td><input type="hidden" name="coMakers[]" value="' + memId + '">' + memText + '</td>';
-            $.ajax({
-                url: "{{ url('getAccBalance') }}",
-                method: 'get',
-                data: {
-                    member: memId
-                },
-                success: function (accounts) {
-                    let ava = $('#availsavs').val();
-                    let amt = $('#loanamt').val();
+            async function fillComakers() {
+                const loanType = await getData('getLoanType?ltype=' + loanty);
+                const account = await getData('getMemAcc?member=' + memId + '&account=' + loanType.blockacc);
+                let ava = $('#availsavs').val();
+                let amt = $('#loanamt').val();
 
-                    $.each(accounts, function (i, account) {
-                        if (account.accnumb.toString().slice(0, 6) === '373000') {
-                            line += '<td><input type="hidden" name="coAccs[]" value="' + account.account + '">' + account.accnumb + '</td>';
-                        }
-                    });
-                    line += '<td class="text-right text-bold">' + ava + '</td>';
+                let line = '<tr>' +
+                    '<td class="text-center" style="width: 5%"><input type="checkbox" class="check" disabled></td>' +
+                    '<td><input type="hidden" name="coMakers[]" value="' + memId + '">' + memText + '</td>' +
+                    '<td><input type="hidden" name="coAccs[]" value="' + account.account + '">' + account.accnumb + '</td>' +
+                    '<td class="text-right text-bold">' + ava + '</td>';
 
-                    if (parseInt(trimOver(ava, null)) <= parseInt(trimOver(amt, null))) {
-                        line += '<td class="text-right text-bold amounts">' +
-                            '<input type="hidden" name="coAmts[]" value="' + parseInt(trimOver(ava, null)) + '">' + ava + '</td>';
-                        $('#com').show();
-                    } else {
-                        line += '<td class="text-right text-bold amounts">' +
-                            '<input type="hidden" name="coAmts[]" value="' + parseInt(trimOver(amt, null)) + '">' + amt + '</td>';
-                        $('#com').hide();
-                    }
-                    line += '<tr>';
-                    $('#coMakers').append(line);
-                    sumAmount();
+                if (parseInt(trimOver(ava, null)) < parseInt(trimOver(amt, null))) {
+                    line += '<td class="text-right text-bold amounts">' +
+                        '<input type="hidden" name="coAmts[]" value="' + parseInt(trimOver(ava, null)) + '">' + ava + '</td>';
+                    $('#com').show();
+                } else {
+                    line += '<td class="text-right text-bold amounts">' +
+                        '<input type="hidden" name="coAmts[]" value="' + parseInt(trimOver(amt, null)) + '">' + amt + '</td>';
+                    $('#com').hide();
+                }
+                line += '<tr>';
+
+                $('#coMakers').append(line);
+                sumAmount();
+            }
+
+            fillComakers();
+        }
+
+        async function accBalance(member, field) {
+            const coms = await getData('getMemComakers?member=' + member);
+            const demComs = await getData('getMemDemComakers?member=' + member);
+            const accBals = await getData('getAccBalance?member=' + member);
+            const blockAccs = await getData('getBlockAcc');
+
+            let block = 0;
+            let acc = 0;
+
+            $.each(coms, function (i, com) {
+                block += (parseInt(com.guaramt) - parseInt(com.paidguar));
+                acc = com.account;
+            });
+
+            $.each(demComs, function (i, demCom) {
+                block += (parseInt(demCom.guaramt) - parseInt(demCom.paidguar));
+                acc = com.account;
+            });
+
+            $.each(blockAccs, function (i, blockAcc) {
+                acc = blockAcc;
+            });
+
+            $.each(accBals, function (i, accBal) {
+                let ava = parseInt(accBal.available);
+                let evebal = parseInt(accBal.evebal);
+                if (ava === 0) {
+                    ava = evebal;
+                }
+
+                if (accBal.account === acc) {
+                    $(field).val(money(parseInt(ava - block)));
                 }
             });
-        }
-
-        function getCredit(id, acc) {
-            return $.parseJSON(
-                $.ajax({
-                    url: "{{ url('getMemCredit') }}",
-                    method: 'get',
-                    data: {
-                        member: id,
-                        account: acc,
-                    },
-                    dataType: 'json',
-                    async: false
-                }).responseText
-            );
-        }
-
-        function getDebit(id, acc) {
-            return $.parseJSON(
-                $.ajax({
-                    url: "{{ url('getMemDebit') }}",
-                    method: 'get',
-                    data: {
-                        member: id,
-                        account: acc,
-                    },
-                    dataType: 'json',
-                    async: false
-                }).responseText
-            );
         }
 
         function sumAmount() {
@@ -756,7 +699,6 @@ if ($emp->lang == 'fr')
             let amount = parseInt(trimOver($('#loanamt').val(), null));
             let dif = amount - sumAmt;
             let diff = $('#diff');
-            console.log(dif);
             if (dif > 0) {
                 diff.attr('class', 'text-orange');
                 diff.text(money(dif));
@@ -846,14 +788,14 @@ if ($emp->lang == 'fr')
                 date = Date.parse(date).toString('dd/MM/yyyy');
 
                 line += '<tr>' +
-                    '<td class="text-center"><input type="hidden" name="nos[]" value="' + i + '">' + i + '</td>' +
-                    '<td class="text-right text-bold"><input type="hidden" name="capitals[]" value="' + Math.round(capital) + '">' + money(Math.round(capital)) + '</td>' +
-                    '<td class="text-right text-bold"><input type="hidden" name="amortAmts[]" value="' + Math.round(amortAmt) + '">' + money(Math.round(amortAmt)) + '</td>' +
-                    '<td class="text-right text-bold"><input type="hidden" name="intAmts[]" value="' + Math.round(intAmt) + '">' + money(Math.round(intAmt)) + '</td>' +
-                    '<td class="text-right text-bold"><input type="hidden" name="annAmts[]" value="' + Math.round(annAmt) + '">' + money(Math.round(annAmt)) + '</td>' +
-                    '<td class="text-right text-bold"><input type="hidden" name="taxAmts[]" value="' + Math.round(taxAmt) + '">' + money(Math.round(taxAmt)) + '</td>' +
-                    '<td class="text-right text-bold"><input type="hidden" name="totAmts[]" value="' + Math.round(totAmt) + '">' + money(Math.round(totAmt)) + '</td>' +
-                    '<td class="text-center"><input type="hidden" name="dates[]" value="' + date + '">' + date + '</td>' +
+                    '<td class="text-center">' + i + '</td>' +
+                    '<td class="text-right text-bold">' + money(Math.round(capital)) + '</td>' +
+                    '<td class="text-right text-bold">' + money(Math.round(amortAmt)) + '</td>' +
+                    '<td class="text-right text-bold">' + money(Math.round(intAmt)) + '</td>' +
+                    '<td class="text-right text-bold">' + money(Math.round(annAmt)) + '</td>' +
+                    '<td class="text-right text-bold">' + money(Math.round(taxAmt)) + '</td>' +
+                    '<td class="text-right text-bold">' + money(Math.round(totAmt)) + '</td>' +
+                    '<td class="text-center">' + date + '</td>' +
                     '</tr>';
 
                 totAmorAmt += amortAmt;

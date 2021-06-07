@@ -7,6 +7,8 @@ use App\Models\Account;
 use App\Models\Bank;
 use App\Models\Check;
 use App\Models\CheckAccAmt;
+use App\Models\Loan;
+use App\Models\LoanType;
 use App\Models\Member;
 use App\Models\Operation;
 use Illuminate\Support\Facades\DB;
@@ -42,12 +44,14 @@ class CheckInController extends Controller
         $accounts = Request::input('accounts');
         $operations = Request::input('operations');
         $amounts = Request::input('amounts');
-//        $accounts2 = Request::input('accounts2');
-//        $operations2 = Request::input('operations2');
-//        $amounts2 = Request::input('amounts2');
+
+        $loans = Request::input('loans');
+        $intamts = Request::input('intamts');
+        $loanamts = Request::input('loanamts');
 
         try {
             $opera = Operation::getByCode(37);
+            $opera2 = Operation::getByCode(54);
 
             $check = new Check();
             $check->checknumb = Request::input('checkno');
@@ -61,40 +65,42 @@ class CheckInController extends Controller
             $check->operation = $opera->idoper;
             $check->institution = $emp->institution;
             $check->branch = $emp->branch;
-
             $check->save();
 
-            if (isset($accounts)) {
-                foreach ($accounts as $key => $account) {
-                    if ($amounts[$key] !== '0' || $amounts[$key] !== null) {
-                        $checkaccamt = new CheckAccAmt();
-                        $checkaccamt->checkno = $check->idcheck;
-                        $checkaccamt->type = 'N';
-                        $checkaccamt->account = $account;
-                        $checkaccamt->operation = $operations[$key];
-                        $checkaccamt->accamt = trimOver($amounts[$key], ' ');
-
-                        $checkaccamt->save();
-                    }
+            foreach ($accounts as $key => $account) {
+                if (!empty($amounts[$key]) && $amounts[$key] !== null && $amounts[$key] !== '0') {
+                    $checkaccamt = new CheckAccAmt();
+                    $checkaccamt->checkno = $check->idcheck;
+                    $checkaccamt->type = 'N';
+                    $checkaccamt->account = $account;
+                    $checkaccamt->operation = $operations[$key];
+                    $checkaccamt->accamt = trimOver($amounts[$key], ' ');
+                    $checkaccamt->save();
                 }
             }
 
-//            if (isset($accounts2)) {
-//                foreach ($accounts2 as $key => $account) {
-//                    if ($amounts2[$key] !== '0' || $amounts2[$key] !== null) {
-//                        $checkaccamt = new CheckAccAmt();
-//                        $checkaccamt->checkno = $check->idcheck;
-//                        $checkaccamt->type = 'L';
-//                        $checkaccamt->account = $account;
-//                        if (array_key_exists($key, $operations2)) {
-//                            $checkaccamt->operation = $operations2[$key];
-//                        }
-//                        $checkaccamt->accamt = trimOver($amounts2[$key], ' ');
-//
-//                        $checkaccamt->save();
-//                    }
-//                }
-//            }
+            if (isset($loans)) {
+                foreach ($loans as $key => $loan) {
+                    $memLoan = Loan::getLoan($loan);
+                    $loanType = LoanType::getLoanType($memLoan->loantype);
+
+                    $checkaccamt = new CheckAccAmt();
+                    $checkaccamt->checkno = $check->idcheck;
+                    $checkaccamt->type = 'L';
+                    $checkaccamt->account = $loanType->loanacc;
+                    $checkaccamt->operation = $opera2->idoper;
+                    $checkaccamt->loan = $loan;
+
+                    if (!empty($intamts[$key]) && $intamts[$key] !== null && $intamts[$key] !== '0') {
+                        $checkaccamt->intamt = trimOver($intamts[$key], ' ');
+                    }
+
+                    if (!empty($loanamts[$key]) && $loanamts[$key] !== null && $loanamts[$key] !== '0') {
+                        $checkaccamt->accamt = trimOver($loanamts[$key], ' ');
+                    }
+                    $checkaccamt->save();
+                }
+            }
 
             DB::commit();
             return Redirect::route('omega')->with('success', trans('alertSuccess.chesave'));

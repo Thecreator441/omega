@@ -1,15 +1,18 @@
-<?php $emp = session()->get('employee');
-App::setLocale($emp->lang);
+<?php $emp = Session::get('employee');
+
+if ($emp->lang == 'fr')
+    App::setLocale('fr');
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', trans('sidebar.account'))
+@section('title', trans('sidebar.accounts'))
 
 @section('content')
-
     <div class="box">
-
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.accounts') </h3>
+        </div>
         <div class="box-body">
             <div class="box-header with-border">
                 <div class="row">
@@ -83,7 +86,7 @@ App::setLocale($emp->lang);
                             <td>{{$account->accnumb}}</td>
                             <td>@if($emp->lang == 'fr') {{$account->labelfr}} @else {{$account->labeleng}} @endif</td>
                             <td>@if($emp->lang == 'fr') {{$account->Atfr}} @else {{$account->Ateng}} @endif</td>
-                            <td>{{$account->accplan}}</td>
+                            <td>{{$account->idplan}}</td>
                             <td>{{changeFormat($account->created_at)}}</td>
                         </tr>
                     @endforeach
@@ -96,5 +99,4 @@ App::setLocale($emp->lang);
             </div>
         </div>
     </div>
-
 @stop

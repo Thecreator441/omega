@@ -1,5 +1,17 @@
 <?php
 
+use Illuminate\Support\Facades\Session;
+
+$member = 'Membre';
+
+if (Session::exists('employee')) {
+    $emp = Session::get('employee');
+
+    if ($emp->collector !== null) {
+        $member = 'Client';
+    }
+}
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -12,49 +24,81 @@ return [
     |
     */
 
-    'open_header' => 'OUVERTURE CAISSE',
+    'netsave_text' => 'VOULEZ-VOUS VRAIMENT ENREGISTRER CE RESEAU?',
+    'netedit_text' => 'VOULEZ-VOUS VRAIMENT MODIFIER CE RESEAU?',
+    'netdel_text' => 'VOULEZ-VOUS VRAIMENT SUPPRIMER CE RESEAU?',
+    
+    'zonesave_text' => 'VOULEZ-VOUS VRAIMENT ENREGISTRER CETTE ZONE?',
+    'zoneedit_text' => 'VOULEZ-VOUS VRAIMENT MODIFIER CETTE ZONE?',
+    'zonedel_text' => 'VOULEZ-VOUS VRAIMENT SUPPRIMER CETTE ZONE?',
+    
+    'instsave_text' => 'VOULEZ-VOUS VRAIMENT ENREGISTRER CETTE INSTITUTION?',
+    'instedit_text' => 'VOULEZ-VOUS VRAIMENT MODIFIER CETTE INSTITUTION?',
+    'instdel_text' => 'VOULEZ-VOUS VRAIMENT SUPPRIMER CETTE INSTITUTION?',
+    
+    'bransave_text' => 'VOULEZ-VOUS VRAIMENT ENREGISTRER CETTE AGENCE?',
+    'branedit_text' => 'VOULEZ-VOUS VRAIMENT MODIFIER CETTE AGENCE?',
+    'brandel_text' => 'VOULEZ-VOUS VRAIMENT SUPPRIMER CETTE AGENCE?',
+    
+    'usersave_text' => 'VOULEZ-VOUS VRAIMENT ENREGISTRER CET UTILISATEUR?',
+    'useredit_text' => 'VOULEZ-VOUS VRAIMENT MODIFIER CET UTILISATEUR?',
+    'userdel_text' => 'VOULEZ-VOUS VRAIMENT SUPPRIMER CET UTILISATEUR?',
+
+
     'open_text' => 'Voulez-vous ouvrir la caisse',
-    'close_header' => 'FERMETURE CAISSE',
     'close_text' => 'Voulez-vous fermer la caisse',
-    'reopen_header' => 'REOUVERTURE CAISSE',
     'reopen_text'     => 'Voulez-vous reouvrir cette caisse',
-    'recfund_header' => 'RÉCEPTION DES FONDS',
     'recfund_text' => 'Voulez-vous envoyer les fonds a la caisse',
-    'emisfund_header' => 'ÉMISSION DES FONDS',
     'emisfund_text' => 'Voulez-vous émêttre les fonds a la caisse',
-    'memsave_header' => 'ADHÉSION MEMBRE',
-    'memsave_text' => 'Voulez-vous enregistrer ce nouveau membre',
-    'memreg_header' => 'ENREGISTREMENT',
-    'memreg_text' => 'Voulez-vous inscrire ce nouveau client',
-    'cashfrbank_header' => 'VERSEMENT DE LA BANQUE',
+    'memsave_text' => 'Voulez-vous enregistrer ce nouveau ' . $member,
+    'memreg_text' => 'Voulez-vous inscrire ce nouveau ' . $member,
     'cashfrbank_text' => 'Voulez-vous enregistrer cette transaction',
-    'cashtobank_header' => 'RETRAIT DE LA BANQUE',
     'cashtobank_text' => 'Voulez-vous enregistrer cette transaction',
-    'monexc_header' => 'ÉCHANGE DE MONNAIE',
     'monexc_text' => 'Voulez-vous échanger cette monnaie',
-    'opendate_header' => 'OUVERTURE JOURNÉE COMPTABLE',
     'opendate_text' => 'Voulez-vous ouvrir cette date',
-    'closedate_header' => 'FERMETURE JOURNÉE COMPTABLE',
     'closedate_text' => 'Voulez-vous fermer cette date',
-    'adjdate_header' => 'ADJUSTEMENT JOURNÉE COMPTABLE',
     'adjdate_text' => 'Voulez-vous adjuster cette date',
-    'ocin_header' => 'AUTRES VERSEMENT ESPECES',
     'ocin_text' => 'Voulez-vous enregistrer cette transaction',
-    'ocout_header' => 'AUTRES RETRAIT ESPECES',
     'ocout_text' => 'Voulez-vous enregistrer cette transaction',
-    'opera_header' => 'OPÉRATIONS',
     'opesave_text' => 'Voulez-vous enregistrer cette opération',
 	'opeedit_text' => 'Voulez-vous enregistrer cette opération',
 	'opedel_text' => 'Voulez-vous enregistrer cette opération',
-    'cash_header' => 'CAISSES',
     'cassave_text' => 'Voulez-vous enregistrer cette caisse',
     'casedit_text' => 'Voulez-vous enregistrer cette caisse',
     'casedel_text' => 'Voulez-vous enregistrer cette caisse',
-    'bank_header' => 'BANUES',
     'bansave_text' => 'Voulez-vous enregistrer cette banque',
     'banedit_text' => 'Voulez-vous enregistrer cette banque',
     'banedel_text' => 'Voulez-vous enregistrer cette banque',
 
+    'userres_text' => 'Réinitialiser les informations d\'identification de l\'utilisateur?',
+    'userblun_text' => 'Voulez-vous bloquer cet utilisateur?',
+    'accpdel' => 'Voulez-vous supprimer ce plan de compte?',
+    'logout_text' => 'Voulez-vous vous déconnecter?',
+    'coldel_text' => 'Voulez-vous vraiment supprimer ce collecteur?',
+    'curdel_text'=> 'Supprimer cette devise?',
+    'cursave_text' => 'Ajouter une devise?',
+    'curedit_text' => 'Voulez-vous modifier cette devise?',
+    'coundel_text' => 'Supprimer le pays?',
+    'counsave_text' => 'Ajouter ce pays?',
+    'counedit_text' => 'Voulez-vous modifier ce pays?',
+    'regsave_text' => 'Ajouter une région?',
+    'regedit_text' => 'Modifier une région?',
+    'regdel_text' => 'Supprimer une région?',
+    'divsave_text' => 'Ajouter un département?',
+    'divdel_text' => 'Supprimer un département?',
+    'divedit_text' => 'Modifier un département?',
+    'subdivsave_text' => 'Ajouter un arrondissement?',
+    'subdivedit_text' => 'Modifier un arrondissement?',
+    'subdivdel_text' => 'Supprimer un arrondissement?',
+    'townsave_text' => 'Ajouter une ville?',
+    'townedit_text' => 'Modifier une ville?',
+    'towndel_text' => 'Supprimer une ville?',
+    'devicesave_text' => 'Ajouter un appareil?',
+    'deviceedit_text' => 'Modifier les informations d\'identification de l\'appareil?',
+    'devicedel_text' => 'Supprimer un appareil?',
+    'profsave_text' => 'Ajouter une profession?',
+    'profedit_text' => 'Modifier une profession?',
+    'profdel_text' => 'Supprimer une profession?',
 
     'yes' => 'Oui',
     'no' => 'Non',

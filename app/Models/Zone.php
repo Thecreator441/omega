@@ -6,29 +6,31 @@ use Illuminate\Database\Eloquent\Model;
 
 class Zone extends Model
 {
-    private $idzone;
+    protected $table = 'zones';
 
-    private $name;
+    protected $primaryKey = 'idzone';
 
-    private $phone1;
+    protected $fillable = ['zones'];
 
-    private $phone2;
+    /**
+     * @param int $id
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getZone(int $id)
+    {
+        return self::query()->where('idzone', $id)->first();
+    }
 
-    private $email;
+    /**
+     * @param array $where
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getZones(array $where = null)
+    {
+        if ($where !== null) {
+            return self::query()->where($where)->orderBy('name')->get();
+        }
+        return self::query()->orderBy('name')->get();
+    }
 
-    private $country;
-
-    private $region;
-
-    private $town;
-
-    private $address;
-
-    private $postcode;
-
-    private $network;
-
-    private $updated_at;
-
-    private $created_at;
 }

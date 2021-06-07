@@ -23,6 +23,6 @@ class LoginControllerTest extends TestCase
             '_token' => csrf_token()
         ]);
         $this->assertEquals(302, $response->getStatusCode());
-        $this->assertEquals('auth.login', $response->original->name());
+        $this->assertEquals('omega.login', $response->original->name());
     }
 }

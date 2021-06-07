@@ -9,35 +9,49 @@ class Money extends Model
 {
     protected $table = 'moneys';
 
-    private $idmoney;
+    protected $primaryKey = 'idmoney';
 
-    private $moncode;
-
-    private $value;
-
-    private $format;
-
-    private $labeleng;
-
-    private $labelfr;
-
-    private $currency;
-
-    private $updated_at;
-
-    private $created_at;
+    protected $fillable = ['moneys'];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @param int $idcountry
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getMoneys()
+    public static function getMoney(int $idmoney)
+    {
+        return self::query()->where('idmoney', $idmoney)->first();
+    }
+
+    /**
+     * @param array $where
+     * @return Branch[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getMoneys(array $where = [])
     {
         $emp = Session::get('employee');
 
+        if ($where !== null) {
+            return self::query()->where($where)->where('C.idcountry', $emp->country)
+                ->join('countries AS C', 'C.currency', '=', 'moneys.currency')
+                ->select('moneys.*', 'C.labelfr AS coulabelfr', 'C.labeleng AS coulabeleng')
+                ->orderByDesc('value')->get();
+        }
         return self::query()->where('C.idcountry', $emp->country)
             ->join('countries AS C', 'C.currency', '=', 'moneys.currency')
             ->select('moneys.*', 'C.labelfr AS coulabelfr', 'C.labeleng AS coulabeleng')
             ->orderByDesc('value')->get();
     }
 
+
+    /**
+     * @param int $country
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getMoneysMob(int $country)
+    {
+        return self::query()->where('C.idcountry', $country)
+            ->join('countries AS C', 'C.currency', '=', 'moneys.currency')
+            ->select('moneys.*', 'C.labelfr AS coulabelfr', 'C.labeleng AS coulabeleng')
+            ->orderByDesc('value')->get();
+    }
 }

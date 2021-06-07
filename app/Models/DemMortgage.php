@@ -45,6 +45,6 @@ class DemMortgage extends Model
      */
     public static function getMortgages(int $demloan)
     {
-        return self::query()->where('loan', $demloan)->get();
+        return self::query()->where(['loan' => $demloan, 'status' => 'Al'])->get();
     }
 }

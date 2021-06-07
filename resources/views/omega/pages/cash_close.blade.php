@@ -1,25 +1,24 @@
 <?php
 $emp = Session::get('employee');
 
-if ($emp->lang == 'fr') {
+if ($emp->lang == 'fr')
     App::setLocale('fr');
-    $title = 'Fermeture Caisse';
-} else {
-    $title = 'Cash Closing';
-}
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', $title)
+@section('title', trans('sidebar.closecash'))
 
 @section('content')
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.closecash') </h3>
         </div>
+{{--        <div class="box-header">--}}
+{{--            <div class="box-tools pull-right">--}}
+{{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('cash_close/store') }}" method="post" role="form" id="cashCloseForm">
                 {{ csrf_field() }}

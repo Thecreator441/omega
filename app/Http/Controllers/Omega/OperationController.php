@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Omega;
 
 use App\Http\Controllers\Controller;
 use App\Models\Operation;
+use App\Models\Priv_Menu;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -13,14 +14,18 @@ class OperationController extends Controller
 {
     public function index()
     {
-        if (dateOpen()) {
-            $operations = Operation::getPaginate();
-
-            return view('omega.pages.operation', [
-                'operations' => $operations
-            ]);
+        $emp = verifSession('employee');
+        if($emp === null) {
+            return Redirect::route('/');
         }
-        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+
+        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
+            $operations = Operation::getOperations();
+            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+            return view('omega.pages.operation', compact('menu', 'operations'));
+        }
+        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
     }
 
     public function store()
@@ -28,7 +33,6 @@ class OperationController extends Controller
         $emp = Session::get('employee');
 
         $idoper = Request::input('idoper');
-
         DB::beginTransaction();
         try {
             $oper = null;
@@ -42,12 +46,14 @@ class OperationController extends Controller
             $oper->opercode = pad(Request::input('opercode'), 3);
             $oper->labelfr = Request::input('labelfr');
             $oper->labeleng = Request::input('labeleng');
-            $oper->debtfr = Request::input('debtfr');
-            $oper->debteng = Request::input('debteng');
-            $oper->credtfr = Request::input('credtfr');
-            $oper->credteng = Request::input('credteng');
-            $oper->institution = $emp->institution;
-            $oper->branch = $emp->branch;
+            // $oper->debtfr = Request::input('debtfr');
+            // $oper->debteng = Request::input('debteng');
+            // $oper->credtfr = Request::input('credtfr');
+            // $oper->credteng = Request::input('credteng');
+            // $oper->network = $emp->network;
+            // $oper->zone = $emp->zone;
+            // $oper->institution = $emp->institution;
+            // $oper->branch = $emp->branch;
 
             $oper->save();
 

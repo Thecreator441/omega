@@ -15,5 +15,8 @@ return [
 
     'failed' => 'Ces informations d\'identification ne correspondent pas à nos enregistrements.',
     'throttle' => 'Trop de tentatives de connexion. Veuillez réessayer dans :seconds secondes.',
+    'blocked' => 'Votre compte a été blocker. Veuillez contacter l\'administrateur pour plus de details',
+    'undevice' => 'Appareil non reconnue. Veuillez contacter l\'administrateur pour plus de details',
+    'unauthorised' => 'Vous n\'ete pas authoriser a voir cette page',
 
 ];

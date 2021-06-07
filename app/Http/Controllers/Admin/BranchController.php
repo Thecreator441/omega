@@ -2,46 +2,106 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Branch;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
+use App\Models\Country;
+use App\Models\Division;
+use App\Models\Institution;
+use App\Models\Network;
+use App\Models\Region;
+use App\Models\SubDiv;
+use App\Models\Town;
+use App\Models\Zone;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
 
 class BranchController extends Controller
 {
     public function index()
     {
-        $institution = DB::table('institutions')->get();
-        $branchs = DB::table('branches')->get();
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
+        $towns = Town::getTowns();
+        $subdivs = SubDiv::getSubDivs();
+        $networks = Network::getNetworks();
+        $zones = Zone::getZones();
+        $institutions = Institution::getInstitutions();
+        $branches = Branch::getBranches();
 
-        return view('admin.pages.branch', ['branches' => $branchs, 'institutions' => $institution]);
+        return view('admin.pages.branch', compact(
+            'networks', 'zones', 'institutions', 'branches', 'countries',
+            'regions', 'divisions', 'subdivs', 'towns'));
     }
 
     public function store()
     {
-        $branchs = new Branch();
+//        dd(Request::all());
+        DB::beginTransaction();
+        try {
+            $idbranch = Request::input('idbranch');
+            $branch = null;
 
-        $branchs->name = Request::input('name');
-        $branchs->phone1 = Request::input('phone1');
-        $branchs->phone2 = Request::input('phone2');
-        $branchs->email = Request::input('email');
-        $branchs->region = Request::input('region');
-        $branchs->town = Request::input('town');
-        $branchs->address = Request::input('address');
-        $branchs->postcode = Request::input('postcode');
-        $branchs->idinst = Request::input('idinst');
+            if ($idbranch === null) {
+                $branch = new Branch();
+            } else {
+                $branch = Branch::getBranch($idbranch);
+            }
 
-        $branchs->save();
+            $branch->network = Request::input('network');
+            $branch->zone = Request::input('zone');
+            $branch->institution = Request::input('institution');
+            $branch->code = Request::input('code');
+            $branch->name = Request::input('name');
+            $branch->phone1 = Request::input('phone1');
+            $branch->phone2 = Request::input('phone2');
+            $branch->email = Request::input('email');
+            $branch->country = Request::input('country');
+            $branch->region = Request::input('region');
+            $branch->division = Request::input('division');
+            $branch->subdivision = Request::input('subdiv');
+            $branch->town = Request::input('town');
+            $branch->address = Request::input('address');
+            $branch->postcode = Request::input('postal');
+            //$branch->dormem = Request::input('dormem');
 
-        return Redirect::back();
+            if ($idbranch === null) {
+                $branch->save();
+            } else {
+                $branch->update((array)$branch);
+            }
+
+            DB::commit();
+            if ($idbranch === null) {
+                return Redirect::back()->with('success', trans('alertSuccess.bransave'));
+            }
+            return Redirect::back()->with('success', trans('alertSuccess.branedit'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            if ($idbranch === null) {
+                return Redirect::back()->with('danger', trans('alertDanger.bransave'));
+            }
+            return Redirect::back()->with('danger', trans('alertDanger.branedit'));
+        }
     }
 
-    public function delete(Request $request): \Illuminate\Http\RedirectResponse
+    public function delete()
     {
-        DB::table('branches')->where('idbranch', $request->id)->delete();
+//        dd(Request::all());
+        $idbranch = Request::input('branch');
 
-        return Redirect::back();
+        DB::beginTransaction();
+        try {
+            Branch::getBranch($idbranch)->delete();
+
+            DB::commit();
+            return Redirect::back()->with('success', trans('alertSuccess.brandel'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            return Redirect::back()->with('danger', trans('alertDanger.brandel'));
+        }
     }
 }

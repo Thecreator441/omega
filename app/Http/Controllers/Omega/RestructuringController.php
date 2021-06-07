@@ -11,18 +11,6 @@ use Illuminate\Support\Facades\Request;
 
 class RestructuringController extends Controller
 {
-    public function index()
-    {
-        if (dateOpen()) {
-            $loans = Loan::getLoans(['loanstat' => 'Ar']);
-
-            return view('omega.pages.restructuring', [
-                'loans' => $loans,
-            ]);
-        }
-        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
-    }
-
     public static function store()
     {
 //        dd(Request::all());
@@ -39,7 +27,7 @@ class RestructuringController extends Controller
         $totAmts = Request::input('totAmts');
         $dates = Request::input('dates');
         try {
-            $loan = Loan::getloan($idloan);
+            $loan = Loan::getLoan($idloan);
             $installs = Installment::getInstalls($idloan);
 
             if ($resBy === 'intrate') {
@@ -48,13 +36,14 @@ class RestructuringController extends Controller
                 $loan->nbrinst = $nbrinst;
             } else if ($resBy === 'grace') {
                 $loan->grace = Request::input('grace');
+                $loan->instdate1 = Request::input('inst1');
             } else if ($resBy === 'all') {
                 $loan->intrate = Request::input('int_rate');
                 $loan->nbrinst = $nbrinst;
                 $loan->grace = Request::input('grace');
+                $loan->instdate1 = Request::input('inst1');
             }
             $loan->annuity = trimOver(Request::input('annAmt'), ' ');
-            $loan->intamt = trimOver(Request::input('intAmt'), ' ');
             ++$loan->isRes;
             $loan->update((array)$loan);
 
@@ -118,5 +107,17 @@ class RestructuringController extends Controller
             DB::rollBack();
             return Redirect::back()->with('danger', trans('alertDanger.ressave'));
         }
+    }
+
+    public function index()
+    {
+        if (dateOpen()) {
+            $loans = Loan::getLoans(['loanstat' => 'Ar']);
+
+            return view('omega.pages.restructuring', [
+                'loans' => $loans,
+            ]);
+        }
+        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
 }

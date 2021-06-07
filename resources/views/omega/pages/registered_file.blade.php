@@ -1,18 +1,24 @@
-<?php $emp = Session::get('employee');
-App::setLocale($emp->lang);
+<?php
+$emp = Session::get('employee');
+
+if ($emp->lang == 'fr')
+    App::setLocale('fr');
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', trans('sidebar.registered').'s')
+@section('title', trans('sidebar.registereds'))
 
 @section('content')
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.registereds') </h3>
         </div>
+        {{--        <div class="box-header">--}}
+        {{--            <div class="box-tools">--}}
+        {{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+        {{--            </div>--}}
+        {{--        </div>--}}
         <div class="box-body">
             <div class="box-header with-border">
                 <div class="row">

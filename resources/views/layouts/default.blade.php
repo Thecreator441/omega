@@ -8,7 +8,8 @@
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
-    <title>OMEGA | @yield('title')</title>
+	<title>{{env('APP_NAME')}} | @yield('title')</title>
+  
     <link rel="apple-touch-icon" href="{{ asset('images/favicon.png') }}"/>
     <link rel="shortcut icon" href="{{ asset('images/favicon.png') }}"/>
     <link rel="icon" href="{{ asset('images/favicon.png') }}">
@@ -26,7 +27,7 @@
     <link href="{{ asset('plugins/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
 
     <!-- Flags Icon -->
-    <link href="{{ asset('plugins/flags-icon/css/flag-icon.min.css') }}" rel="stylesheet">
+{{--    <link href="{{ asset('plugins/flags-icon/css/flag-icon.min.css') }}" rel="stylesheet">--}}
 
     <!-- Theme style -->
     <link href="{{ asset('css/AdminLTE/AdminLTE.min.css') }}" rel="stylesheet">
@@ -52,10 +53,13 @@
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.min.js') }}"></script>
 
 <!-- Material Design -->
-<script src="{{ asset('js/material.min.js') }}"></script>
+{{--<script src="{{ asset('js/material.min.js') }}"></script>--}}
 
 <!-- Select2 -->
 <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+
+<!-- ua-parser -->
+<script src="{{ asset('plugins/ua-parser/ua-parser.pack.js') }}"></script>
 
 @yield('script')
 

@@ -1,23 +1,19 @@
 <?php
 $emp = Session::get('employee');
 
-if ($emp->lang == 'fr') {
+if ($emp->lang == 'fr')
     App::setLocale('fr');
-    $title = 'Bût Pret';
-} else {
-    $title = 'Loan Purpose';
-}
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', $title)
+@section('title', trans('sidebar.lpur'))
 
 @section('content')
     <div class="box">
         <div class="box-header">
             <div class="box-tools">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
+                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close home" id="home"></button>
             </div>
         </div>
         <div class="box-body">
@@ -32,30 +28,24 @@ if ($emp->lang == 'fr') {
                 {{ csrf_field() }}
                 <div id="form">
                     @if ($loanpurs->count() == 0)
-                        <input type="hidden" id="idloanpur" name="idloanpur">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="loancode" class="col-md-6 control-label">@lang('label.loanpur')</label>
-                                    <div class="col-md-6">
-                                        <input type="text" name="purcode" id="purcode" class="form-control"
-                                               placeholder="@lang('label.code')">
+                        <div class="box-header with-border">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="loaneng"
+                                               class="col-md-3 control-label">@lang('label.labeleng')</label>
+                                        <div class="col-md-9">
+                                            <input type="text" name="loaneng" id="loaneng" class="form-control">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <input type="text" name="pureng" id="pureng" class="form-control"
-                                               placeholder="@lang('label.labeleng')">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <input type="text" name="purfr" id="purfr" class="form-control"
-                                               placeholder="@lang('label.labelfr')">
+                                        <label for="loanfr"
+                                               class="col-md-3 control-label">@lang('label.labelfr')</label>
+                                        <div class="col-md-9">
+                                            <input type="text" name="loanfr" id="loanfr" class="form-control">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -63,6 +53,7 @@ if ($emp->lang == 'fr') {
 
                         <div class="row">
                             <div class="col-md-12">
+                                <div class="col-md-12">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <button type="button" id="delete" disabled
@@ -76,34 +67,30 @@ if ($emp->lang == 'fr') {
                                         </button>
                                     </div>
                                 </div>
+                                </div>
                             </div>
                         </div>
                     @else
                         @foreach ($loanpurs as $loanpur)
                             <input type="hidden" id="idloantype" name="idloantype" value="{{$loanpur->idloanpur}}">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="purcode" class="col-md-6 control-label">@lang('label.loanty')</label>
-                                        <div class="col-md-6">
-                                            <input type="text" name="purcode" id="purcode" class="form-control"
-                                                   value="{{pad($loanpur->purcode, 3)}}" readonly>
+                            <div class="box-header with-border">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="loaneng"
+                                                   class="col-md-3 control-label">@lang('label.labeleng')</label>
+                                            <div class="col-md-9">
+                                                <input type="text" name="loaneng" id="loaneng" class="form-control" readonly value="{{$loanpur->labeleng}}">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-                                            <input type="text" name="pureng" id="pureng" class="form-control" readonly
-                                                   placeholder="@lang('label.labeleng')" value="{{$loanpur->labeleng}}">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="text" name="purfr" id="purfr" class="form-control" readonly
-                                                   placeholder="@lang('label.labelfr')" value="{{$loanpur->labelfr}}">
+                                            <label for="loanfr"
+                                                   class="col-md-3 control-label">@lang('label.labelfr')</label>
+                                            <div class="col-md-9">
+                                                <input type="text" name="loanfr" id="loanfr" class="form-control" readonly value="{{$loanpur->labelfr}}">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -111,6 +98,7 @@ if ($emp->lang == 'fr') {
 
                             <div class="row">
                                 <div class="col-md-12">
+                                    <div class="col-md-12">
                                     <div class="col-md-12">
                                         <button type="button" id="delete"
                                                 class="btn btn-sm bg-red pull-right btn-raised fa fa-trash">
@@ -121,6 +109,7 @@ if ($emp->lang == 'fr') {
                                         <button type="button" id="insert"
                                                 class="btn btn-sm bg-blue pull-right btn-raised fa fa-file-o">
                                         </button>
+                                    </div>
                                     </div>
                                 </div>
                             </div>
@@ -134,14 +123,6 @@ if ($emp->lang == 'fr') {
 
 @section('script')
     <script>
-        $(document).ready(function () {
-            $("#purcode").verifNumber();
-        });
-
-        $('#purfr, #pureng').on('input', function () {
-            $(this).val($(this).val().toUpperCase())
-        });
-
         $('#insert').click(function () {
             setEditable();
             $('#form :input').val('');
@@ -163,7 +144,7 @@ if ($emp->lang == 'fr') {
                 text = '@lang('confirm.lpuredit_text')';
 
             swal({
-                    title: '@lang('confirm.lpur_header')',
+                    title: '@lang('sidebar.lpur')',
                     text: text,
                     type: 'info',
                     showCancelButton: true,
@@ -184,7 +165,7 @@ if ($emp->lang == 'fr') {
 
         $('#delete').click(function () {
             swal({
-                    title: '@lang('confirm.lpur_header')',
+                    title: '@lang('sidebar.lpur')',
                     text: '@lang('confirm.lpurdel_text')',
                     type: 'info',
                     showCancelButton: true,

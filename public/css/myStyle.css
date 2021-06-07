@@ -1,4 +1,13 @@
-﻿.avatar {
+﻿.swal-footer, .swal-text {
+    text-align: center;
+}
+
+.dataTables_wrapper .dt-buttons {
+    float:none;
+    text-align:center;
+}
+
+.avatar {
     font-size: 35px;
     text-align: center;
     margin-bottom: 25px;
@@ -434,6 +443,24 @@ input[type=text], input[type=password] {
     font-weight: 700
 }
 
+#tableInput3 td input[type=text], th input[type=text] {
+    width: 100%;
+    height: 100%;
+    float: right;
+    text-align: right;
+    border: none;
+    background: transparent;
+    font-weight: 700
+}
+
+.removeLine {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    background: transparent !important;
+    text-transform: capitalize !important;
+}
+
 #tableInput td input[type=text]:hover {
     background: #d2d6de;
 }
@@ -442,12 +469,13 @@ input[type=text], input[type=password] {
     background: #d2d6de;
 }
 
-#tableInput, #tableInput2 {
-    font-weight: 700;
-}
+/*#tableInput, #tableInput2 {*/
+/*    font-weight: 700;*/
+/*}*/
 
 #bil {
     text-align: right;
+    font-weight: bold;
     background-color: antiquewhite;
     width: 6%;
 }
@@ -455,56 +483,94 @@ input[type=text], input[type=password] {
 #billet {
     text-align: right;
     background-color: antiquewhite;
+    width: 22%;
+    font-weight: bold;
+}
+
+.input {
+    text-align: right;
+    background-color: antiquewhite;
+    width: 22%;
+    font-weight: bold;
+}
+
+#billeting {
+    text-align: right;
     width: 25%;
+    font-weight: bold;
+}
+
+#billExc {
+    text-align: right;
+    background-color: antiquewhite;
+    width: 6%;
+    font-weight: bold;
 }
 
 #billetO {
     text-align: right;
     background-color: antiquewhite;
     width: 15%;
+    font-weight: bold;
+}
+
+.sumIn, .sumOut {
+    font-weight: bold;
 }
 
 #bill {
     text-align: left;
     background-color: antiquewhite;
     width: 26%;
+    font-weight: bold;
 }
 
 #mon1, #mon2, #mon3, #mon4, #mon5, #mon6, #mon7, #mon8, #mon9, #mon10, #mon11, #mon12 {
     text-align: right;
     background-color: antiquewhite;
     width: 10%;
+    font-weight: bold;
 }
 
 .sum {
     text-align: right;
-    width: 15%;
+    width: 12%;
+    font-weight: bold;
 }
 
 #B1Word, #B2Word, #B3Word, #B4Word, #B5Word, #P6Word, #P7Word, #P8Word, #P9Word, #P10Word, #P11Word, #P12Word {
     text-align: left;
     width: 30%;
+    font-weight: bold;
 }
 
 .word {
     text-align: left;
     width: 40%;
+    font-weight: bold;
 }
 
 .bilSum {
     width: 45%;
+    font-weight: bold;
 }
 
 .moncode1 {
     color: blue;
     width: auto;
+    font-weight: bold;
 }
 
 .moncode2 {
     width: auto;
+    font-weight: bold;
 }
 
-table {
+tfoot {
+    font-weight: bold;
+}
+
+.table {
     width: 100% !important;
 }
 
@@ -512,6 +578,7 @@ table thead tr th {
     background-color: rgb(23, 146, 233) !important;
     text-align: center !important;
     color: white !important;
+    font-weight: bold !important;
 }
 
 .member input[type=text] {
@@ -565,6 +632,14 @@ label {
     width: 100%;
     border: none;
     background: transparent;
+}
+
+.cout {
+    width: 12%;
+}
+
+.cin {
+    width: 10%;
 }
 
 ::-webkit-scrollbar {

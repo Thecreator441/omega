@@ -1,25 +1,24 @@
 <?php
 $emp = Session::get('employee');
 
-if ($emp->lang == 'fr') {
+if ($emp->lang == 'fr')
     App::setLocale('fr');
-    $title = 'Autre Versement par Chèque';
-} else {
-    $title = 'Other Deposit by Check';
-}
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', $title)
+@section('title', trans('sidebar.ochein'))
 
 @section('content')
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.ochein') </h3>
         </div>
+{{--        <div class="box-header">--}}
+{{--            <div class="box-tools pull-right">--}}
+{{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('other_check_in/store') }}" method="post" role="form" id="ocheinForm">
                 {{ csrf_field() }}

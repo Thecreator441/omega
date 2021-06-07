@@ -3,45 +3,127 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
+use App\Models\Division;
 use App\Models\Institution;
-use Illuminate\Http\Request;
+use App\Models\Network;
+use App\Models\Region;
+use App\Models\SubDiv;
+use App\Models\Town;
+use App\Models\Zone;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
 
 class InstitutionController extends Controller
 {
     public function index()
     {
-        $institution = DB::table('institutions')->get();
-        $zone = DB::table('zones')->get();
+        $networks = Network::getNetworks();
+        $zones = Zone::getZones();
+        $institutions = Institution::getInstitutions();
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
+        $towns = Town::getTowns();
+        $subdivs = SubDiv::getSubDivs();
 
-        return view('admin.pages.institution', ['institutions' => $institution, 'zones' => $zone]);
+        return view('admin.pages.institution', compact(
+            'networks', 'zones', 'institutions', 'countries',
+            'regions', 'divisions', 'subdivs', 'towns'));
     }
 
     public function store()
     {
-        $ins = new Institution();
+//        dd(Request::all());
+        DB::beginTransaction();
+        try {
+            $idinst = Request::input('idinstitute');
+            $network = Request::input('network');
+            $zone = Request::input('zone');
+            $last = Institution::getLast();
+            $inst = null;
+            $logo = null;
+            $last_id = 1;
 
-        $ins->name = Request::input('name');
-        $ins->phone1 = Request::input('phone1');
-        $ins->phone2 = Request::input('phone2');
-        $ins->email = Request::input('email');
-        $ins->region = Request::input('region');
-        $ins->town = Request::input('town');
-        $ins->address = Request::input('address');
-        $ins->postcode = Request::input('postcode');
-        $ins->idzone = Request::input('zone');
+            if ($idinst === null) {
+                $inst = new Institution();
+                $last_id += $last->idinst;
+            } else {
+                $inst = Institution::getInstitution($idinst);
+                $last_id = $inst->idinst;
+            }
 
-        $ins->save();
+            if (Request::hasFile('profile')) {
+                $reference = $network . '' . $zone . '' . $last_id;
+                $pic = Request::file('profile');
+                $logo = $reference . '.' . $pic->getClientOriginalExtension();
 
-        return Redirect::back();
+                if (file_exists($logo)) {
+                    unlink($logo);
+                    $pic->storePubliclyAs('logos', $logo, ['visibility' => true]);
+                }
+                $pic->storePubliclyAs('logos', $logo, ['visibility' => true]);
+            }
+
+            $inst->network = $network;
+            $inst->zone = $zone;
+            $inst->name = Request::input('name');
+            $inst->abbr = Request::input('abbr');
+            $inst->slogan = ucwords(Request::input('slogan'));
+            if ($logo !== null) {
+                $inst->logo = $logo;
+            }
+            $inst->phone1 = Request::input('phone1');
+            $inst->phone2 = Request::input('phone2');
+            $inst->email = Request::input('email');
+            $inst->country = Request::input('country');
+            $inst->region = Request::input('region');
+            $inst->division = Request::input('division');
+            $inst->subdivision = Request::input('subdiv');
+            $inst->town = Request::input('town');
+            $inst->address = Request::input('address');
+            $inst->postcode = Request::input('postal');
+            $inst->strategy = Request::input('strategy');
+            //$inst->witdepacc = Request::input('witdepacc');
+
+            if ($idinst === null) {
+                $inst->save();
+            } else {
+                $inst->update((array)$inst);
+            }
+
+            DB::commit();
+            if ($idinst === null) {
+                return Redirect::back()->with('success', trans('alertSuccess.instsave'));
+            }
+            return Redirect::back()->with('success', trans('alertSuccess.instedit'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            if ($idinst === null) {
+                return Redirect::back()->with('danger', trans('alertDanger.instsave'));
+            }
+            return Redirect::back()->with('danger', trans('alertDanger.instedit'));
+        }
     }
 
-    public function delete(Request $request): \Illuminate\Http\RedirectResponse
+    public function delete()
     {
-        DB::table('institutions')->where('idinst', '=', $request->id)->delete();
+//        dd(Request::all());
+        $idinst = Request::input('institute');
 
-        return Redirect::back();
+        DB::beginTransaction();
+        try {
+            Institution::getInstitution($idinst)->delete();
+
+            DB::commit();
+            return Redirect::back()->with('success', trans('alertSuccess.instdel'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            return Redirect::back()->with('danger', trans('alertDanger.instdel'));
+        }
     }
+
 }

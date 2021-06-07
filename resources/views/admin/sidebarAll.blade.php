@@ -114,7 +114,7 @@
                         href="{{ url('cash_reconciliation') }}"><i
                             class="fa fa-signal"></i>@if ($emp->lang == 'fr') Rapprochement Caisse @else
                             Cash Reconciliation @endif</a></li>
-                <li><a href=""><i class="fa fa-exchange"></i> Exchange Currency</a></li>
+                <li><a href=""><i class="fa fa-exchange"></i> Money Exchange</a></li>
                 <li class="{{ active('cash_regularisation') }}"><a
                         href="{{ url('cash_regularisation') }}"><i
                             class="fa fa-renren"></i>@if ($emp->lang == 'fr') Régularisation Caisse @else
@@ -579,8 +579,7 @@
         <li><a href=""><i class="fa fa-sort"></i> Normalisation</a></li>
         <li><a href=""><i class="fa fa-hourglass-start"></i> Initialisation</a></li>
         <li><a href=""><i class="fa fa-archive"></i> Archives</a></li>
-        <li><a href=""><i class="fa fa-search"></i>@if($emp->lang == 'fr') Recherche Documentaire @else
-                    Document Research @endif</a></li>
+        <li><a href=""><i class="fa fa-search"></i>@if($emp->lang == 'fr') Recherche Documentaire @else Document Research @endif</a></li>
         <li><a href=""><i class="fa fa-registered"></i> Report</a></li>
     </ul>
 </li>

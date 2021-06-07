@@ -11,11 +11,14 @@ if ($emp->lang === 'fr')
 
 @section('content')
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.membership') </h3>
         </div>
+{{--        <div class="box-header">--}}
+{{--            <div class="box-tools pull-right">--}}
+{{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('membership/store') }}" method="post" role="form" id="memSaveForm">
                 {{ csrf_field() }}
@@ -176,7 +179,7 @@ if ($emp->lang === 'fr')
                 </div>
 
                 <div class="col-md-11" id="tableInput">
-                    <table class="table table-responsive" id="simul-data-table2">
+                    <table class="table table-responsive">
                         <thead>
                         <tr class="text-bold text-blue bg-antiquewhite text-left">
                             @foreach($accounts as $account)

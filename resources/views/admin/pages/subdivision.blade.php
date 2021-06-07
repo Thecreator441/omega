@@ -1,21 +1,18 @@
-<?php $emp = session()->get('employee');
+<?php
+$emp = Session::get('employee');
 
 if ($emp->lang == 'fr')
-    $title = 'Arrondissements';
-else
-    $title = 'Sub Divisions';
+    App::setLocale('fr');
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', $title)
+@section('title', trans('sidebar.subdiv'))
 
 @section('content')
-    {{--    Insert and Update SubDivision Box--}}
     <div class="box box-info" id="newForm" style="display: none;">
         <div class="box-header with-border">
-            <h3 class="box-title text-bold">@if($emp->lang == 'fr') Nouvelle Arrondissement @else New
-                Sub Division @endif</h3>
+            <h3 class="box-title text-bold" id="title">@lang('label.newsub')</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-alert bg-red btn-sm pull-right" id="exitForm">
                     <i class="fa fa-close"></i>
@@ -23,155 +20,278 @@ else
             </div>
         </div>
         <div class="box-body">
-            <div class="container-fluid">
-                <form action="{{ route('admin/subdivision/store') }}" method="post" role="form">
-                    {{ csrf_field() }}
-                    <input type="hidden" name="id" id="id">
+            <form action="{{ route('admin/subdivision/store') }}" method="post" role="form" class="needs-validation" id="subForm">
+                {{ csrf_field() }}
+
+                <div id="fillform">
+                    <input type="hidden" name="idsubdivision" id="idsubdivision">
+
                     <div class="row">
-                        @if($emp->lang == 'fr')
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labelfr">@if($emp->lang == 'fr') NOMS EN FRANÇAIS @else NAME IN
-                                        FRENCH @endif</label>
-                                    <input type="text" class="form-control" name="labelfr" id="labelfr"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Français' : 'Enter the Name in French'; ?>">
+                        <div class="col-md-3 col-sm-3 col-xs-6">
+                            <div class="form-group has-error">
+                                <label for="country" class="col-md-4 control-label">@lang('label.country')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-8">
+                                    <select class="form-control select2" id="country" name="country" required>
+                                        <option value=""></option>
+                                        @foreach($countries as $country)
+                                            <option value="{{ $country->idcountry }}">@if($emp->lang == 'fr') {{ $country->labelfr }} @else {{ $country->labeleng }} @endif</option>
+                                        @endforeach
+                                    </select>
+                                    <span class="help-block">@lang('placeholder.country')</span>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labeleng">@if($emp->lang == 'fr') NOMS EN ANGLAIS @else NAME IN
-                                        ENGLISH @endif</label>
-                                    <input type="text" class="form-control" name="labeleng" id="labeleng"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Anglais' : 'Enter the Name in English'; ?>">
-                                </div>
-                            </div>
-                        @else
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labeleng">@if($emp->lang == 'fr') NOMS EN ANGLAIS @else NAME IN
-                                        ENGLISH @endif</label>
-                                    <input type="text" class="form-control" name="labeleng" id="labeleng"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Anglais' : 'Enter the Name in English'; ?>">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="labelfr">@if($emp->lang == 'fr') NOMS EN FRANÇAIS @else NAME IN
-                                        FRENCH @endif</label>
-                                    <input type="text" class="form-control" name="labelfr" id="labelfr"
-                                           placeholder="<?php echo $emp->lang === 'fr' ? 'Entrez le Noms en Français' : 'Enter the Name in French'; ?>">
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="division">@if($emp->lang == 'fr') DÉPARTEMENT @else
-                                        DIVISION @endif</label>
-                                <select class="form-control" id="division" name="division">
-                                    <option>@if($emp->lang == 'fr') Selectionez le Départment @else Select
-                                        Division @endif</option>
-                                    @foreach($divisions as $division)
-                                        <option value="{{ $division->iddiv }}">@if($emp->lang == 'fr') {{ $division->labelfr }} @else {{ $division->labeleng }} @endif</option>
-                                    @endforeach
-                                </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="region">@if($emp->lang == 'fr') RÉGION @else
-                                        REGION @endif</label>
-                                <select class="form-control" id="region" name="region">
-                                    <option>@if($emp->lang == 'fr') Selectionez la Region @else Select
-                                        Region @endif</option>
-                                    @foreach($regions as $region)
-                                        <option value="{{ $region->idregi }}">@if($emp->lang == 'fr') {{ $region->labelfr }} @else {{ $region->labeleng }} @endif</option>
-                                    @endforeach
-                                </select>
+                        <div class="col-md-3 col-sm-3 col-xs-6">
+                            <div class="form-group has-error">
+                                <label for="region" class="col-md-4 control-label">@lang('label.region')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-8">
+                                    <select class="form-control select2" id="region" name="region" required>
+                                        <option value=""></option>
+                                        @foreach ($regions as $region)
+                                            <option value="{{$region->idregi}}">@if ($emp->lang === 'fr') {{$region->labelfr}} @else {{$region->labeleng}} @endif</option>
+                                        @endforeach
+                                    </select>
+                                    <span class="help-block">@lang('placeholder.region')</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="country">@if($emp->lang == 'fr') PAYS @else COUNTRY @endif</label>
-                                <select class="form-control" id="country" name="country">
-                                    <option>@if($emp->lang == 'fr') Selectionez le Pays @else Select
-                                        Country @endif</option>
-                                    @foreach($countries as $country)
-                                        <option value="{{ $country->idcountry }}">@if($emp->lang == 'fr') {{ $country->labelfr }} @else {{ $country->labeleng }} @endif</option>
-                                    @endforeach
-                                </select>
+                        <div class="col-md-3 col-sm-3 col-xs-6">
+                            <div class="form-group has-error">
+                                <label for="division" class="col-md-4 control-label">@lang('label.division')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-8">
+                                    <select class="form-control select2" id="division" name="division" required>
+                                        <option value=""></option>
+                                        @foreach ($divisions as $division)
+                                            <option value="{{$division->iddiv}}">{{$division->label}}</option>
+                                        @endforeach
+                                    </select>
+                                    <span class="help-block">@lang('placeholder.division')</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-6">
+                            <div class="form-group has-error">
+                                <label for="label" class="col-md-4 control-label">@lang('label.subdiv')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" name="label" id="label" required>
+                                    <span class="help-block">@lang('placeholder.name')</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary bg-primary pull-right btn-raised">Save</button>
-                </form>
-            </div>
+                </div>
+
+                <div class="col-md-12">
+                    <button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
+                </div>
+            </form>
         </div>
     </div>
-    {{--    Insert and Update SubDivision Box--}}
 
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title">@if($emp->lang == 'fr') Arrondissements @else Sub Divisions @endif</h3>
+            <h3 class="box-title text-bold">@lang('sidebar.subdiv')</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-success bg-green btn-sm pull-right" id="insertForm">
-                    <i class="oin ion-plus"></i>&nbsp;@if($emp->lang == 'fr') Nouveau Arrondissement @else New Sub
-                    Division @endif
+                    <i class="fa fa-plus"></i>&nbsp;@lang('label.newsub')
                 </button>
             </div>
         </div>
         <div class="box-body">
-            <table id="bootstrap-data-table" class="table table-striped table-hover table-responsive-xl">
-                <thead>
-                <tr>
-                    <th>@if($emp->lang == 'fr') Arrondissement @else Sub Division @endif</th>
-                    <th>@if($emp->lang == 'fr') Département @else Division @endif</th>
-                    <th>@if($emp->lang == 'fr') Région @else Region @endif</th>
-                    <th>@if($emp->lang == 'fr') Pays @else Country @endif</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($subdivisions as $subdivision)
-                    <tr>
-                        <td>@if($emp->lang == 'fr') {{ $subdivision->labelfr }} @else {{ $subdivision->labeleng }} @endif</td>
-                        <td>
-                            @foreach($divisions as $division)
-                                @if($division->iddiv == $subdivision->iddiv)
-                                    @if($emp->lang == 'fr') {{ $division->labelfr }} @else {{ $division->labeleng }} @endif
-                                @endif
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-12">
+                        <table id="admin-data-table" class="table table-bordered table-striped table-hover table-responsive-xl">
+                            <thead>
+                            <tr>
+                                <th>@lang('label.label')</th>
+                                <th>@lang('label.division')</th>
+                                <th>@lang('label.region')</th>
+                                <th>@lang('label.country')</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($subdivisions as $subdivision)
+                                <tr>
+                                    <td>{{$subdivision->label}}</td>
+                                    <td>{{$subdivision->division}}</td>
+                                    <td>
+                                        @if($emp->lang === 'fr') {{ $subdivision->reg_fr }} @else {{ $subdivision->reg_en }} @endif
+                                    </td>
+                                    <td>
+                                        @if($emp->lang === 'fr') {{ $subdivision->cou_fr }} @else {{ $subdivision->cou_en }} @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-info bg-aqua btn-sm fa fa-edit" onclick="edit('{{$subdivision->idsub}}')"></button>
+                                        <button type="button" class="btn bg-red btn-sm delete fa fa-trash" onclick="remove('{{$subdivision->idsub}}')"></button>
+                                    </td>
+                                </tr>
                             @endforeach
-                        </td>
-                        <td>
-                            @foreach($regions as $region)
-                                @if($division->idregi == $region->idregi)
-                                    @if($emp->lang == 'fr') {{ $region->labelfr }} @else {{ $region->labeleng }} @endif
-                                @endif
-                            @endforeach
-                        </td>
-                        <td>
-                            @foreach($countries as $country)
-                                @if($country->idcountry == $region->idcountry)
-                                    @if($emp->lang == 'fr') {{ $country->labelfr }} @else {{ $country->labeleng }} @endif
-                                @endif
-                            @endforeach
-                        </td>
-                        <td>
-                            <button class="btn btn-info bg-aqua btn-sm" onclick="edit()">
-                                <i class="ion ion-edit"></i>&nbsp; @if($emp->lang == 'fr') Modifier @else
-                                    Edit @endif
-                            </button>
-                            <button class="btn bg-red btn-sm" data-toggle="modal" data-target="#delete"
-                                    onclick="setData('admin', 'subdivision', '{{ $subdivision->idsub }}')">
-                                <i class="ion ion-trash-b"></i>&nbsp; @if($emp->lang == 'fr') Effacer @else
-                                    Delete @endif
-                            </button>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
+                            </tbody>
+                        </table>
+                        <form action="{{route('admin/subdivision/delete')}}" method="post" role="form" id="delForm" style="display: none">
+                            {{ csrf_field() }}
+                            <input type="hidden" name="subdivision" id="subdivision" value="">
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+@stop
+
+@section('script')
+    <script>
+        /**
+         * Get the regions based on the country
+         */
+        $('#country').change(function (e) {
+            e.preventDefault();
+
+            if ($(this).val() !== null) {
+                $.ajax({
+                    url: "{{ url('getRegions') }}",
+                    method: 'get',
+                    data: {
+                        country: $('#country').val()
+                    },
+                    success: function (result) {
+                        let option = "<option></option>";
+                        $.each(result, function (i, region) {
+                            option += "<option " +
+                                "value=" + region.idregi + ">@if($emp->lang == 'fr') " + region.labelfr + " @else " + region.labeleng + " @endif</option>";
+                        });
+                        $('#region').html(option);
+                    }
+                });
+            }
+        });
+
+        /**
+         * Get the Divisions based on the Region
+         */
+        $('#region').change(function (e) {
+            e.preventDefault();
+
+            if ($(this).val() !== null) {
+                $.ajax({
+                    url: "{{ url('getDivisions') }}",
+                    method: 'get',
+                    data: {
+                        region: $('#region').val()
+                    },
+                    success: function (result) {
+                        let option = "<option></option>";
+                        $.each(result, function (i, division) {
+                            option += "<option value=" + division.iddiv + ">" + division.label + "</option>";
+                        });
+                        $('#division').html(option);
+                    }
+                });
+            }
+        });
+
+        $('#insertForm').click(function () {
+            in_out_form();
+            $('#newForm').show();
+        });
+
+        function edit(idsubdivision) {
+            $.ajax({
+                url: "{{ url('getSubDiv') }}",
+                method: 'get',
+                data: {
+                    id: idsubdivision
+                },
+                success: function (subdiv) {
+                    $('#title').text('@lang('label.edit') ' + subdiv.label);
+                    $('#idsubdivision').val(subdiv.idsub);
+
+
+                    $.ajax({
+                        url: "{{ url('getDivision') }}",
+                        method: 'get',
+                        data: {
+                            id: subdiv.division
+                        },
+                        success: function (division) {
+                            $('#region').val(division.region).select2();
+
+                            $.ajax({
+                                url: "{{ url('getRegion') }}",
+                                method: 'get',
+                                data: {
+                                    id: division.region
+                                },
+                                success: function (region) {
+                                    $('#country').val(region.country).select2();
+                                }
+                            });
+                        }
+                    });
+                    $('#division').val(subdiv.division).select2();
+                    $('#label').val(subdiv.label);
+
+                    $('#save').replaceWith('<button type="submit" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit"></button>');
+
+                    $('#newForm').show();
+                }
+            });
+        }
+
+        function remove(idsubdivision) {
+            swal({
+                icon: 'warning',
+                title: '@lang('sidebar.subdivision')',
+                text: '@lang('confirm.subdivdel_text')',
+                closeOnClickOutside: false,
+                allowOutsideClick: false,
+                closeOnEsc: false,
+                buttons: {
+                    cancel: {
+                        text: ' @lang('confirm.no')',
+                        value: false,
+                        visible: true,
+                        closeModal: true,
+                        className: "btn bg-red fa fa-close"
+                    },
+                    confirm: {
+                        text: ' @lang('confirm.yes')',
+                        value: true,
+                        visible: true,
+                        closeModal: true,
+                        className: "btn bg-green fa fa-check"
+                    },
+                },
+            }).then(function (isConfirm) {
+                if (isConfirm) {
+                    $('#subdivision').val(idsubdivision);
+                    $('#delForm').submit();
+                }
+            });
+        }
+
+        $('#exitForm').click(function () {
+            $('#newForm').hide();
+            in_out_form();
+        });
+
+        function submitForm() {
+            let text = '@lang('confirm.subdivsave_text')';
+            if ($('#idsubdivision').val() !== '') {
+                text = '@lang('confirm.subdivedit_text')';
+            }
+
+            mySwal('@lang('sidebar.subdiv')', text, '@lang('confirm.no')', '@lang('confirm.yes')', '#subForm');
+        }
+
+        function in_out_form() {
+            $('#title').text('@lang('label.newsub')');
+            $('#idsubdivision').val('');
+            $('#fillform :input').val('');
+            $('.select2').trigger('change');
+            $('#edit').replaceWith('<button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>');
+        }
+    </script>
 @stop

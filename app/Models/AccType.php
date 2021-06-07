@@ -2,64 +2,35 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class AccType extends Model
 {
-    private $idacctype;
+    protected $primaryKey = 'idacctype';
 
-    private $accabbr;
+    protected $table = 'acc_types';
 
-    private $labelfr;
+    protected $fillable = ['acc_types'];
 
-    private $labeleng;
-
-    private $updated_at;
-
-    private $created_at;
+    /**
+     * @param int $idacctype
+     * @return Builder|Model|object|null
+     */
+    public static function getAccType(int $idacctype)
+    {
+        return self::query()->where('idacctype', $idacctype)->first();
+    }
 
     /**
      * @param array $where
-     * @return Collection
+     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    private static function getData(array $where = []): Collection
+    public static function getAccTypes(array $where = null)
     {
-        if (!empty($where)) {
-            return DB::table('acc_types')->where($where)->get();
+        if ($where !== null) {
+            return self::query()->where($where)->orderBy('accabbr')->get();
         }
-        return DB::table('acc_types')->get();
-    }
-
-    /**
-     * @param array $data
-     * @return bool
-     */
-    private static function insertData(array $data): bool
-    {
-        DB::table('acc_types')->insert($data);
-        return true;
-    }
-
-    /**
-     * @param int $id
-     * @param array $data
-     * @return bool
-     */
-    private static function updateData(int $id, array $data): bool
-    {
-        DB::table('acc_types')->where('idacctype', $id)->update($data);
-        return true;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    private static function deleteData(int $id): bool
-    {
-        DB::table('acc_types')->where('idacctype', $id)->delete();
-        return true;
+        return self::query()->orderBy('accabbr')->get();
     }
 }

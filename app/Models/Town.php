@@ -8,56 +8,30 @@ use Illuminate\Support\Facades\DB;
 
 class Town extends Model
 {
-    private $idtown;
+    protected $table = 'towns';
 
-    private $label;
+    protected $primaryKey = 'idtown';
 
-    private $region;
-
-    private $updated_at;
-
-    private $created_at;
+    protected $fillable = ['towns'];
 
     /**
-     * @param array $data
-     * @return bool
+     * @param int $idtown
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    private static function insertData(array $data): bool
+    public static function getTown(int $idtown)
     {
-        DB::table('towns')->insert($data);
-        return true;
+        return self::query()->where('idtown', $idtown)->first();
     }
 
     /**
      * @param array $where
-     * @return Collection
+     * @return Branch[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    private static function getData(array $where = []): Collection
+    public static function getTowns(array $where = [])
     {
-        if (!empty($where)) {
-            return DB::table('towns')->where($where)->get();
+        if ($where !== null) {
+            return self::query()->where($where)->orderBy('label')->get();
         }
-        return DB::table('towns')->get();
-    }
-
-    /**
-     * @param int $id
-     * @param array $data
-     * @return bool
-     */
-    private static function updateData(int $id, array $data): bool
-    {
-        DB::table('towns')->where('idtown', $id)->update($data);
-        return true;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    private static function deleteData(int $id): bool
-    {
-        DB::table('towns')->where('idtown', $id)->delete();
-        return true;
+        return self::query()->orderBy('label')->get();
     }
 }

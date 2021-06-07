@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Omega;
 
 use App\Http\Controllers\Controller;
 use App\Models\AccDate;
+use App\Models\Account;
 use App\Models\Balance;
-use App\Models\Comakers;
-use App\Models\DemComakers;
+use App\Models\Comaker;
+use App\Models\DemComaker;
 use App\Models\DemLoan;
 use App\Models\DemMortgage;
 use App\Models\Installment;
@@ -15,6 +16,7 @@ use App\Models\LoanType;
 use App\Models\Mortgage;
 use App\Models\Operation;
 use App\Models\Writing;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -22,18 +24,6 @@ use Illuminate\Support\Facades\Session;
 
 class LoanApprovalController extends Controller
 {
-    public function index()
-    {
-        if (dateOpen()) {
-            $loans = DemLoan::getDemLoans();
-
-            return view('omega.pages.loan_approval', [
-                'loans' => $loans,
-            ]);
-        }
-        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
-    }
-
     public static function store()
     {
 //        dd(Request::all());
@@ -55,10 +45,11 @@ class LoanApprovalController extends Controller
         try {
             $last = Loan::getLast();
             if ($last !== null) {
-                $loanno += $last->loanno + 1;
+                $loanno = $last->loanno + 1;
             }
-            $demLoan = DemLoan::getloan($idloan);
-            $loanacc = LoanType::getLoanType($demLoan->loantype);
+            $demLoan = DemLoan::getLoan($idloan);
+            $loanType = LoanType::getLoanType($demLoan->loantype);
+            $writnumb = getWritNumb();
             $accdate = AccDate::getOpenAccDate();
             $opera1 = Operation::getByCode(19);
             $opera2 = Operation::getByCode(33);
@@ -67,9 +58,8 @@ class LoanApprovalController extends Controller
 
             $loan->loanno = $loanno;
             $loan->member = $demLoan->member;
-            $loan->memacc = $loanacc->memacc;
+            $loan->memacc = $loanType->transacc;
             $loan->amount = $amount;
-            $loan->annuity = trimOver(Request::input('annAmt'), ' ');
             $loan->vat = $demLoan->vat;
             $loan->amortype = $demLoan->amortype;
             $loan->periodicity = $demLoan->periodicity;
@@ -77,9 +67,9 @@ class LoanApprovalController extends Controller
             $loan->instdate1 = $demLoan->instdate1;
             $loan->nbrinst = $demLoan->nbrinst;
             $loan->intrate = $demLoan->intrate;
-            $loan->intamt = trimOver(Request::input('intAmt'), ' ');
             $loan->appdate = getsDate(now());
             $loan->demdate = getsDate($demLoan->created_at);
+            $loan->lastdate = $demLoan->instdate1;
             $loan->loanpur = $demLoan->loanpur;
             $loan->loantype = $demLoan->loantype;
             $loan->isforce = $demLoan->isforce;
@@ -91,19 +81,17 @@ class LoanApprovalController extends Controller
             $loan->save();
 
             if ($demLoan->guarantee === 'F') {
-                $demcoMakers = DemComakers::getComakers($idloan);
+                $demcoMakers = DemComaker::getComakers($idloan);
                 if ($demcoMakers->count() !== 0) {
                     foreach ($demcoMakers as $demcoMaker) {
-                        $coMaker = new Comakers();
+                        $coMaker = new Comaker();
                         $coMaker->loan = $loan->idloan;
                         $coMaker->member = $demcoMaker->member;
                         $coMaker->account = $demcoMaker->account;
-                        $coMaker->gauramt = $demcoMaker->guaramt;
+                        $coMaker->guaramt = $demcoMaker->guaramt;
                         $coMaker->save();
 
                         $demcoMaker->delete();
-//                        $demcoMaker->status = 'Ar';
-//                        $demcoMaker->update((array)$demcoMaker);
                     }
                 }
             }
@@ -126,25 +114,21 @@ class LoanApprovalController extends Controller
                         $mortgage->save();
 
                         $demMortgage->delete();
-//                        $demMortgage->status = 'Ar';
-//                        $demMortgage->update((array)$demMortgage);
                     }
                 }
             }
             if ($demLoan->guarantee === 'F&M') {
-                $demcoMakers = DemComakers::getComakers($idloan);
+                $demcoMakers = DemComaker::getComakers($idloan);
                 if ($demcoMakers->count() !== 0) {
                     foreach ($demcoMakers as $demcoMaker) {
-                        $coMaker = new Comakers();
+                        $coMaker = new Comaker();
                         $coMaker->loan = $loan->idloan;
                         $coMaker->member = $demcoMaker->member;
                         $coMaker->account = $demcoMaker->account;
-                        $coMaker->gauramt = $demcoMaker->guaramt;
+                        $coMaker->guaramt = $demcoMaker->guaramt;
                         $coMaker->save();
 
                         $demcoMaker->delete();
-//                        $demcoMaker->status = 'Ar';
-//                        $demcoMaker->update((array)$demcoMaker);
                     }
                 }
                 $mortgno = 1;
@@ -165,14 +149,12 @@ class LoanApprovalController extends Controller
                         $mortgage->save();
 
                         $demMortgage->delete();
-//                        $demMortgage->status = 'Ar';
-//                        $demMortgage->update((array)$demMortgage);
                     }
                 }
             }
 
             foreach ($nos as $key => $no) {
-                if ($no !== null) {
+                if (!empty($no) || ($no !== '0')) {
                     $install = new Installment();
                     $install->loan = $loan->idloan;
                     $install->installno = $no;
@@ -187,13 +169,12 @@ class LoanApprovalController extends Controller
                 }
             }
 
-            $writnumb1 = getWritNumb();
             /**
              * Setting up Loan
              */
             $writing = new Writing();
-            $writing->writnumb = $writnumb1;
-            $writing->account = $loanacc->loanacc;
+            $writing->writnumb = $writnumb;
+            $writing->account = $loanType->loanacc;
             $writing->operation = $opera1->idoper;
             $writing->debitamt = $amount;
             $writing->accdate = $accdate->idaccdate;
@@ -205,39 +186,9 @@ class LoanApprovalController extends Controller
             $writing->save();
 
             $writing = new Writing();
-            $writing->writnumb = $writnumb1;
-            $writing->account = $loanacc->transacc;
-            $writing->operation = $opera1->idoper;
-            $writing->creditamt = $amount;
-            $writing->accdate = $accdate->idaccdate;
-            $writing->employee = $emp->idemp;
-            $writing->network = $emp->network;
-            $writing->zone = $emp->zone;
-            $writing->institution = $emp->institution;
-            $writing->branch = $emp->branch;
-            $writing->save();
-
-            $writnumb2 = getWritNumb();
-            /**
-             * Disbursement of Loan
-             */
-            $writing = new Writing();
-            $writing->writnumb = $writnumb2;
-            $writing->account = $loanacc->transacc;
-            $writing->operation = $opera2->idoper;
-            $writing->debitamt = $amount;
-            $writing->accdate = $accdate->idaccdate;
-            $writing->employee = $emp->idemp;
-            $writing->network = $emp->network;
-            $writing->zone = $emp->zone;
-            $writing->institution = $emp->institution;
-            $writing->branch = $emp->branch;
-            $writing->save();
-
-            $writing = new Writing();
-            $writing->writnumb = $writnumb2;
-            $writing->aux = $loan->member;
-            $writing->account = $loanacc->memacc;
+            $writing->writnumb = $writnumb;
+            $writing->account = $loanType->transacc;
+            $writing->aux = $demLoan->member;
             $writing->operation = $opera2->idoper;
             $writing->creditamt = $amount;
             $writing->accdate = $accdate->idaccdate;
@@ -248,31 +199,41 @@ class LoanApprovalController extends Controller
             $writing->branch = $emp->branch;
             $writing->save();
 
-            $memBal = Balance::getMemAcc($demLoan->member, $loanacc->loanacc);
-
+            $memBal = Balance::getMemAcc($demLoan->member, $loanType->transacc);
             if ($memBal !== null) {
-                $memBal->initbal += $amount;
+                $memBal->available += $amount;
                 $memBal->update((array)$memBal);
             } else {
                 $balance = new Balance();
                 $balance->member = $demLoan->member;
-                $balance->account = $loanacc->loanacc;
+                $balance->account = $loanType->transacc;
                 $balance->operation = $opera2->idoper;
-                $balance->initbal = $amount;
+                $balance->available = $amount;
                 $balance->save();
             }
 
             $demLoan->delete();
-//            $demLoan->status = 'Ar';
-//            $demLoan->update((array)$demLoan);
 
             DB::commit();
             return Redirect::back()->with('success', trans('alertSuccess.lappsave'));
-        } catch
-        (\Exception $ex) {
+        } catch (Exception $ex) {
             dd($ex);
             DB::rollBack();
             return Redirect::back()->with('danger', trans('alertDanger.lappsave'));
         }
+    }
+
+    public function index()
+    {
+        if (dateOpen()) {
+            $loans = DemLoan::getDemLoans();
+            $accounts = Account::getAccounts();
+
+            return view('omega.pages.loan_approval', [
+                'loans' => $loans,
+                'accounts' => $accounts
+            ]);
+        }
+        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
 }

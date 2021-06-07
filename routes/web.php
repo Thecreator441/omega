@@ -12,159 +12,77 @@
 */
 
 use App\Models\Account;
+use App\Models\AccPlan;
+use App\Models\AccPlanCommis;
+use App\Models\AccType;
 use App\Models\Balance;
 use App\Models\Bank;
+use App\Models\Branch;
 use App\Models\Cash;
+use App\Models\Cash_Diff;
 use App\Models\Check;
 use App\Models\CheckAccAmt;
+use App\Models\Collect_Bal;
+use App\Models\Collect_Mem;
+use App\Models\Collect_Mem_Benef;
+use App\Models\Collector;
+use App\Models\Collector_Com;
+use App\Models\Comaker;
+use App\Models\Commis_Pay;
+use App\Models\Country;
+use App\Models\Currency;
+use App\Models\DemComaker;
 use App\Models\DemLoan;
+use App\Models\Device;
 use App\Models\Division;
+use App\Models\Employee;
+use App\Models\Installment;
+use App\Models\Institution;
 use App\Models\Loan;
 use App\Models\LoanPur;
 use App\Models\LoanType;
 use App\Models\Member;
+use App\Models\Menu_Level_I;
+use App\Models\Menu_Level_II;
+use App\Models\Menu_Level_III;
+use App\Models\Menu_Level_IV;
 use App\Models\Money;
+use App\Models\Mortgage;
+use App\Models\Network;
 use App\Models\Operation;
+use App\Models\Privilege;
+use App\Models\Priv_Menu;
+use App\Models\Profession;
+use App\Models\RegBenef;
 use App\Models\Region;
 use App\Models\Register;
 use App\Models\SubDiv;
 use App\Models\Town;
+use App\Models\User;
+use App\Models\ValWriting;
 use App\Models\Writing;
+use App\Models\Zone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
-Route::get('tamco', static function () {
-    return view('omega.login');
-});
-Route::get('/', static function () {
-    return view('omega.login');
-});
+
+Route::get('/', 'Omega\LoginController@index')->name('/');
 Route::post('login', 'Omega\LoginController@login')->name('login');
+Route::get('to_home', 'Omega\LoginController@toHome')->name('to_home');
 Route::get('lang/{lang}', 'Omega\LoginController@changeLanguage')->name('lang/{lang}');
+Route::get('edit_logout', 'Omega\LoginController@editLogout')->name('edit_logout');
 Route::post('logout', 'Omega\LoginController@logout')->name('logout');
-/**
- * Administrator Routes
- */
-Route::prefix('admin')->group(static function () {
-    Route::get('/', function () {
-        $users = DB::table('privileges')->get();
-        return view('admin.index', ['users' => $users]);
-    })->name('admin');
+Route::get('change_logout', 'Omega\LoginController@changeLogout')->name('change_logout');
 
-//    Currency Controller
-    Route::prefix('currency')->group(function () {
-        Route::get('/', 'Admin\CurrencyController@index')->name('admin/currency');
-        Route::post('store', 'Admin\CurrencyController@store')->name('admin/currency/store');
-        Route::post('delete', 'Admin\CurrencyController@delete')->name('admin/currency/delete');
-        Route::post('getData', 'Admin\CurrencyController@getData')->name('admin/currency/getData');
-    });
-
-//    Money Controller
-    Route::prefix('money')->group(function () {
-        Route::get('/', 'Admin\MoneyController@index')->name('admin/money');
-        Route::post('store', 'Admin\MoneyController@store')->name('admin/money/store');
-        Route::post('delete', 'Admin\MoneyController@delete')->name('admin/money/delete');
-    });
-
-//     Country Country
-    Route::prefix('country')->group(function () {
-        Route::get('/', 'Admin\CountryController@index')->name('admin/country');
-        Route::post('store', 'Admin\CountryController@store')->name('admin/country/store');
-        Route::post('delete', 'Admin\CountryController@delete')->name('admin/country/delete');
-    });
-
-//    Region Controller
-    Route::prefix('region')->group(function () {
-        Route::get('/', 'Admin\RegionController@index')->name('admin/region');
-        Route::post('store', 'Admin\RegionController@store')->name('admin/region/store');
-        Route::post('delete', 'Admin\RegionController@delete')->name('admin/region/delete');
-    });
-
-//    Division Controller
-    Route::prefix('division')->group(function () {
-        Route::get('/', 'Admin\DivisionController@index')->name('admin/division');
-        Route::post('store', 'Admin\DivisionController@store')->name('admin/division/store');
-        Route::post('delete', 'Admin\DivisionController@delete')->name('admin/division/delete');
-    });
-
-//    SubDivision Controller
-    Route::prefix('subdivision')->group(function () {
-        Route::get('/', 'Admin\SubDivisionController@index')->name('admin/subdivision');
-        Route::post('store', 'Admin\SubDivisionController@store')->name('admin/subdivision/store');
-        Route::post('delete', 'Admin\SubDivisionController@delete')->name('admin/subdivision/delete');
-    });
-
-    //    SubDivision Controller
-    Route::prefix('subdivision')->group(function () {
-        Route::get('/', 'Admin\SubDivisionController@index')->name('admin/subdivision');
-        Route::post('store', 'Admin\SubDivisionController@store')->name('admin/subdivision/store');
-        Route::post('delete', 'Admin\SubDivisionController@delete')->name('admin/subdivision/delete');
-    });
-
-    //  Network Controller
-    Route::prefix('network')->group(function () {
-        Route::get('/', 'Admin\NetworkController@index')->name('admin/network');
-        Route::post('store', 'Admin\NetworkController@store')->name('admin/network/store');
-        Route::post('delete', 'Admin\NetworkController@delete')->name('admin/network/delete');
-    });
-
-    //  Zone Controller
-    Route::prefix('zone')->group(function () {
-        Route::get('/', 'Admin\ZoneController@index')->name('admin/zone');
-        Route::post('store', 'Admin\ZoneController@store')->name('admin/zone/store');
-        Route::post('delete', 'Admin\ZoneController@delete')->name('admin/zone/delete');
-    });
-
-    //  Institution Controller
-    Route::prefix('institution')->group(function () {
-        Route::get('/', 'Admin\InstitutionController@index')->name('admin/institution');
-        Route::post('store', 'Admin\InstitutionController@store')->name('admin/institution/store');
-        Route::post('delete', 'Admin\InstitutionController@delete')->name('admin/institution/delete');
-    });
-
-    //  Privilege Controller
-    Route::prefix('privilege')->group(function () {
-        Route::get('/', 'Admin\PrivilegeController@index')->name('admin/privilege');
-        Route::post('store', 'Admin\PrivilegeController@store')->name('admin/privilege/store');
-        Route::post('delete', 'Admin\PrivilegeController@delete')->name('admin/privilege/delete');
-    });
-
-    //  Branch Controller
-    Route::prefix('branch')->group(function () {
-        Route::get('/', 'Admin\BranchController@index')->name('admin/branch');
-        Route::post('store', 'Admin\BranchController@store')->name('admin/branch/store');
-        Route::post('delete', 'Admin\BranchController@delete')->name('admin/branch/delete');
-    });
-
-    //  Account Type Controller
-    Route::prefix('acctype')->group(function () {
-        Route::get('/', 'Admin\AccTypeController@index')->name('admin/acctype');
-        Route::post('store', 'Admin\AccTypeController@store')->name('admin/acctype/store');
-        Route::post('delete', 'Admin\AccTypeController@delete')->name('admin/acctype/delete');
-    });
-
-    //  Loan Type Controller
-    Route::prefix('loantype')->group(function () {
-        Route::get('/', 'Admin\LoanTypeController@index')->name('admin/loantype');
-        Route::post('store', 'Admin\LoanTypeController@store')->name('admin/loantype/store');
-        Route::post('delete', 'Admin\LoanTypeController@delete')->name('admin/loantype/delete');
-    });
-
-    //  Loan Purpose Controller
-    Route::prefix('loanpur')->group(function () {
-        Route::get('/', 'Admin\LoanPurController@index')->name('admin/loanpur');
-        Route::post('store', 'Admin\LoanPurController@store')->name('admin/loanpur/store');
-        Route::post('delete', 'Admin\LoanPurController@delete')->name('admin/loanpur/delete');
-    });
-
-});
 
 /***************************************************************
  ***************************************************************
  ********************** OMEGA DASHBOARD ************************
  ***************************************************************
  ***************************************************************/
+
 
 /***************************
  ********** HOME **********
@@ -173,6 +91,7 @@ Route::prefix('admin')->group(static function () {
 Route::get('omega', static function () {
     return view('omega.index');
 })->name('omega');
+
 
 /***************************
  ********** FILES **********
@@ -202,6 +121,7 @@ Route::get('account_file', static function () {
     ]);
 });
 
+
 /****************************
  ******** OPERATIONS ********
  ****************************/
@@ -218,18 +138,10 @@ Route::prefix('membership')->group(static function () {
     Route::post('store', 'Omega\MembershipController@store')->name('membership/store');
 });
 
-//    Cash Open, Close and Reopen
+//    Cash Open
 Route::prefix('cash_open')->group(static function () {
     Route::get('/', 'Omega\CashOpenController@index')->name('cash_open');
     Route::post('store', 'Omega\CashOpenController@store')->name('cash_open/store');
-});
-Route::prefix('cash_close')->group(static function () {
-    Route::get('/', 'Omega\CashCloseController@index')->name('cash_close');
-    Route::post('store', 'Omega\CashCloseController@store')->name('cash_close/store');
-});
-Route::prefix('cash_reopen')->group(static function () {
-    Route::get('/', 'Omega\CashReopenController@index')->name('cash_reopen');
-    Route::post('store', 'Omega\CashReopenController@store')->name('cash_reopen/store');
 });
 
 //    Cash In and Out
@@ -282,7 +194,7 @@ Route::prefix('other_check_out')->group(static function () {
     Route::post('store', 'Omega\OtherCheckOutController@store')->name('other_check_out/store');
 });
 
-//     Replenishment Bank and Fund Emission
+//     Funds and Cash to Cash Replenishment, Funds Emission
 Route::prefix('replenish')->group(static function () {
     Route::get('/', 'Omega\ReplenishController@index')->name('replenish');
     Route::post('store', 'Omega\ReplenishController@store')->name('replenish/store');
@@ -290,6 +202,10 @@ Route::prefix('replenish')->group(static function () {
 Route::prefix('emission')->group(static function () {
     Route::get('/', 'Omega\EmissionController@index')->name('emission');
     Route::post('store', 'Omega\EmissionController@store')->name('emission/store');
+});
+Route::prefix('cashtocash')->group(static function () {
+    Route::get('/', 'Omega\CashToCashController@index')->name('cashtocash');
+    Route::post('store', 'Omega\CashToCashController@store')->name('cashtocash/store');
 });
 
 //    Cash Situation, Reconciliation and Regularisation
@@ -310,24 +226,6 @@ Route::prefix('cash_regularisation')->group(static function () {
 Route::prefix('money_exchange')->group(static function () {
     Route::get('/', 'Omega\MoneyExchangeController@index')->name('money_exchange');
     Route::post('store', 'Omega\MoneyExchangeController@store')->name('money_exchange/store');
-});
-
-//    Collector Cash In and Out
-Route::prefix('collector')->group(static function () {
-    Route::prefix('cash_in')->group(static function () {
-        Route::get('/', 'Omega\CashInController@index')->name('collector/cash_in');
-        Route::post('store', 'Omega\CashInController@store')->name('collector/cash_in/store');
-    });
-    Route::prefix('cash_out')->group(static function () {
-        Route::get('/', 'Omega\CashOutController@index')->name('collector/cash_out');
-        Route::post('store', 'Omega\CashOutController@store')->name('collector/cash_out/store');
-    });
-});
-
-//    Collector Report
-Route::prefix('collector_report')->group(static function () {
-    Route::get('/', 'Omega\CollectorReportController@index')->name('collector_report');
-    Route::post('store', 'Omega\CollectorReportController@store')->name('collector_report/store');
 });
 
 //    General, Auxiliary Account and Account FIle
@@ -440,6 +338,12 @@ Route::prefix('transaction')->group(static function () {
     Route::post('store', 'Omega\TransactionController@store')->name('transaction/store');
 });
 
+//    Commission Sharing
+Route::prefix('com_sharing')->group(static function () {
+    Route::get('/', 'Omega\ComSharingController@index')->name('com_sharing');
+    Route::post('store', 'Omega\ComSharingController@store')->name('com_sharing/store');
+});
+
 //    Share Savings and Loans Insurance
 Route::prefix('share_savings_ins')->group(static function () {
     Route::get('/', 'Omega\ShareSavingsInsController@index')->name('share_savings_ins');
@@ -505,6 +409,7 @@ Route::prefix('assets_con_sheet')->group(static function () {
     Route::get('/', 'Omega\AssetsConSheetController@index')->name('assets_con_sheet');
     Route::post('store', 'Omega\AssetsConSheetController@store')->name('assets_con_sheet/store');
 });
+
 
 /****************************************
  *************** LOANS ******************
@@ -623,8 +528,53 @@ Route::prefix('acc_inc_exp')->group(static function () {
 
 
 /****************************************
+ *************** REPORTS ****************
+ ****************************************/
+
+//    Employee, Collector and Customer Lists
+Route::prefix('employee_list')->group(static function () {
+    Route::get('/', 'Omega\EmployeeListController@index')->name('employee_list');
+});
+Route::prefix('collect_list')->group(static function () {
+    Route::get('/', 'Omega\CollectListController@index')->name('collect_list');
+});
+Route::prefix('client_list')->group(static function () {
+    Route::get('/', 'Omega\ClientListController@index')->name('client_list');
+});
+
+//    Collector and Client Situation
+Route::prefix('collect_sit')->group(static function () {
+    Route::get('/', 'Omega\CollectSitController@index')->name('collect_sit');
+});
+Route::prefix('client_sit')->group(static function () {
+    Route::get('/', 'Omega\ClientSitController@index')->name('client_sit');
+});
+
+//    Collector and Client Account
+Route::prefix('collect_acc')->group(static function () {
+    Route::get('/', 'Omega\CollectAccController@index')->name('collect_acc');
+});
+Route::prefix('client_acc')->group(static function () {
+    Route::get('/', 'Omega\ClientAccController@index')->name('client_acc');
+});
+
+//    Collect, Commission and Shared Commission Report
+Route::prefix('collect_report')->group(static function () {
+    Route::get('/', 'Omega\CollectReportController@index')->name('collect_report');
+});
+Route::prefix('commis_report')->group(static function () {
+    Route::get('/', 'Omega\CommisReportController@index')->name('commis_report');
+});
+Route::prefix('shared_commis_report')->group(static function () {
+    Route::get('/', 'Omega\SharedCommisReportController@index')->name('shared_commis_report');
+});
+
+
+/****************************************
  ******** BUSINESS INTELLIGENCE *********
  ****************************************/
+
+
 
 
 /****************************************
@@ -657,39 +607,6 @@ Route::prefix('int_dist')->group(static function () {
 Route::prefix('inc-exp_init')->group(static function () {
     Route::get('/', 'Omega\IncExpInitController@index')->name('inc-exp_init');
     Route::post('store', 'Omega\IncExpInitController@store')->name('inc-exp_init/store');
-});
-
-
-/****************************************
- ************** SETTINGS ****************
- ****************************************/
-
-//    Cash Setting
-Route::prefix('cash')->group(static function () {
-    Route::get('/', 'Omega\CashController@index')->name('cash');
-    Route::post('store', 'Omega\CashController@store')->name('cash/store');
-    Route::post('delete', 'Omega\CashController@delete')->name('cash/delete');
-});
-
-//    Membership Setting
-Route::prefix('mem_setting')->group(static function () {
-    Route::get('/', 'Omega\MemSettingController@index')->name('mem_setting');
-    Route::post('store', 'Omega\MemSettingController@store')->name('mem_setting/store');
-    Route::post('delete', 'Omega\MemSettingController@delete')->name('mem_setting/delete');
-});
-
-//    Operation
-Route::prefix('operation')->group(function () {
-    Route::get('/', 'Omega\OperationController@index')->name('operation');
-    Route::post('store', 'Omega\OperationController@store')->name('operation/store');
-    Route::post('delete', 'Omega\OperationController@delete')->name('operation/delete');
-});
-
-//    Bank
-Route::prefix('bank')->group(function () {
-    Route::get('/', 'Omega\BankController@index')->name('bank');
-    Route::post('store', 'Omega\BankController@store')->name('bank/store');
-    Route::post('delete', 'Omega\BankController@delete')->name('bank/delete');
 });
 
 
@@ -751,32 +668,412 @@ Route::prefix('prev_delinquency')->group(static function () {
 
 
 /****************************************
- *************** EXIT *******************
+ ************** SETTINGS ****************
  ****************************************/
+
+//  Menu_Level_I
+Route::prefix('menu_level_1')->group(function () {
+    Route::get('/', 'Omega\MenuLevelIController@index')->name('menu_level_1');
+    Route::post('store', 'Omega\MenuLevelIController@store')->name('menu_level_1/store');
+    Route::post('delete', 'Omega\MenuLevelIController@delete')->name('menu_level_1/delete');
+});
+
+//  Menu_Level_II
+Route::prefix('menu_level_2')->group(function () {
+    Route::get('/', 'Omega\MenuLevelIIController@index')->name('menu_level_2');
+    Route::post('store', 'Omega\MenuLevelIIController@store')->name('menu_level_2/store');
+    Route::post('delete', 'Omega\MenuLevelIIController@delete')->name('menu_level_2/delete');
+});
+
+//  Menu_Level_III
+Route::prefix('menu_level_3')->group(function () {
+    Route::get('/', 'Omega\MenuLevelIIIController@index')->name('menu_level_3');
+    Route::post('store', 'Omega\MenuLevelIIIController@store')->name('menu_level_3/store');
+    Route::post('delete', 'Omega\MenuLevelIIIController@delete')->name('menu_level_3/delete');
+});
+
+//  Menu_Level_IV
+Route::prefix('menu_level_4')->group(function () {
+    Route::get('/', 'Omega\MenuLevelIVController@index')->name('menu_level_4');
+    Route::post('store', 'Omega\MenuLevelIVController@store')->name('menu_level_4/store');
+    Route::post('delete', 'Omega\MenuLevelIVController@delete')->name('menu_level_4/delete');
+});
+
+//  Privilege
+Route::prefix('privilege')->group(function () {
+    Route::get('/', 'Omega\PrivilegeController@index')->name('privilege');
+    Route::post('store', 'Omega\PrivilegeController@store')->name('privilege/store');
+    Route::post('delete', 'Omega\PrivilegeController@delete')->name('privilege/delete');
+});
+
+//  Devices
+Route::prefix('device')->group(function () {
+    Route::get('/', 'Omega\DeviceController@index')->name('device');
+    Route::post('store', 'Omega\DeviceController@store')->name('device/store');
+    Route::post('blun', 'Omega\DeviceController@blun')->name('device/blun');
+    Route::post('delete', 'Omega\DeviceController@delete')->name('device/delete');
+});
+
+//  Currency
+Route::prefix('currency')->group(function () {
+    Route::get('/', 'Omega\CurrencyController@index')->name('currency');
+    Route::post('store', 'Omega\CurrencyController@store')->name('currency/store');
+    Route::post('delete', 'Omega\CurrencyController@delete')->name('currency/delete');
+});
+
+//  Money
+Route::prefix('money')->group(function () {
+    Route::get('/', 'Omega\MoneyController@index')->name('money');
+    Route::post('store', 'Omega\MoneyController@store')->name('money/store');
+    Route::post('delete', 'Omega\MoneyController@delete')->name('money/delete');
+});
+
+//  Country
+Route::prefix('country')->group(function () {
+    Route::get('/', 'Omega\CountryController@index')->name('country');
+    Route::post('store', 'Omega\CountryController@store')->name('country/store');
+    Route::post('delete', 'Omega\CountryController@delete')->name('country/delete');
+});
+
+//  Region
+Route::prefix('region')->group(function () {
+    Route::get('/', 'Omega\RegionController@index')->name('region');
+    Route::post('store', 'Omega\RegionController@store')->name('region/store');
+    Route::post('delete', 'Omega\RegionController@delete')->name('region/delete');
+});
+
+//  Division
+Route::prefix('division')->group(function () {
+    Route::get('/', 'Omega\DivisionController@index')->name('division');
+    Route::post('store', 'Omega\DivisionController@store')->name('division/store');
+    Route::post('delete', 'Omega\DivisionController@delete')->name('division/delete');
+});
+
+//    SubDivision
+Route::prefix('subdivision')->group(function () {
+    Route::get('/', 'Omega\SubDivisionController@index')->name('subdivision');
+    Route::post('store', 'Omega\SubDivisionController@store')->name('subdivision/store');
+    Route::post('delete', 'Omega\SubDivisionController@delete')->name('subdivision/delete');
+});
+
+//    Town
+Route::prefix('town')->group(function () {
+    Route::get('/', 'Omega\TownController@index')->name('town');
+    Route::post('store', 'Omega\TownController@store')->name('town/store');
+    Route::post('delete', 'Omega\TownController@delete')->name('town/delete');
+});
+
+//  Profession
+Route::prefix('profession')->group(function () {
+    Route::get('/', 'Omega\ProfessionController@index')->name('profession');
+    Route::post('store', 'Omega\ProfessionController@store')->name('profession/store');
+    Route::post('delete', 'Omega\ProfessionController@delete')->name('profession/delete');
+});
+
+//  Network
+Route::prefix('network')->group(function () {
+    Route::get('/', 'Omega\NetworkController@index')->name('network');
+    Route::post('store', 'Omega\NetworkController@store')->name('network/store');
+    Route::post('delete', 'Omega\NetworkController@delete')->name('network/delete');
+});
+
+//  Zone
+Route::prefix('zone')->group(function () {
+    Route::get('/', 'Omega\ZoneController@index')->name('zone');
+    Route::post('store', 'Omega\ZoneController@store')->name('zone/store');
+    Route::post('delete', 'Omega\ZoneController@delete')->name('zone/delete');
+});
+
+//  Institution
+Route::prefix('institution')->group(function () {
+    Route::get('/', 'Omega\InstitutionController@index')->name('institution');
+    Route::post('store', 'Omega\InstitutionController@store')->name('institution/store');
+    Route::post('delete', 'Omega\InstitutionController@delete')->name('institution/delete');
+});
+
+//  Branch
+Route::prefix('branch')->group(function () {
+    Route::get('/', 'Omega\BranchController@index')->name('branch');
+    Route::post('store', 'Omega\BranchController@store')->name('branch/store');
+    Route::post('delete', 'Omega\BranchController@delete')->name('branch/delete');
+});
+
+//  User
+Route::prefix('user')->group(function () {
+    Route::get('/', 'Omega\UserController@index')->name('user');
+    Route::post('reset', 'Omega\UserController@reset')->name('user/reset');
+    Route::post('blun', 'Omega\UserController@blun')->name('user/blun');
+    Route::post('store', 'Omega\UserController@store')->name('user/store');
+    Route::post('delete', 'Omega\UserController@delete')->name('user/delete');
+});
+
+//  Account Type
+Route::prefix('acctype')->group(function () {
+    Route::get('/', 'Omega\AccTypeController@index')->name('acctype');
+    Route::post('store', 'Omega\AccTypeController@store')->name('acctype/store');
+    Route::post('delete', 'Omega\AccTypeController@delete')->name('acctype/delete');
+});
+
+//  Operation
+Route::prefix('operation')->group(function () {
+    Route::get('/', 'Omega\OperationController@index')->name('operation');
+    Route::post('store', 'Omega\OperationController@store')->name('operation/store');
+    Route::post('delete', 'Omega\OperationController@delete')->name('operation/delete');
+});
+
+//  Cash Setting
+Route::prefix('cash')->group(static function () {
+    Route::get('/', 'Omega\CashController@index')->name('cash');
+    Route::post('store', 'Omega\CashController@store')->name('cash/store');
+    Route::post('delete', 'Omega\CashController@delete')->name('cash/delete');
+});
+
+//  Membership Setting
+Route::prefix('mem_setting')->group(static function () {
+    Route::get('/', 'Omega\MemSettingController@index')->name('mem_setting');
+    Route::post('store', 'Omega\MemSettingController@store')->name('mem_setting/store');
+    Route::post('delete', 'Omega\MemSettingController@delete')->name('mem_setting/delete');
+});
+
+//  Collector
+Route::prefix('collector')->group(function () {
+    Route::get('/', 'Omega\CollectorController@index')->name('collector');
+    Route::post('store', 'Omega\CollectorController@store')->name('collector/store');
+    Route::post('delete', 'Omega\CollectorController@delete')->name('collector/delete');
+});
+
+//  Bank
+Route::prefix('bank')->group(function () {
+    Route::get('/', 'Omega\BankController@index')->name('bank');
+    Route::post('store', 'Omega\BankController@store')->name('bank/store');
+    Route::post('delete', 'Omega\BankController@delete')->name('bank/delete');
+});
+
+//  Account Plan
+Route::prefix('acc_plan')->group(function () {
+    Route::get('/', 'Omega\AccPlanController@index')->name('acc_plan');
+    Route::post('store', 'Omega\AccPlanController@store')->name('acc_plan/store');
+    Route::post('delete', 'Omega\AccPlanController@delete')->name('acc_plan/delete');
+});
+
+//  Branch Param
+Route::prefix('branch_param')->group(function () {
+    Route::get('/', 'Omega\BranchParamController@index')->name('branch');
+    Route::post('store', 'Omega\BranchParamController@store')->name('branch/store');
+    Route::post('delete', 'Omega\BranchParamController@delete')->name('branch/delete');
+});
+
+//  Institution Param
+Route::prefix('institution_param')->group(function () {
+    Route::get('/', 'Omega\InstitutionParamController@index')->name('institution');
+    Route::post('store', 'Omega\InstitutionParamController@store')->name('institution/store');
+    Route::post('delete', 'Omega\InstitutionParamController@delete')->name('institution/delete');
+});
+
+//  Account Type
+Route::prefix('acctype')->group(function () {
+    Route::get('/', 'Omega\AccTypeController@index')->name('acctype');
+    Route::post('store', 'Omega\AccTypeController@store')->name('acctype/store');
+    Route::post('delete', 'Omega\AccTypeController@delete')->name('acctype/delete');
+});
+
+//  Loan Type
+Route::prefix('loantype')->group(function () {
+    Route::get('/', 'Omega\LoanTypeController@index')->name('loantype');
+    Route::post('store', 'Omega\LoanTypeController@store')->name('loantype/store');
+    Route::post('delete', 'Omega\LoanTypeController@delete')->name('loantype/delete');
+});
+
+//  Loan Purpose
+Route::prefix('loanpur')->group(function () {
+    Route::get('/', 'Omega\LoanPurController@index')->name('loanpur');
+    Route::post('store', 'Omega\LoanPurController@store')->name('loanpur/store');
+    Route::post('delete', 'Omega\LoanPurController@delete')->name('loanpur/delete');
+});
 
 
 /****************************************
  *********** AJAX EXECUTIONS ************
  ****************************************/
 
+//  Get AccPlan
+Route::get('getAccPlan', static function () {
+    return AccPlan::getAccPlan(Request::input('id'));
+});
+
+//  Get AccPlanCommis
+Route::get('getAccPlanCommis', static function () {
+    return AccPlanCommis::getAccPlanCommiss(['acc_plan' => Request::input('acc_plan')]);
+});
+
+//  GetMenu
+Route::get('getMenu', static function () {
+    $level = Request::input("level");
+    switch ($level) {
+        case 1:
+            return Menu_Level_I::getMenu(Request::input("id"));
+            break;
+        case 2:
+            return Menu_Level_II::getMenu(Request::input("id"));
+            break;
+        case 3:
+            return Menu_Level_III::getMenu(Request::input("id"));
+            break;
+        case 4:
+            return Menu_Level_IV::getMenu(Request::input("id"));
+            break;
+        default:
+            return null;
+            break;
+    }
+});
+
+//  GetPrevMenus
+Route::get('getPrevMenus', static function () {
+    $level = Request::input("level");
+    switch ($level) {
+        case 2:
+            return Menu_Level_II::getMenus(null, ['menu_1' => Request::input("id")]);
+            break;
+        case 3:
+            return Menu_Level_III::getMenus(null, ['menu_2' => Request::input("id")]);
+            break;
+        case 4:
+            return Menu_Level_IV::getMenus(null, ['menu_3' => Request::input("id")]);
+            break;
+        default:
+            return null;
+            break;
+    }
+});
+
+//  GetNextMenus
+Route::get('getNextMenus', static function () {
+    $level = Request::input("level");
+    switch ($level) {
+        case 1:
+            return Menu_Level_II::getMenus(null, ['menu_1' => Request::input("id")]);
+            break;
+        case 2:
+            return Menu_Level_III::getMenus(null, ['menu_2' => Request::input("id")]);
+            break;
+        case 3:
+            return Menu_Level_IV::getMenus(null, ['menu_3' => Request::input("id")]);
+            break;
+        default:
+            return null;
+            break;
+    }
+});
+
+//  getPrivMenusAside
+Route::get('getPrivMenusAside', static function () {
+    $level = Request::input("level");
+    $privi = Request::input("privilege");
+    $menu = Request::input("menu");
+
+    switch ($level) {
+        case 1:
+            return Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_1');
+            break;
+        case 2:
+            return Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_2');
+            break;
+        case 3:
+            return Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_3');
+            break;
+        case 4:
+            return Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_4');
+            break;
+        default:
+            return null;
+            break;
+    }
+});
+
+//      Get Currency
+Route::get('getCurrency', static function () {
+    return Currency::getCurrency(Request::input('id'));
+});
+
+//      Get Country
+Route::get('getCountry', static function () {
+    return Country::getCountry(Request::input('id'));
+});
+
+//      Get Profession
+Route::get('getProfession', static function () {
+    return Profession::getProfession(Request::input('id'));
+});
+
+//      Get Region
+Route::get('getRegion', static function () {
+    return Region::getRegion(Request::input('id'));
+});
+
+//      Get Division
+Route::get('getDivision', static function () {
+    return Division::getDivision(Request::input('id'));
+});
+
+//      Get SubDiv
+Route::get('getSubDiv', static function () {
+    return SubDiv::getSubDiv(Request::input('id'));
+});
+
+//      Get Town
+Route::get('getTown', static function () {
+    return Town::getTown(Request::input('id'));
+});
+
+//     Get Professions
+Route::get('getProfessions', static function () {
+    return Profession::getProfessions(Request::input('lang'));
+});
+
+//     Get Countries
+Route::get('getCountries', static function () {
+    return Country::getCountries(Request::input('lang'));
+});
+
 //     Get Regions
 Route::get('getRegions', static function () {
-    return Region::query()->where('country', Request::input('country'))->get();
+    $country = Request::input('country');
+
+    if ($country === null) {
+        return Region::getRegions(Request::input('lang'));
+    }
+    return Region::getRegions(Request::input('lang'), ['country' => $country]);
 });
 
 //     Get Divisions
 Route::get('getDivisions', static function () {
-    return Division::query()->where('region', Request::input('region'))->get();
+    $region = Request::input('region');
+
+    if ($region === null) {
+        return Division::getDivisions();
+    }
+    return Division::getDivisions(['region' => $region]);
 });
 
 //     Get SubDivisions
 Route::get('getSubDivs', static function () {
-    return SubDiv::query()->where('division', Request::input('division'))->get();
+    $division = Request::input('division');
+
+    if ($division === null) {
+        return SubDiv::getSubDivs();
+    }
+    return SubDiv::getSubDivs(['division' => $division]);
 });
 
 //     Get Towns
 Route::get('getTowns', static function () {
-    return Town::query()->where('subdivision', Request::input('subdivision'))->get();
+    $subdivision = Request::input('subdivision');
+
+    if ($subdivision === null) {
+        return Town::getTowns();
+    }
+    return Town::getTowns(['subdivision' => Request::input('subdivision')]);
 });
 
 //      Get Register
@@ -786,22 +1083,458 @@ Route::get('getRegister', static function () {
 
 //      Get Member
 Route::get('getMember', static function () {
+    $emp = Session::get('employee');
+
+    if ($emp->collector !== null) {
+        return Collect_Mem::getMember(Request::input('member'));
+    }
     return Member::getMember(Request::input('member'));
 });
 
 //      Get Register
-Route::get('getBank', static function () {
-    return Bank::getBank(Request::input('bank'));
+Route::get('getRegister', static function () {
+    return Register::getRegister(Request::input('register'));
+});
+
+//      getRegBenef
+Route::get('getRegBenef', static function () {
+    return RegBenef::getRegBenefs(Request::input('member'));
+});
+
+//      Get Customer
+Route::get('getCustomer', static function () {
+    return Collect_Mem::getMember(Request::input('member'));
+});
+
+//      getCollectMemBenef
+Route::get('getCollectMemBenef', static function () {
+    return Collect_Mem_Benef::getCollectMemBenefs(Request::input('member'));
+});
+
+//      Get Device
+Route::get('getDevice', static function () {
+    return Device::getDevice(Request::input('id'));
 });
 
 //      Get Moneys
 Route::get('getMoneys', static function () {
-    return Money::query()->where('idmoney', Request::input('money'))->get();
+    return Money::getMoneys(['idmoney' => Request::input('money')]);
+});
+
+//      Get Cash Description
+Route::get('getCash', static function () {
+    return Cash::getCash(Request::input('cash'));
+});
+
+//      Get Operation Description
+Route::get('getOperation', static function () {
+    return Operation::getOperation(Request::input('operation'));
+});
+
+//      Get Member Account
+Route::get('getMemAcc', static function () {
+    return Balance::getMemAcc(Request::input('member'), Request::input('account'));
+});
+
+//      Get Account Balance
+Route::get('getCollAccBalance', static function () {
+    return Collect_Bal::getMemBal(Request::input('member'));
+});
+
+//      Get Profile
+Route::get('getProfile', static function () {
+    $owner = Request::input('owner');
+
+    if ($owner === 'platform') {
+        return asset('storage/platforms/profiles/' . Request::input('file'));
+    }
+
+    if ($owner === 'employee') {
+        return asset('storage/employees/profiles/' . Request::input('file'));
+    }
+
+    if ($owner === 'device') {
+        return asset('storage/devices/profiles/' . Request::input('file'));
+    }
+});
+
+//      Get Signature
+Route::get('getSignature', static function () {
+    $owner = Request::input('owner');
+
+    if ($owner === 'platform') {
+        return asset('storage/platforms/signatures/' . Request::input('file'));
+    }
+
+    if ($owner === 'employee') {
+        return asset('storage/employees/signatures/' . Request::input('file'));
+    }
+});
+
+//      Get EmProf
+Route::get('getEmProf', static function () {
+    return asset('storage/emprofs/' . Request::input('file'));
+});
+
+//      Get Logo
+Route::get('getLogo', static function () {
+    return asset('storage/logos/' . Request::input('file'));
+});
+
+//      Get File
+Route::get('getFile', static function () {
+    return asset('storage/files/' . Request::input('file'));
+});
+
+//      Get Network
+Route::get('getNetwork', static function () {
+    return Network::getNetwork(Request::input('id'));
+});
+
+//      Get Zone
+Route::get('getZone', static function () {
+    return Zone::getZone(Request::input('id'));
+});
+
+//      Get Institution
+Route::get('getInstitution', static function () {
+    return Institution::getInstitution(Request::input('id'));
+});
+
+//      Get Zones
+Route::get('getZones', static function () {
+    return Zone::getZones(['network' => Request::input('network')]);
+});
+
+//      Get Account
+Route::get('getAccount', static function () {
+    return Account::getAccount(Request::input('id'));
+});
+
+//      Get Bank
+Route::get('getBank', static function () {
+    return Bank::getBank(Request::input('id'));
+});
+
+//      Get Banks
+Route::get('getBanks', static function () {
+    return Bank::getBanks(['banks.branch' => Request::input('branch')]);
+});
+
+//      Get Institutions
+Route::get('getInstitutions', static function () {
+    return Institution::getInstitutions(['zone' => Request::input('zone')]);
+});
+
+//      Get Branches
+Route::get('getBranches', static function () {
+    return Branch::getBranches(['institution' => Request::input('institution')]);
+});
+
+//      Get Branch
+Route::get('getBranch', static function () {
+    return Branch::getBranch(Request::input('id'));
+});
+
+//      Get Collector
+Route::get('getCollector', static function () {
+    return Collector::getCollector(Request::input('id'));
+});
+
+//      Get User
+Route::get('getUserInfos', static function () {
+    return User::getUserInfos(Request::input('id'));
+});
+
+//      Get CollectorsBy
+Route::get('getCollectorsBy', static function () {
+    return Collector::getCollectorsBy(['branch' => Request::input('branch')]);
+});
+
+//      Delete Account Date
+Route::get('delDate', static function () {
+    Session::forget('accdate');
+//    return Redirect::route('o-collect');
+});
+
+//      Get Privilege
+Route::get('getPrivilege', static function () {
+    return Privilege::getPrivilege(Request::input('priv'));
+});
+
+//      Get Account Type
+Route::get('getAccType', static function () {
+    return AccType::getAccType(Request::input('acctype'));
+});
+
+//      Get Filter Collectors
+Route::get('getFilterCollectors', static function () {
+    return Collector::getFilterCollectors(Request::input('institution'), Request::input('branch'));
+});
+
+//      Get Filter Collectors Balance
+Route::get('getFilterCollectBals', static function () {
+    return Collector::getFilterCollectBals(Request::input('institution'), Request::input('branch'), Request::input('month'));
+});
+
+//      Get Collector Balance
+Route::get('getCollectBal', static function () {
+    return Collector_Com::getCollectBal(Request::input('collector'));
+});
+
+//      Get Filter Customers
+Route::get('getFilterCustomers', static function () {
+    return Collect_Mem::getFilterCustomers(Request::input('institution'), Request::input('branch'), Request::input('collector'));
+});
+
+//      Get Filter Customer Balances
+Route::get('getFilterCustBals', static function () {
+    return Collect_Mem::getFilterCustBals(Request::input('institution'), Request::input('branch'), Request::input('collector'));
+});
+
+//      Get Filter Employees
+Route::get('getFilterEmployees', static function () {
+    return Employee::getFilterEmployees(Request::input('institution'), Request::input('branch'));
+});
+
+//      Get Cash Differences
+Route::get('getCashDiffs', static function () {
+    $cash_diffs = Cash_Diff::getCashDiffs(['cash' => Request::input('collector'), 'diff_status' => 'N']);
+
+    foreach ($cash_diffs as $cash_diff) {
+        $account = Account::getAccount($cash_diff->account);
+
+        $cash_diff->accnumb = $account->accnumb;
+        $cash_diff->acc_fr = $account->labelfr;
+        $cash_diff->acc_en = $account->labeleng;
+    }
+
+    return $cash_diffs;
+});
+
+//      Get Cash Difference
+Route::get('getCashDiff', static function () {
+    return Cash_Diff::getCashDiff(Request::input('id'));
+});
+
+//      Get Collectors Cash
+Route::get('getCollectorsCash', static function () {
+    return Collector::getCollectorsCash(['collectors.branch' => Request::input('branch')]);
+});
+
+//      Get Filter Collectors
+Route::get('getFilterSharings', static function () {
+    return Collector::getFilterSharings(Request::input('branch'), Request::input('month'));
+});
+
+//      Get Filter Collects
+Route::get('getFilterReports', static function () {
+    return Writing::getFilterReports(Request::input('zone'), Request::input('institution'), Request::input('branch'), Request::input('collector'), Request::input('date1'), Request::input('date2'));
+});
+
+//      get Member Balance
+Route::get('getMemBal', static function () {
+    return Collect_Mem::getMemBal(Request::input('member'));
+});
+
+
+// O-COLLECT MOBILE
+
+//Route::post('loginMob', 'O_Collect\LoginController@loginMob');
+
+//      getMembersByColl
+Route::get('getMembersByColl', static function () {
+    return Collect_Mem::getCollectMemsByColl(Request::input('collector'));
+});
+
+//      getJournalByColl
+Route::get('getJournalsByColl', static function () {
+    return Writing::getJournalsByColl(Request::input('network'), Request::input('collector'), Request::input('idcollect'), '\'' . Request::input('language') . '\'');
+});
+
+//      getTransactionsByColl
+Route::get('getTransactionsByColl', static function () {
+    return ValWriting::getTransactionsByColl(Request::input('network'), Request::input('collector'), Request::input('idcollect'), '\'' . Request::input('language') . '\'');
+});
+
+//      getFilterTransactionsByColl
+Route::get('getFilterTransactionsByColl', static function () {
+    return ValWriting::getFilterTransactionsByColl(Request::input('network'), Request::input('collector'), Request::input('idcollect'), '\'' . Request::input('language') . '\'', Request::input('date1'), Request::input('date2'));
+});
+
+//      getMonth
+Route::get('getMonth', static function () {
+    $month = null;
+
+    $pay = Commis_Pay::getMonth(Request::input('branch'));
+
+    if ($pay !== null && $pay->month !== 12) {
+        $month = $pay->month + 1;
+    }
+
+    return $month;
+});
+
+//      getCollectBalsByColl
+Route::get('getCollectBalsByColl', static function () {
+    return Collector::getCollectBalsByColl(Request::input('institution'), Request::input('collector'));
+});
+
+//      getFilterCollectBalsByColl
+Route::get('getFilterCollectBalsByColl', static function () {
+    return Collector::getFilterCollectBalsByColl(Request::input('institution'), Request::input('collector'), Request::input('month'));
+});
+
+//      getCustBalsByColl
+Route::get('getCustBalsByColl', static function () {
+    return Collect_Bal::getCustBalsByColl(Request::input('collector'));
+});
+
+//      getReportsByColl
+Route::get('getReportsByColl', static function () {
+    return Writing::getReportsByColl(Request::input('institution'), Request::input('collector'));
+});
+
+//      getFilterReportsByColl
+Route::get('getFilterReportsByColl', static function () {
+    $from = Request::input('date1');
+    $to = Request::input('date2');
+
+    if ($from === null && $to === null) {
+        return Writing::getReportsByColl(Request::input('institution'), Request::input('collector'));
+    }
+    return Writing::getFilterReportsByColl(Request::input('institution'), Request::input('collector'), $from, $to);
+});
+
+//      getOpenCashConditions
+Route::get('getOpenCashConditions', static function () {
+    $error = 'null';
+
+    if (dateOpen(Request::input('branch'))) {
+        if (cashOpen(Request::input('collector'))) {
+            $error = trans('alertDanger.alrcash');
+        }
+    } else {
+        $error = trans('alertDanger.opdate');
+    }
+
+    return $error;
+});
+
+//      getCashConditions
+Route::get('getCashConditions', static function () {
+    $error = 'null';
+
+    if (dateOpen(Request::input('branch'))) {
+        if (!cashOpen(Request::input('collector'))) {
+            $error = trans('alertDanger.opencash');
+        }
+    } else {
+        $error = trans('alertDanger.opdate');
+    }
+
+    return $error;
+});
+
+//      getEmptyCashConditions
+Route::get('getEmptyCashConditions', static function () {
+    $error = 'null';
+
+    if (dateOpen(Request::input('branch'))) {
+        if (!cashOpen(Request::input('collector'))) {
+            $error = trans('alertDanger.opencash');
+        }
+
+        if ((int)cashEmpty(Request::input('collector')) <= 10000) {
+            $error = trans('alertDanger.emptycash');
+        }
+    } else {
+        $error = trans('alertDanger.opdate');
+    }
+
+    return $error;
+});
+
+//      getCashMoneys
+Route::get('getCashMoneys', static function () {
+    $cash = Cash::getEmpCash(Request::input('collector'));
+    $moneys = Money::getMoneysMob(Request::input('country'));
+
+    foreach ($moneys as $money) {
+        $money->billet = money($cash->{'mon' . $money->idmoney});
+        $money->total = money($money->value * $cash->{'mon' . $money->idmoney});
+        $money->value = money($money->value);
+    }
+
+    return $moneys;
+});
+
+//      getDashboardCount
+Route::get('getDashboardCount', static function () {
+    $customers = Collect_Mem::getCollectMems(Request::input('collector'))->count();
+    $cash = Cash::getSumBillet(Cash::getEmpCash(Request::input('user'))->idcash)->total;
+
+    return [
+        'customers' => $customers,
+        'cash' => \money($cash)
+    ];
+});
+
+//      getCustomers
+Route::get('getCustomers', static function () {
+    return Collect_Mem::getCollectMems(Request::input('collector'));
+});
+
+//      Registration
+Route::get('registration/store', 'O_Collect\RegistrationController@store');
+
+//      Till Opening
+Route::get('till_opening/store', 'O_Collect\CashOpenController@store');
+
+//      Till In
+Route::get('cash_in/store', 'O_Collect\CashInController@store');
+
+//      Till Out
+Route::get('cash_out/store', 'O_Collect\CashOutController@store');
+
+//      Money Exchange
+Route::get('money_exchange/store', 'O_Collect\MoneyExchangeController@store');
+
+//      GetCustomerBalance
+Route::get('getCustomerBalance', static function () {
+    $customer = Collect_Bal::getCustomerBalance(Request::input('customer'));
+
+    $ava = (int)$customer->available;
+    $evebal = (int)$customer->evebal;
+    if ($ava === 0) {
+        $ava = $evebal;
+    }
+
+    $customer->ava = \money($ava);
+
+    return $customer;
+//    return ['data' => $customer];
+});
+
+//      getFilterCustStatements
+Route::get('getFilterCustStatements', static function () {
+    $from = Request::input('date1');
+    $to = Request::input('date2');
+
+    if ($from === null && $to === null) {
+        return Writing::getCustStatements(Request::input('customer'), Request::input('language'));
+    }
+    return Writing::getFilterCustStatements(Request::input('customer'), Request::input('language'), $from, $to);
 });
 
 //      Get Account Description
 Route::get('getAccount', static function () {
-    return Account::getAccount(['idaccount' => Request::input('account')]);
+    return Account::getAccount(Request::input('id'));
+});
+
+//      Get Accounts
+Route::get('getAccounts', static function () {
+    return Account::getAccounts();
 });
 
 //      Get Account Chart
@@ -814,9 +1547,14 @@ Route::get('getLoan', static function () {
     return Loan::getLoan(Request::input('loan'));
 });
 
+//      Get tLoans()
+Route::get('getLoansMember', static function () {
+    return Loan::getLoansMember();
+});
+
 //      Get Demand Loan
 Route::get('getMemLoans', static function () {
-    return Loan::getLoans(['member' => Request::input('member')]);
+    return Loan::getMemLoans(['member' => Request::input('member')]);
 });
 
 //      Get Loan
@@ -839,9 +1577,14 @@ Route::get('getLoanType', static function () {
     return LoanType::getLoanType(Request::input('ltype'));
 });
 
+//      Get Loan Types
+Route::get('getLoanTypes', static function () {
+    return LoanType::getLoanTypes();
+});
+
 //      Get Loan Pur
 Route::get('getLoanPur', static function () {
-    return LoanPur::getLoanPur(Request::input('lpur'));
+    return LoanPur::getLoanPur(Request::input('loanpur'));
 });
 
 //      Get Cash Description
@@ -849,13 +1592,27 @@ Route::get('getCash', static function () {
     return Cash::getCash(Request::input('cash'));
 });
 
-//      Get Operation Description
+//      Get Operation
 Route::get('getOperation', static function () {
     return Operation::getOperation(Request::input('operation'));
 });
 
+//      Get Member Account
+Route::get('getMemAcc', static function () {
+    return Balance::getMemAcc(Request::input('member'), Request::input('account'));
+});
+
 //      Get Account Balance
 Route::get('getAccBalance', static function () {
+    if (\request()->ajax()) {
+        return Collect_Bal::getMemBal(Request::input('member'));
+    }
+
+    $emp = Session::get('employee');
+
+    if ($emp->collector !== null) {
+        return Collect_Bal::getMemBal(Request::input('member'));
+    }
     return Balance::getMemAccBal(Request::input('member'));
 });
 
@@ -892,4 +1649,65 @@ Route::get('getCheckAccs', static function () {
 //      Get Checks Account Description
 Route::get('getOtherCheckAccs', static function () {
     return CheckAccAmt::getOtherCheckAccAmts(['checkno' => Request::input('check')]);
+});
+
+//      Get Loan Installments Description
+Route::get('getInstalls', static function () {
+    return Installment::getInstalls(Request::input('loan'));
+});
+
+//      Get Comakers
+Route::get('getComakers', static function () {
+    return Comaker::getComakers(['loan' => Request::input('loan')]);
+});
+
+//      Get Member Comakers
+Route::get('getMemComakers', static function () {
+    return Comaker::getComakers(['member' => Request::input('member')]);
+});
+
+//      Get Member Demand Comakers
+Route::get('getMemDemComakers', static function () {
+    return DemComaker::getDemComakers(['member' => Request::input('member')]);
+});
+
+//      Get BlockAcc
+Route::get('getBlockAcc', static function () {
+    return Comaker::getBlockAcc();
+});
+
+//      Get Provision Loan
+Route::get('getProvLoans', static function () {
+    return Loan::getProvLoans(Request::input('ltype'), Request::input('employee'));
+});
+
+//      Get Comakers
+Route::get('getMortgages', static function () {
+    return Mortgage::getMortgages(Request::input('loan'));
+});
+
+//  Get Filter Member Accounts
+Route::get('getFilterMemAccs', static function () {
+    return Balance::getFilterMemAccs(Request::input('member'), Request::input('date'));
+});
+
+//  Get Filter Member Loans
+Route::get('getFilterMemLoans', static function () {
+    return Loan::getFilterMemLoans(Request::input('member'), Request::input('date'));
+});
+
+//  Get Member Situation
+Route::get('getMemSituation', static function () {
+    $balances = Balance::getFilterMemAccs(Request::input('member'), Request::input('date'));
+    $loans = Loan::getFilterMemLoans(Request::input('member'), Request::input('date'));
+
+    return [
+        'balances' => $balances,
+        'loans' => $loans
+    ];
+});
+
+//  Get Journals
+Route::get('getJournals', static function () {
+    return Writing::getJournals(Request::input('state'), Request::input('user'));
 });

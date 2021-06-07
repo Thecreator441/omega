@@ -46,32 +46,36 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof \Illuminate\Session\TokenMismatchException) {
+            return redirect('/');
+        }
+
         if ($this->isHttpException($exception)) {
+//            return $this->renderHttpException($exception);
             switch ($exception->getStatusCode()) {
-                // Method Not Allowed
-                case '305':
-                    return $this->renderHttpException($exception);
-                    break;
-                // Not Found
-                case '404':
-                    return $this->renderHttpException($exception);
-                    break;
-                // Page Expired
+//                // Method Not Allowed
+//                case '305':
+//                    return $this->renderHttpException($exception);
+//                    break;
+//                // Not Found
+//                case '404':
+//                    return $this->renderHttpException($exception);
+//                    break;
+//                // Page Expired
                 case '419':
-                    return $this->renderHttpException($exception);
+//                    return $this->renderHttpException($exception);
+                    return redirect('/');
                     break;
-                // Internal Server Error
+//                // Internal Server Error
                 case '500':
-                    return $this->renderHttpException($exception);
+//                    return $this->renderHttpException($exception);
+                    return redirect('/');
                     break;
                 default:
                     return $this->renderHttpException($exception);
                     break;
             }
-        } else {
-            return parent::render($request, $exception);
         }
-
+        return parent::render($request, $exception);
     }
 }
-

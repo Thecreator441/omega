@@ -1,9 +1,37 @@
-﻿$(document).ready(function () {
+﻿// $(document).ajaxSend(function () {
+//     $('body').preloader();
+// });
+// $(document).ajaxComplete(function () {
+//     $('body').preloader('remove');
+// });
+
+(function () {
+    "use strict";
+
+    window.addEventListener("load", function () {
+        let forms = document.getElementsByClassName("needs-validation");
+
+        let validator = Array.prototype.filter.call(forms, function (form) {
+            form.addEventListener("submit", function (event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    submitForm();
+                }
+            }, false);
+        });
+    }, false);
+})();
+
+$(document).ready(function () {
     // Initialise the MDBootstrap API
     $.material.init();
 
     //Initialize Select2 Elements
-    $('.select2').select2();
+    $('select').select2();
 
     // Resolve conflict in jQuery UI tooltip with Bootstrap tooltip
     $.widget.bridge('uibutton', $.ui.button);
@@ -15,69 +43,89 @@
         }, 5000);
     });
 
-    //iCheck for checkbox and radio inputs
-    //Square red color scheme for iCheck
-    // $('input[type="checkbox"].square-red, input[type="radio"].square-red').iCheck({
-    //     checkboxClass: 'icheckbox_square-red',
-    //     radioClass: 'iradio_square-red'
-    // });
-    //Square green color scheme for iCheck
-    // $('input[type="checkbox"].square-green, input[type="radio"].square-green').iCheck({
-    //     checkboxClass: 'icheckbox_square-green',
-    //     radioClass: 'iradio_square-green'
-    // });
-    //Square blue color scheme for iCheck
-    // $('input[type="checkbox"].square-blue, input[type="radio"].square-blue').iCheck({
-    //     checkboxClass: 'icheckbox_square-blue',
-    //     radioClass: 'iradio_square-blue'
-    // });
-    //Square yellow color scheme for iCheck
-    // $('input[type="checkbox"].square-yellow, input[type="radio"].square-yellow').iCheck({
-    //     checkboxClass: 'icheckbox_square-yellow',
-    //     radioClass: 'iradio_square-yellow'
-    // });
-
-    // Datatable initialisation
-    $('#bootstrap-data-table, #bootstrap-data-tables').DataTable({
-        scrollX: true,
-        scrollY: '75vh',
-        scrollCollapse: true,
-        paging: false,
-        responsive: true,
-        ordering: false
-    });
-
-    // Datatable initialisation
-    $('#simul-data-table, #simul-data-table2').DataTable({
-        scrollX: true,
-        scrollY: '75vh',
-        scrollCollapse: true,
-        searching: false,
-        paging: false,
-        paginate: false,
-        responsive: true,
-        ordering: false,
-    });
-
     $('form').attr('autocomplete', 'off');
+    // $('form').sisyphus();
+
+    $("#phone1, #phone2, #phonecode, #isocode, #code, #inst_com, #col_com, #plat_com, #part_com, #plancode, #per_rate, #cnpsnumb, #tax_rate, #login_attempt, #block_duration, #inactive_duration").prop("type", "number");
+    $(".bene_reg, .limit").prop('type', 'number');
+    $("input[type='number']").prop("min", "0");
+    $("#per_rate, #tax_rate").prop("step", "0.01");
+
+    $("input[type='number']").prop("oninput", "validity.valid ? this.save = value : value = this.save;");
+    $("#per_rate").prop("oninput", "this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\\..*)\\./g, '$1');");
+
+    $(".limit, .bene_reg, #per_rate, #tax_rate, #inst_com, #col_com, #plat_com, #part_com").prop("max", "100");
+
+    $("input[type='date']").prop("data-date", "");
+    $("input[type='date']").prop("data-date-format", "dd/mm/yyyy");
 });
 
-$(document).on('input', 'input[type="text"]', function () {
+$(document).on("input", "input[type='text'], #name", function () {
     $(this).val($(this).val().toUpperCase());
 });
 
-$('#home, .home').click(function () {
-    location.assign('/omega');
+$(document).on("input", "#dev_model", function () {
+    $(this).val($(this).val().toLowerCase());
 });
 
-// Change Address ?
-$('#change_addr, #interval, #by_sex').click(function () {
-    if ($(this).is(":checked")) {
-        $('#changeAddr').css('display', 'block');
-    } else {
-        $('#changeAddr').css('display', 'none');
-    }
+$('#home, .home').on('click', function () {
+    $('#homePage').trigger('submit');
 });
+
+$('td .fa-edit').on('click', function () {
+    location.href = "#page-top";
+});
+
+function mySwal(title, text, no, yes, formUrl, icon = 'info') {
+    swal({
+        icon: icon,
+        title: title,
+        text: text,
+        closeOnClickOutside: false,
+        allowOutsideClick: false,
+        closeOnEsc: false,
+        buttons: {
+            cancel: {
+                text: " " + no,
+                value: false,
+                visible: true,
+                closeModal: true,
+                className: "btn bg-red fa fa-close"
+            },
+            confirm: {
+                text: " " + yes,
+                value: true,
+                visible: true,
+                closeModal: true,
+                className: "btn bg-green fa fa-check"
+            },
+        },
+    }).then(function (isConfirm) {
+        if (isConfirm) {
+            $(formUrl).submit();
+        }
+    });
+}
+
+function myOSwal(title, text, icon = 'info') {
+    swal({
+        icon: icon,
+        title: title,
+        text: text,
+        closeOnClickOutside: false,
+        allowOutsideClick: false,
+        closeOnEsc: false,
+        buttons: {
+            confirm: {
+                text: "OK",
+                value: true,
+                visible: true,
+                closeModal: true,
+                className: "btn bg-blue"
+            },
+        },
+    });
+}
 
 /**
  *
@@ -97,9 +145,10 @@ function trimOver(text, type) {
  * @param number
  * @returns {*}
  */
-function money(number) {
+function money(number, type = ',') {
     let amount = accounting.formatNumber(number);
-    return trimOver(amount, ',');
+
+    return trimOver(amount, type);
 }
 
 /**
@@ -122,18 +171,17 @@ function toWord(number, lang) {
  * @param type
  * @returns {string|*}
  */
-function pad(text, size, type = 'left') {
-    let length;
-    length = text.toString().length;
+function pad(text, size = 2, type = 'left') {
+    let length = text.toString().length;
+    let output = '';
 
     if (type === 'left') {
-        let output = '';
         for (let i = 0; i < (size - length); i++) {
             output += '0';
         }
-        return output + "" + text;
+        return output + '' + text;
     } else {
-        let output = text;
+        output = text;
         for (let i = 0; i < (size - length); i++) {
             output += '0';
         }
@@ -147,7 +195,18 @@ function pad(text, size, type = 'left') {
  * @returns {string}
  */
 function userDate(userDate) {
-    return Date.parse(userDate).toString('dd/MM/yyyy');
+    let date = new Date(userDate);
+    return Date.parse(date).toString('dd/MM/yyyy');
+}
+
+/**
+ *
+ * @param sysDate
+ * @returns {string}
+ */
+function sysDate(sysDate) {
+    let date = new Date(sysDate);
+    return Date.parse(date).toString('yyyy-MM-dd');
 }
 
 /**
@@ -161,11 +220,29 @@ function formDate(days) {
     return Date.parse(date).toString('yyyy-MM-dd');
 }
 
+/**
+ * Used to get Data
+ * @param url
+ * @returns {Promise<any>}
+ */
+async function getData(url) {
+    const response = await fetch('/' + url);
+    return response.json();
+}
+
 $.fn.verifNumber = function () {
-    return this.bind("input paste", function () {
+    return this.bind("input paste keyup", function () {
         setTimeout($.proxy(function () {
             this.val(this.val().replace(/[^0-9]/g, ''));
         }, $(this)), 0);
+    });
+};
+
+$.fn.number = function () {
+    return this.bind("input paste keyup", function () {
+        if (isNaN(this.val())) {
+            return false;
+        }
     });
 };
 
@@ -176,3 +253,31 @@ $.fn.verifTax = function () {
         }, $(this)), 0);
     });
 };
+
+/**
+ * Sends a request to the specified url from a form. This will change the window location.
+ * @param {string} path the path to send the post request to
+ * @param {object} params the parameters to add to the url
+ * @param {string} [method=post] the method to use on the form
+ */
+function post(path, params, method = 'post') {
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    const form = document.createElement('form');
+    form.method = method;
+    form.action = path;
+
+    for (const key in params) {
+        if (params.hasOwnProperty(key)) {
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = key;
+            hiddenField.value = params[key];
+
+            form.appendChild(hiddenField);
+        }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}

@@ -9,13 +9,15 @@ if ($emp->lang == 'fr')
 @section('title', trans('sidebar.report'))
 
 @section('content')
-
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.report') </h3>
         </div>
+{{--        <div class="box-header">--}}
+{{--            <div class="box-tools">--}}
+{{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('check_report/store') }}" method="POST" id="cheRegForm" role="form">
                 {{ csrf_field() }}
@@ -152,7 +154,6 @@ if ($emp->lang == 'fr')
             </form>
         </div>
     </div>
-
 @stop
 
 @section('script')

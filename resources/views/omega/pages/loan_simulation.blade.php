@@ -11,11 +11,14 @@ if ($emp->lang == 'fr')
 
 @section('content')
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.simul') </h3>
         </div>
+        {{--        <div class="box-header">--}}
+        {{--            <div class="box-tools">--}}
+        {{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+        {{--            </div>--}}
+        {{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('loan_simulation/store') }}" method="POST" role="form">
                 {{ csrf_field() }}
@@ -281,11 +284,7 @@ if ($emp->lang == 'fr')
                         date = date.addDays(7 * (i - 1));
                     } else if (period === 'B') {
                         date = date.addDays(15 * (i - 1));
-                    }
-                    // else if (period === 'F') {
-                    //     date = date.addMonths(i - 1);
-                    // }
-                    else if (period === 'M') {
+                    } else if (period === 'M') {
                         date = date.addMonths(i - 1);
                     } else if (period === 'T') {
                         date = date.addMonths(3 * (i - 1));

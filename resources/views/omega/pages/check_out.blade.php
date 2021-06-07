@@ -11,11 +11,14 @@ if ($emp->lang == 'fr')
 
 @section('content')
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.checkout') </h3>
         </div>
+{{--        <div class="box-header">--}}
+{{--            <div class="box-tools">--}}
+{{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('check_out/store') }}" method="post" role="form" id="cheoutForm">
                 {{ csrf_field() }}
@@ -101,13 +104,13 @@ if ($emp->lang == 'fr')
                     <table
                         class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
                         <thead>
-                        <tr class="bg-purples">
-                            <th>@lang('label.account')</th>
-                            <th style="width: 20%">@lang('label.entitle')</th>
+                        <tr class="text-bold">
+                            <th class="cout">@lang('label.account')</th>
+                            <th style="width: 25%">@lang('label.entitle')</th>
                             <th>@lang('label.opera')</th>
-                            <th>@lang('label.available')</th>
-                            <th>@lang('label.amount')</th>
-                            <th>@lang('label.fees')</th>
+                            <th class="cout">@lang('label.available')</th>
+                            <th class="cout">@lang('label.amount')</th>
+                            <th class="cout">@lang('label.fees')</th>
                         </tr>
                         </thead>
                         <tbody id="mem_table">
@@ -150,68 +153,53 @@ if ($emp->lang == 'fr')
                     } else {
                         $('#mem_name').val(member.name + ' ' + member.surname);
                     }
-                    $('#nic').val(member.nic);
-                    $('#pic').attr('src', member.pic);
-                    $('#sign').attr('src', member.signature);
 
-                    $.ajax({
-                        url: "{{ url('getAccBalance') }}",
-                        method: 'get',
-                        data: {member: member.idmember},
-                        success: function (accounts) {
-                            let ordLine = '';
-                            $.each(accounts, function (i, account) {
-                                if (account.accabbr === 'O') {
-                                    let available;
-                                    let initbal = parseInt(account.initbal);
-                                    let evebal = parseInt(account.evebal);
+                    async function memAccs() {
+                        const coms = await getData('getMemComakers?member=' + member.idmember);
+                        const demComs = await getData('getMemDemComakers?member=' + member.idmember);
+                        const accBals = await getData('getAccBalance?member=' + member.idmember);
 
-                                    let debit = $.parseJSON(
-                                        $.ajax({
-                                            url: "{{ url('getMemDebit') }}",
-                                            method: 'get',
-                                            data: {
-                                                member: member.idmember,
-                                                account: account.account,
-                                            },
-                                            dataType: 'json',
-                                            async: false
-                                        }).responseText
-                                    );
+                        let block = 0;
+                        let acc = 0;
+                        let memAccLine = '';
 
-                                    let credit = $.parseJSON(
-                                        $.ajax({
-                                            url: "{{ url('getMemCredit') }}",
-                                            method: 'get',
-                                            data: {
-                                                member: member.idmember,
-                                                account: account.account,
-                                            },
-                                            dataType: 'json',
-                                            async: false
-                                        }).responseText
-                                    );
+                        $.each(coms, function (i, com) {
+                            block += (parseInt(com.guaramt) - parseInt(com.paidguar));
+                            acc = com.account;
+                        });
 
-                                    if (evebal === 0) {
-                                        available = -initbal + (debit - credit);
-                                    } else {
-                                        available = -evebal + (debit - credit);
-                                    }
+                        $.each(demComs, function (i, demCom) {
+                            block += (parseInt(demCom.guaramt) - parseInt(demCom.paidguar));
+                            acc = demCom.account;
+                        });
 
-                                    ordLine += "<tr>" +
-                                        "<td><input type='hidden' name='accounts[]' value='" + account.account + "'>" + account.accnumb + "</td>" +
-                                        "<td>@if ($emp->lang == 'fr')" + account.labelfr + " @else " + account.labeleng + "@endif</td>" +
-                                        "<td><input type='hidden' name='operations[]' value='" + account.operation + "'>" +
-                                        "@if ($emp->lang == 'fr') RETRAIT CHÈQUE " + account.operfr + " @else CHECK OUT " + account.opereng + "@endif</td>" +
-                                        "<td class='text-right'>" + money(Math.abs(available)) + "</td>" +
-                                        "<td><input type='text' class='amount' name='amounts[]'></td>" +
-                                        "<td><input type='text' class='fee' name='fees[]'></td>" +
-                                        "</tr>";
-                                    $('#mem_table').html(ordLine);
+                        $.each(accBals, function (i, accBal) {
+                            let ava = parseInt(accBal.available);
+                            let evebal = parseInt(accBal.evebal);
+                            if (ava === 0) {
+                                ava = evebal;
+                            }
+
+                            if (accBal.accabbr === 'O' || accBal.accabbr === 'E') {
+                                memAccLine += '<tr>' +
+                                    '<td class="cout"><input type="hidden" name="accounts[]" value="' + accBal.account + '">' + accBal.accnumb + '</td>' +
+                                    '<td style="width: 25%">@if ($emp->lang == 'fr')' + accBal.labelfr + ' @else ' + accBal.labeleng + '@endif</td>' +
+                                    '<td><input type="hidden" name="operations[]" value="' + accBal.operation + '">' +
+                                    '@if ($emp->lang == 'fr')' + accBal.debtfr + ' @else ' + accBal.debteng + '@endif</td>';
+                                if (accBal.account === acc) {
+                                    memAccLine += '<td class="text-right cout text-bold">' + money(ava - block) + '</td>';
+                                } else {
+                                    memAccLine += '<td class="text-right cout text-bold">' + money(ava) + '</td>';
                                 }
-                            });
-                        }
-                    });
+                                memAccLine += '<td class="cout"><input type="text" class="amount" name="amounts[]"></td>' +
+                                    '<td class="cout"><input type="text" class="fee" name="fees[]"></td>' +
+                                    '</tr>';
+                            }
+                        });
+                        $('#mem_table').html(memAccLine);
+                    }
+
+                    memAccs();
                 }
             });
         });

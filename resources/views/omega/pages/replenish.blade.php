@@ -1,81 +1,75 @@
 <?php
 $emp = Session::get('employee');
 
-if ($emp->lang == 'fr') {
+if ($emp->lang == 'fr')
     App::setLocale('fr');
-    $title = 'Réception de Fonds';
-} else {
-    $title = 'Replenishment';
-}
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', $title)
+@section('title', trans('sidebar.repfund'))
 
 @section('content')
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.repfund') </h3>
         </div>
         <div class="box-body">
             <form action="{{ url('replenish/store') }}" method="post" role="form" id="recFundsForm">
                 {{ csrf_field() }}
                 <div class="box-header with-border">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="cash" class="col-md-3 control-label">@lang('label.cash')</label>
-                                <div class="col-md-9">
-                                    <input type="text" name="cash" id="cash" class="form-control" disabled
-                                           value="{{$cash->cashcode}} :@if ($emp->lang == 'fr') {{$cash->labelfr}} @else {{$cash->labeleng}} @endif">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="cashto" class="col-md-4 control-label">@lang('label.cashto')</label>
-                                <div class="col-md-8">
-                                    <select name="cashto" id="cashto" class="form-control select2">
-                                        <option value=""></option>
-                                        @foreach($cashes as $cashe)
-                                            @if ($cashe->idcash !== $cash->idcash)
-                                                @if ($cashe->cashcode !== 'PC')
-                                                    @if ($cashe->cashcode !== 'CP')
-                                                        <option
-                                                            value="{{$cashe->idcash}}">{{$cashe->cashcode}}
-                                                            : @if ($emp->lang == 'fr') {{$cashe->labelfr}} @else {{$cashe->labeleng}} @endif
-                                                        </option>
-                                                    @endif
-                                                @endif
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="opera" class="col-md-3 control-label">@lang('label.opera')</label>
-                                <div class="col-md-9">
-                                    @foreach ($operas as $opera)
-                                        @if ($opera->opercode == 6)
-                                            <input type="text" class="form-control" disabled
-                                                   value="{{pad($opera->opercode, 3)}} : @if ($emp->lang == 'fr') {{$opera->labelfr}}@else {{$opera->labeleng}} @endif">
-                                        @endif
-                                    @endforeach
-                                </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="cash" class="col-md-3 control-label">@lang('label.cash')</label>
+                            <div class="col-md-9">
+                                <input type="text" name="cash" id="cash" class="form-control" disabled
+                                       value="{{$cash->cashcode}} :@if ($emp->lang == 'fr') {{$cash->labelfr}} @else {{$cash->labeleng}} @endif">
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="cashto" class="col-md-4 control-label">@lang('label.cashto')</label>
+                            <div class="col-md-8">
+                                <select name="cashto" id="cashto" class="form-control select2">
+                                    <option value=""></option>
+                                    @foreach($cashes as $cashe)
+                                        @if ($cashe->idcash !== $cash->idcash)
+                                            @if ($cashe->cashcode !== 'PC')
+                                                @if ($cashe->cashcode !== 'CP')
+                                                    <option
+                                                        value="{{$cashe->idcash}}">{{$cashe->cashcode}}
+                                                        : @if ($emp->lang == 'fr') {{$cashe->labelfr}} @else {{$cashe->labeleng}} @endif
+                                                    </option>
+                                                @endif
+                                            @endif
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-col-md-1"></div>
+                    {{--                        <div class="col-md-4">--}}
+                    {{--                            <div class="form-group">--}}
+                    {{--                                <label for="opera" class="col-md-3 control-label">@lang('label.opera')</label>--}}
+                    {{--                                <div class="col-md-9">--}}
+                    {{--                                    @foreach ($operas as $opera)--}}
+                    {{--                                        @if ($opera->opercode == 6)--}}
+                    {{--                                            <input type="text" class="form-control select2" disabled--}}
+                    {{--                                                   value="{{pad($opera->opercode, 3)}} : @if ($emp->lang == 'fr') {{$opera->labelfr}}@else {{$opera->labeleng}} @endif">--}}
+                    {{--                                        @endif--}}
+                    {{--                                    @endforeach--}}
+                    {{--                                </div>--}}
+                    {{--                            </div>--}}
+                    {{--                        </div>--}}
                 </div>
 
                 <div class="col-md-12">
                     <table id="tableInput"
                            class="table table-striped table-hover table-condensed table-bordered table-responsive">
-                        <caption class="text-blue">@lang('label.break')</caption>
+                        <caption class="text-blue text-bold h4"><b>@lang('label.break')</b></caption>
                         <thead>
                         <tr class="text-blue">
                             <th>@lang('label.value')</th>
@@ -93,7 +87,7 @@ if ($emp->lang == 'fr') {
                                     <td id="bil">{{money($money->value)}}</td>
                                     <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
                                     <td id="mon{{$money->idmoney}}">{{money($cash->{'mon'.$money->idmoney}) }}</td>
-                                    <td style="width: 10%;">
+                                    <td class="cin">
                                         <input type="text" name="{{$money->moncode}}" id="{{$money->moncode}}"
                                                oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum', '#{{$money->moncode}}Word')">
                                     </td>
@@ -170,36 +164,11 @@ if ($emp->lang == 'fr') {
         $('#save').click(function () {
             let cash = parseInt($('#cashto').val());
             let tot = parseInt(trimOver($('#totbil').val(), null));
-            alert('Cash = ' + cash + '\nAmount = ' + tot);
-            if (!isNaN(cash) && !isNaN(tot)) {
-                swal({
-                        title: '@lang('confirm.recfund_header')',
-                        text: '@lang('confirm.recfund_text')',
-                        type: 'info',
-                        showCancelButton: true,
-                        cancelButtonClass: 'bg-red',
-                        confirmButtonClass: 'bg-green',
-                        confirmButtonText: '@lang('confirm.yes')',
-                        cancelButtonText: '@lang('confirm.no')',
-                        closeOnConfirm: true,
-                        closeOnCancel: true
-                    },
-                    function (isConfirm) {
-                        if (isConfirm) {
-                            $('#recFundsForm').submit();
-                        }
-                    }
-                );
+
+            if (cash !== '' && !isNaN(tot) && tot !== 0) {
+                mySwal('@lang('sidebar.repfund')', '@lang('confirm.repfund_text')', '@lang('confirm.no')', '@lang('confirm.yes')', '#recFundsForm');
             } else {
-                swal({
-                        title: '@lang('confirm.recfund_header')',
-                        text: '@lang('confirm.recfunderror_text')',
-                        type: 'error',
-                        confirmButtonClass: 'bg-blue',
-                        confirmButtonText: 'OK',
-                        closeOnConfirm: true,
-                    }
-                );
+                myOSwal('@lang('sidebar.repfund')', '@lang('confirm.repfunderror_text')', 'error');
             }
         })
     </script>

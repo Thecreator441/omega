@@ -18,7 +18,8 @@ class AccTypeController extends Controller
     {
         $acctype = [
             'labelfr' => Request::input('labelfr'),
-            'labeleng' => Request::input('labeleng')
+            'labeleng' => Request::input('labeleng'),
+            'created_at' => now()
         ];
         if (AccType::insertData($acctype)) {
             return Redirect::back()->with('success', 'Account Type Successfully Saved');

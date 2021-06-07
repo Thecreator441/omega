@@ -10,13 +10,15 @@ if ($emp->lang == 'fr')
 @section('title', trans('sidebar.other_sort'))
 
 @section('content')
-
     <div class="box">
-        <div class="box-header">
-            <div class="box-tools">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+        <div class="box-header with-border">
+            <h3 class="box-title text-bold"> @lang('sidebar.other_sort') </h3>
         </div>
+{{--        <div class="box-header">--}}
+{{--            <div class="box-tools">--}}
+{{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('other_check_sort/store') }}" method="post" role="form" id="checkSortForm">
                 {{ csrf_field() }}

@@ -5,41 +5,83 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Country;
 use App\Models\Currency;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
 
 class CountryController extends Controller
 {
     public function index()
     {
-        $countries = Country::getData();
-        $currencies = Currency::getData();
+        $countries = Country::getCountries();
+        $currencies = Currency::getCurrencies();
 
-        return view('admin.pages.country')->with(['countries' => $countries, 'currencies' => $currencies]);
+        foreach ($countries as $country) {
+            $currency = Currency::getCurrency($country->currency);
+
+            $country->currency = $currency->label;
+            $country->cur_format = $currency->format;
+        }
+
+        return view('admin.pages.country', compact('countries', 'currencies'));
     }
 
     public function store()
     {
-        $country = [
-            'labelfr' => Request::input('labelfr'),
-            'labeleng' => Request::input('labeleng'),
-            'isocode' => Request::input('isocode'),
-            'phonecode' => Request::input('phonecode'),
-            'idcurrency' => Request::input('currency')
-        ];
+        DB::beginTransaction();
+        try {
+            $idcountry = Request::input('idcountry');
+            $country = null;
 
-        if (Currency::insertData($country)) {
-            return Redirect::back()->with('success', 'Country Successfully Saved');
+            if ($idcountry === null) {
+                $country = new Country();
+            } else {
+                $country = Country::getCountry($idcountry);
+            }
+
+            $country->labelfr = Request::input('labelfr');
+            $country->labeleng = Request::input('labeleng');
+            $country->code = Request::input('code');
+            $country->iso = Request::input('iso');
+            $country->iso3 = Request::input('iso3');
+            $country->phonecode = Request::input('phonecode');
+            $country->currency = Request::input('currency');
+
+            if ($idcountry === null) {
+                $country->save();
+            } else {
+                $country->update((array)$country);
+            }
+
+            DB::commit();
+            if ($idcountry === null) {
+                return Redirect::back()->with('success', trans('alertSuccess.counsave'));
+            }
+            return Redirect::back()->with('success', trans('alertSuccess.counedit'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            if ($idcountry === null) {
+                return Redirect::back()->with('danger', trans('alertDanger.counsave'));
+            }
+            return Redirect::back()->with('danger', trans('alertDanger.counedit'));
         }
-        return Redirect::back()->with('danger', 'Country not Saved');
     }
 
-    public function delete(Request $request): \Illuminate\Http\RedirectResponse
+    public function delete(): \Illuminate\Http\RedirectResponse
     {
-        if (Country::deleteData($request->id)) {
-            return Redirect::back()->with('success', 'Country successfully Deleted');
+        $idcountry = Request::input('country');
+
+        DB::beginTransaction();
+        try {
+            Country::getCountry($idcountry)->delete();
+
+            DB::commit();
+            return Redirect::back()->with('success', trans('alertSuccess.coundel'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            dd($ex);
+            return Redirect::back()->with('danger', trans('alertDanger.coundel'));
         }
-        return Redirect::back()->with('danger', 'Country not Delete');
     }
 }

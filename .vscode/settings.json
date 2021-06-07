@@ -1,0 +1,20 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "database": "omegamfi",
+            "username": "root",
+            "name": "MySQL WorkBench",
+            "password": ""
+        }
+    ],
+    "open-php-html-js-in-browser.customHost": "localhost:8000",
+    "open-php-html-js-in-browser.urlToOpen": "custom",
+    "open-php-html-js-in-browser.documentRootFolder": "http://localhost:8000"
+}

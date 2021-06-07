@@ -17,6 +17,6 @@ class HomeControllerTest extends TestCase
     {
         $response = $this->get('/');
         $response->assertStatus(200);
-        $response->assertViewIs('auth.login');
+        $response->assertViewIs('omega.login');
     }
 }
