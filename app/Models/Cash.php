@@ -26,9 +26,32 @@ class Cash extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getEmpCash(int $iduser)
+    public static function getEm001ash(int $iduser)
     {
         return self::query()->where('employee', $iduser)->first();
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getCashBy(array $where)
+    {
+        $emp = Session::get('employee');
+
+        return self::query()->where(static function ($query) use ($emp) {
+            if ($emp->level === 'N') {
+                $query->where('cashes.network', $emp->network);
+            }
+            if ($emp->level === 'Z') {
+                $query->where('cashes.zone', $emp->zone);
+            }
+            if ($emp->level === 'I') {
+                $query->where('cashes.institution', $emp->institution);
+            }
+            if ($emp->level === 'B') {
+                $query->where('cashes.branch', $emp->branch);
+            }
+        })->where($where)->orderBy('cashcode')->first();
     }
 
     /**
@@ -41,10 +64,10 @@ class Cash extends Model
         if ($where !== null) {
             return self::query()->where(static function ($query) use ($emp) {
                 if ($emp->level === 'N') {
-                    $query->where('cashes.network ', $emp->network);
+                    $query->where('cashes.network', $emp->network);
                 }
                 if ($emp->level === 'Z') {
-                    $query->where('cashes.zone ', $emp->zone);
+                    $query->where('cashes.zone', $emp->zone);
                 }
                 if ($emp->level === 'I') {
                     $query->where('cashes.institution', $emp->institution);
@@ -57,10 +80,10 @@ class Cash extends Model
 
         return self::query()->where(static function ($query) use ($emp) {
             if ($emp->level === 'N') {
-                $query->where('cashes.network ', $emp->network);
+                $query->where('cashes.network', $emp->network);
             }
             if ($emp->level === 'Z') {
-                $query->where('cashes.zone ', $emp->zone);
+                $query->where('cashes.zone', $emp->zone);
             }
             if ($emp->level === 'I') {
                 $query->where('cashes.institution', $emp->institution);
@@ -87,12 +110,12 @@ class Cash extends Model
                     $query->where('cashes.institution', $emp->institution);
                 }
                 if ($emp->level === 'Z') {
-                    $query->where('cashes.zone ', $emp->zone);
+                    $query->where('cashes.zone', $emp->zone);
                 }
                 if ($emp->level === 'N') {
-                    $query->where('cashes.network ', $emp->network);
+                    $query->where('cashes.network', $emp->network);
                 }
-            })->where('cashcode', '!=', 'PC')->where($where)->orderBy('cashcode')->get();
+            })->where('cashcode', '!=', '001')->where($where)->orderBy('cashcode')->get();
         }
 
         return self::query()->where(static function ($query) use ($emp) {
@@ -103,12 +126,12 @@ class Cash extends Model
                 $query->where('cashes.institution', $emp->institution);
             }
             if ($emp->level === 'Z') {
-                $query->where('cashes.zone ', $emp->zone);
+                $query->where('cashes.zone', $emp->zone);
             }
             if ($emp->level === 'N') {
-                $query->where('cashes.network ', $emp->network);
+                $query->where('cashes.network', $emp->network);
             }
-        })->where('cashcode', '!=', 'PC')->orderBy('cashcode')->get();
+        })->where('cashcode', '!=', '001')->orderBy('cashcode')->get();
     }
 
     /**
@@ -128,10 +151,10 @@ class Cash extends Model
                     $query->where('cashes.institution', $emp->institution);
                 }
                 if ($emp->level === 'Z') {
-                    $query->where('cashes.zone ', $emp->zone);
+                    $query->where('cashes.zone', $emp->zone);
                 }
                 if ($emp->level === 'N') {
-                    $query->where('cashes.network ', $emp->network);
+                    $query->where('cashes.network', $emp->network);
                 }
             })->orderBy('cashcode')->get();
     }
@@ -140,7 +163,7 @@ class Cash extends Model
      * @param int|null $collector
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getEmpCashOpen(int $collector = null)
+    public static function getEm001ashOpen(int $collector = null)
     {
         $emp = Session::get('employee');
 
@@ -158,7 +181,7 @@ class Cash extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getEmpCashReopen()
+    public static function getEm001ashReopen()
     {
         $emp = Session::get('employee');
 
@@ -182,10 +205,10 @@ class Cash extends Model
                     $query->where('cashes.institution', $emp->institution);
                 }
                 if ($emp->level === 'Z') {
-                    $query->where('cashes.zone ', $emp->zone);
+                    $query->where('cashes.zone', $emp->zone);
                 }
                 if ($emp->level === 'N') {
-                    $query->where('cashes.network ', $emp->network);
+                    $query->where('cashes.network', $emp->network);
                 }
             })->orderBy('cashcode')->get();
     }
@@ -207,10 +230,10 @@ class Cash extends Model
                     $query->where('cashes.institution', $emp->institution);
                 }
                 if ($emp->level === 'Z') {
-                    $query->where('cashes.zone ', $emp->zone);
+                    $query->where('cashes.zone', $emp->zone);
                 }
                 if ($emp->level === 'N') {
-                    $query->where('cashes.network ', $emp->network);
+                    $query->where('cashes.network', $emp->network);
                 }
             })->paginate(1);
     }
@@ -233,10 +256,10 @@ class Cash extends Model
                     $query->where('cashes.institution', $emp->institution);
                 }
                 if ($emp->level === 'Z') {
-                    $query->where('cashes.zone ', $emp->zone);
+                    $query->where('cashes.zone', $emp->zone);
                 }
                 if ($emp->level === 'N') {
-                    $query->where('cashes.network ', $emp->network);
+                    $query->where('cashes.network', $emp->network);
                 }
             })->distinct('idcash')->paginate(1);
     }
@@ -258,10 +281,10 @@ class Cash extends Model
                     $query->where('cashes.institution', $emp->institution);
                 }
                 if ($emp->level === 'Z') {
-                    $query->where('cashes.zone ', $emp->zone);
+                    $query->where('cashes.zone', $emp->zone);
                 }
                 if ($emp->level === 'N') {
-                    $query->where('cashes.network ', $emp->network);
+                    $query->where('cashes.network', $emp->network);
                 }
             })->distinct('idcash')->orderBy('idcash', 'ASC')->paginate(1);
     }

@@ -127,6 +127,14 @@ function myOSwal(title, text, icon = 'info') {
     });
 }
 
+function setDisabled(choice) {        
+    $('.fillform :input').prop('disabled', choice);
+    $('.fillform :input[type="checkbox"]').prop('disabled', choice);
+    $('.fillform :input[type="radio"]').prop('disabled', choice);
+    $('.fillform :input[type="button"]').prop('disabled', choice);
+    $('.select2').prop('disabled', choice).select2();
+}
+
 /**
  *
  * @param text

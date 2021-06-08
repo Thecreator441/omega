@@ -32,8 +32,8 @@ if ($emp->lang == 'fr') {
                 <div class="row">
                     <div class="col-md-2 col=xs-12">
                         <div class="form-group has-error">
-                            <label for="bank_code" class="col-md-4 col-xs-4 control-label">@lang('label.code')<span class="text-red text-bold">*</span></label>
-                            <div class="col-md-8 col-xs-8">
+                            <label for="bank_code" class="col-md-4 col-xs-3 control-label">@lang('label.code')<span class="text-red text-bold">*</span></label>
+                            <div class="col-md-8 col-xs-9">
                                 <input type="text" name="bank_code" id="bank_code" class="form-control text-right code_" value="{{ (int)$banks->count() + 1 }}" readonly required>
                                 <div class="help-block">@lang('placeholder.code')</div>
                             </div>
@@ -111,8 +111,8 @@ if ($emp->lang == 'fr') {
                             </div>
                             <div class="col-md-4 col-xs-12">
                                 <div class="form-group has-info">
-                                    <label for="email" class="col-md-4 col-xs-4 control-label">@lang('label.@')</label>
-                                    <div class="col-md-8 col-xs-8">
+                                    <label for="email" class="col-md-4 col-xs-3 control-label">@lang('label.@')</label>
+                                    <div class="col-md-8 col-xs-9">
                                         <input type="email" class="form-control" name="email" id="email">
                                         <div class="help-block">@lang('placeholder.@')</div>
                                     </div>
@@ -141,8 +141,8 @@ if ($emp->lang == 'fr') {
                             </div>
                             <div class="col-md-4 col-xs-12">
                                 <div class="form-group has-info">
-                                    <label for="postal" class="col-md-4 col-xs-4 control-label">@lang('label.postal')</label>
-                                    <div class="col-md-8 col-xs-8">
+                                    <label for="postal" class="col-md-4 col-xs-3 control-label">@lang('label.postal')</label>
+                                    <div class="col-md-8 col-xs-9">
                                         <input type="text" class="form-control" id="postal" name="postal">
                                         <div class="help-block">@lang('placeholder.postal')</div>
                                     </div>
@@ -181,8 +181,8 @@ if ($emp->lang == 'fr') {
                             </div>
                             <div class="col-md-4 col-xs-12">
                                 <div class="form-group">
-                                    <label for="division" class="col-md-4 col-xs-4 control-label">@lang('label.division')</label>
-                                    <div class="col-md-8 col-xs-8">
+                                    <label for="division" class="col-md-4 col-xs-3 control-label">@lang('label.division')</label>
+                                    <div class="col-md-8 col-xs-9">
                                         <select class="form-control select2" id="division" name="division" >
                                             <option value=""></option>
                                             @foreach($divisions as $division)
@@ -226,8 +226,8 @@ if ($emp->lang == 'fr') {
                             </div>
                             <div class="col-md-4 col-xs-12">
                                 <div class="form-group">
-                                    <label for="address" class="col-md-4 col-xs-4 control-label">@lang('label.address')</label>
-                                    <div class="col-md-8 col-xs-8">
+                                    <label for="address" class="col-md-4 col-xs-3 control-label">@lang('label.address')</label>
+                                    <div class="col-md-8 col-xs-9">
                                         <input type="text" class="form-control" id="address" name="address">
                                     </div>
                                 </div>
@@ -254,8 +254,8 @@ if ($emp->lang == 'fr') {
                                         <select name="theiracc" id="theiracc" class="select2" required>
                                             <option value=""></option>
                                             @foreach ($accplans as $accplan)
-                                                @if (substrWords($accplan->plan_code, 2) === '56'))
-                                                    <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 3) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>        
+                                                @if ((int)$accplan->class === 5)
+                                                    <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>        
                                                 @endif
                                             @endforeach
                                         </select>
@@ -270,9 +270,7 @@ if ($emp->lang == 'fr') {
                                         <select name="cash_check_acc" id="cash_check_acc" class="select2">
                                             <option value=""></option>
                                             @foreach ($accplans as $accplan)
-                                                @if (substrWords($accplan->plan_code, 2) === '56'))
-                                                    <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 3) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>        
-                                                @endif
+                                                <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>
                                             @endforeach
                                         </select>
                                         <div class="help-block">@lang('placeholder.cash_check_acc')</div>
@@ -289,9 +287,7 @@ if ($emp->lang == 'fr') {
                                         <select name="credit_check_acc" id="credit_check_acc" class="select2">
                                             <option value=""></option>
                                             @foreach ($accplans as $accplan)
-                                                @if (substrWords($accplan->plan_code, 2) === '56'))
-                                                    <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 3) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>        
-                                                @endif
+                                                <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>
                                             @endforeach
                                         </select>
                                         <div class="help-block">@lang('placeholder.credit_check_acc')</div>
@@ -305,9 +301,7 @@ if ($emp->lang == 'fr') {
                                         <select name="cash_corresp_check_acc" id="cash_corresp_check_acc" class="select2">
                                             <option value=""></option>
                                             @foreach ($accplans as $accplan)
-                                                @if (substrWords($accplan->plan_code, 2) === '56'))
-                                                    <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 3) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>        
-                                                @endif
+                                                <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>
                                             @endforeach
                                         </select>
                                         <div class="help-block">@lang('placeholder.cash_corresp_check_acc')</div>
@@ -366,8 +360,11 @@ if ($emp->lang == 'fr') {
                     <td>{{ $bank->phone1 }}</td>
                     <td class="text-center">{{changeFormat($bank->created_at)}}</td>
                     <td class="text-center">
-                        <button class="btn btn-info bg-aqua btn-sm fa fa-edit" onclick="edit('{{$bank->idbank}}')"></button>
-                        <button type="button" class="btn bg-red btn-sm delete fa fa-trash-o" onclick="remove('{{$bank->idbank}}')"></button>
+                        <button type="button" class="btn bg-green btn-sm fa fa-eye" onclick="view('{{$bank->idbank}}')"></button>
+                        @if ($emp->level === 'B')
+                            <button type="button" class="btn bg-aqua btn-sm fa fa-edit" onclick="edit('{{$bank->idbank}}')"></button>
+                            <button type="button" class="btn bg-red btn-sm fa fa-trash-o" onclick="remove('{{$bank->idbank}}')"></button>
+                        @endif
                     </td>
                 </tr>
             @endforeach
@@ -400,9 +397,96 @@ if ($emp->lang == 'fr') {
                     $('#bank_code').val(banks.length + 1);
                 }
             });
-653558723
+
             $('#form').show();
         });
+
+        function view(idbank) {
+            $.ajax({
+                url: "{{ url('getBank') }}",
+                method: 'get',
+                data: {
+                    id: idbank
+                },
+                success: function (bank) {
+                    setDisabled(true);
+                    
+                    $('#title').text("@if($emp->lang === 'fr') " + bank.labelfr + " @else " + bank.labeleng + "@endif");
+
+                    $('#idbank').val(bank.idbank);
+                    $('#bank_code').val(bank.bankcode);
+                    $('#labeleng').val(bank.labeleng);
+                    $('#labelfr').val(bank.labelfr);
+                    $('#ouracc').val(bank.ouracc);
+                    $('#manager').val(bank.manager);
+                    $('#email').val(bank.email);
+                    $('#phone1').val(bank.phone1);
+                    $('#phone2').val(bank.phone2);
+                    $('#postal').val(bank.postcode);
+                    $('#country').val(bank.country).select2();
+                    $('#region').val(bank.region).select2();
+                    $('#division').val(bank.division).select2();
+                    $('#subdiv').val(bank.subdivision).select2();
+                    $('#town').val(bank.town).select2();
+                    $('#address').val(bank.address);
+
+                    $.ajax({
+                        url: "{{ url('getAccount') }}",
+                        method: 'get',
+                        data: {
+                            id: bank.theiracc
+                        },
+                        success: function (theirAcc) {
+                            $('#theiracc').val(theirAcc.idplan).select2();
+                        }
+                    });
+
+                    if (bank.cash_check_acc !== null) {
+                        $.ajax({
+                            url: "{{ url('getAccount') }}",
+                            method: 'get',
+                            data: {
+                                id: bank.cash_check_acc
+                            },
+                            success: function (theirAcc) {
+                                $('#theiracc').val(theirAcc.idplan).select2();
+                            }
+                        });
+                    }
+
+                    if (bank.credit_check_acc !== null) {
+                        $.ajax({
+                            url: "{{ url('getAccount') }}",
+                            method: 'get',
+                            data: {
+                                id: bank.credit_check_acc
+                            },
+                            success: function (creditCheckAcc) {
+                                $('#credit_check_acc').val(creditCheckAcc.idplan).select2();
+                            }
+                        });
+                    }
+
+                    if (bank.cash_corresp_check_acc !== null) {
+                        $.ajax({
+                            url: "{{ url('getAccount') }}",
+                            method: 'get',
+                            data: {
+                                id: bank.cash_corresp_check_acc
+                            },
+                            success: function (cashCorrespCheckAcc) {
+                                $('#cash_corresp_check_acc').val(cashCorrespCheckAcc.idplan).select2();
+                            }
+                        });
+                    }
+
+                    $('#save').replaceWith('<button type="button" id="save" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit" style="display: none"></button>');
+                    $('.edit').replaceWith('<button type="button" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save" style="display: none"></button>');
+
+                    $('#form').show();
+                }
+            });
+        }
 
         function edit(idbank) {
             $.ajax({
@@ -412,6 +496,7 @@ if ($emp->lang == 'fr') {
                     id: idbank
                 },
                 success: function (bank) {
+                    setDisabled(false);
                     $('#title').text("@lang('label.edit') @if($emp->lang === 'fr') " + bank.labelfr + " @else " + bank.labeleng + "@endif");
 
                     $('#idbank').val(bank.idbank);
@@ -525,17 +610,18 @@ if ($emp->lang == 'fr') {
             in_out_form();
         });
 
-        $(document).on('click', '#save, #edit', function () {
-            let text = '';
-            if ($('#idbank').val() === '')
-                text = '@lang('confirm.bank_save_text')';
-            else
-                text = '@lang('confirm.bank_edit_text')';
+        function submitForm() {
+            var text = "@lang('confirm.bank_save_text')";
+            if ($('#idbank').val() !== '') {
+                text = "@lang('confirm.bank_edit_text')";
+            }
 
-            mySwal("{{$title}}", text, '@lang('confirm.no')', '@lang('confirm.yes')', '#bankForm');
-        });
+            mySwal("{{ $title }}", text, '@lang('confirm.no')', '@lang('confirm.yes')', '#cashForm');
+        }
 
         function in_out_form() {
+            setDisabled(false);
+            
             $('#title').text('@lang('label.new_bank')');
             $('#idbank').val('');
             $('.fillform :input').val('');

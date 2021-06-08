@@ -381,7 +381,7 @@ if ($emp->lang === 'fr')
                 //         changeURL = "{{url('admin/user/change')}}";
                 //     }
                 //     swal({
-                //         title: '@lang('label.editpass')',
+                //         title: "@lang('label.editpass')",
                 //         icon: 'info',
                 //         closeOnClickOutside: false,
                 //         allowOutsideClick: false,
@@ -389,14 +389,14 @@ if ($emp->lang === 'fr')
                 //         content: {
                 //             element: 'input',
                 //             attributes: {
-                //                 placeholder: '@lang('placeholder.newpass')',
+                //                 placeholder: "@lang('placeholder.newpass')",
                 //                 type: 'password',
                 //                 autocapitalize: 'off',
                 //             }
                 //         },
                 //         buttons: {
                 //             confirm: {
-                //                 text: ' @lang('label.edit')',
+                //                 text: " @lang('label.edit')",
                 //                 visible: true,
                 //                 closeModal: false,
                 //                 className: "btn bg-aqua fa fa-edit"
@@ -407,7 +407,7 @@ if ($emp->lang === 'fr')
                 //             post(changeURL, {user: '{{$emp->iduser}}', password: result, _token: '{{csrf_token()}}'});
                 //         } else {
                 //             swal({
-                //                 title: '@lang('label.editpass')',
+                //                 title: "@lang('label.editpass')",
                 //                 icon: 'warning',
                 //                 closeOnClickOutside: false,
                 //                 allowOutsideClick: false,
@@ -415,14 +415,14 @@ if ($emp->lang === 'fr')
                 //                 content: {
                 //                     element: 'input',
                 //                     attributes: {
-                //                         placeholder: '@lang('placeholder.newpass')',
+                //                         placeholder: "@lang('placeholder.newpass')",
                 //                         type: 'password',
                 //                         autocapitalize: 'off',
                 //                     }
                 //                 },
                 //                 buttons: {
                 //                     confirm: {
-                //                         text: ' @lang('label.edit')',
+                //                         text: " @lang('label.edit')",
                 //                         visible: true,
                 //                         closeModal: false,
                 //                         className: "btn bg-aqua fa fa-edit"
@@ -433,7 +433,7 @@ if ($emp->lang === 'fr')
                 //                     post(changeURL, {user: '{{$emp->iduser}}', password: result, _token: '{{csrf_token()}}'});
                 //                 } else {
                 //                     swal({
-                //                         title: '@lang('label.editpass')',
+                //                         title: "@lang('label.editpass')",
                 //                         icon: 'error',
                 //                         closeOnClickOutside: false,
                 //                         allowOutsideClick: false,
@@ -441,14 +441,14 @@ if ($emp->lang === 'fr')
                 //                         content: {
                 //                             element: 'input',
                 //                             attributes: {
-                //                                 placeholder: '@lang('placeholder.newpass')',
+                //                                 placeholder: "@lang('placeholder.newpass')",
                 //                                 type: 'password',
                 //                                 autocapitalize: 'off',
                 //                             }
                 //                         },
                 //                         buttons: {
                 //                             confirm: {
-                //                                 text: ' @lang('label.edit')',
+                //                                 text: " @lang('label.edit')",
                 //                                 visible: true,
                 //                                 closeModal: true,
                 //                                 className: "btn bg-aqua fa fa-edit"
@@ -492,25 +492,25 @@ if ($emp->lang === 'fr')
                             extend: 'copy',
                             text: '',
                             className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
-                            titleAttr: '@lang('label.copy')',
+                            titleAttr: "@lang('label.copy')",
                         },
                         {
                             extend: 'excel',
                             text: '',
                             className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
-                            titleAttr: '@lang('label.excel')',
+                            titleAttr: "@lang('label.excel')",
                         },
                         {
                             extend: 'pdf',
                             text: '',
                             className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
-                            titleAttr: '@lang('label.pdf')',
+                            titleAttr: "@lang('label.pdf')",
                         },
                         {
                             extend: 'print',
                             text: '',
                             className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
-                            titleAttr: '@lang('label.print')',
+                            titleAttr: "@lang('label.print')",
                         }
                     ],
                     dom:
@@ -535,25 +535,25 @@ if ($emp->lang === 'fr')
                             extend: 'copy',
                             text: '',
                             className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
-                            titleAttr: '@lang('label.copy')',
+                            titleAttr: "@lang('label.copy')",
                         },
                         {
                             extend: 'excel',
                             text: '',
                             className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
-                            titleAttr: '@lang('label.excel')',
+                            titleAttr: "@lang('label.excel')",
                         },
                         {
                             extend: 'pdf',
                             text: '',
                             className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
-                            titleAttr: '@lang('label.pdf')',
+                            titleAttr: "@lang('label.pdf')",
                         },
                         {
                             extend: 'print',
                             text: '',
                             className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
-                            titleAttr: '@lang('label.print')',
+                            titleAttr: "@lang('label.print')",
                         }
                     ],
                     dom:
@@ -600,12 +600,12 @@ if ($emp->lang === 'fr')
                 });
 
                 $('#logOutBtn').click(function () {
-                    mySwal('@lang('sidebar.user')', '@lang('confirm.logout_text')', '@lang('confirm.no')', '@lang('confirm.yes')', '#logOutForm');
+                    mySwal("@lang('sidebar.user')", "@lang('confirm.logout_text')", "@lang('confirm.no')", "@lang('confirm.yes')", '#logOutForm');
                 });
 
                 // $('#editPassBtn').click(function () {
                 //     swal({
-                //         title: '@lang('label.editpass')',
+                //         title: "@lang('label.editpass')",
                 //         icon: 'info',
                 //         closeOnClickOutside: true,
                 //         allowOutsideClick: false,
@@ -613,14 +613,14 @@ if ($emp->lang === 'fr')
                 //         content: {
                 //             element: 'input',
                 //             attributes: {
-                //                 placeholder: '@lang('placeholder.oldpass')',
+                //                 placeholder: "@lang('placeholder.oldpass')",
                 //                 type: 'password',
                 //                 autocapitalize: 'off',
                 //             }
                 //         },
                 //         buttons: {
                 //             confirm: {
-                //                 text: ' @lang('label.next')',
+                //                 text: " @lang('label.next')",
                 //                 visible: true,
                 //                 closeModal: true,
                 //                 className: "btn bg-aqua fa fa-arrow-right"
@@ -637,14 +637,14 @@ if ($emp->lang === 'fr')
                 //                 content: {
                 //                     element: 'input',
                 //                     attributes: {
-                //                         placeholder: '@lang('placeholder.newpass')',
+                //                         placeholder: "@lang('placeholder.newpass')",
                 //                         type: 'password',
                 //                         autocapitalize: 'off',
                 //                     }
                 //                 },
                 //                 buttons: {
                 //                     confirm: {
-                //                         text: ' @lang('label.edit')',
+                //                         text: " @lang('label.edit')",
                 //                         visible: true,
                 //                         closeModal: true,
                 //                         className: "btn bg-aqua fa fa-edit"
@@ -663,37 +663,39 @@ if ($emp->lang === 'fr')
                 //     });
                 // });
 
-                $('.fa-save').attr('title', '@lang('label.save')');
-                $('.fa-edit').attr('title', '@lang('label.edit')');
-                $('.fa-trash').attr('title', '@lang('label.delete')');
-                $('.fa-recycle').attr('title', '@lang('label.reset')');
-                $('.fa-refresh').attr('title', '@lang('label.reset')');
-                $('.fa-check').attr('title', '@lang('label.free')');
-                $('.fa-close').attr('title', '@lang('label.block')');
-                $('.fa-print').attr('title', '@lang('label.print')');
-                $('.fa-file-pdf-o').attr('title', '@lang('label.pdf')');
-                $('.fa-file-excel-o').attr('title', '@lang('label.excel')');
-                $('.fa-copy').attr('title', '@lang('label.copy')');
+                $('.fa-save').prop('title', "@lang('label.save')");
+                $('.fa-edit').prop('title', "@lang('label.edit')");
+                $('.fa-trash').prop('title', "@lang('label.delete')");
+                $('.fa-trash-o').prop('title', "@lang('label.delete')");
+                $('.fa-view').prop('title', "@lang('label.view')");
+                $('.fa-recycle').prop('title', "@lang('label.reset')");
+                $('.fa-refresh').prop('title', "@lang('label.reset')");
+                $('.fa-check').prop('title', "@lang('label.free')");
+                $('.fa-close').prop('title', "@lang('label.block')");
+                $('.fa-print').prop('title', "@lang('label.print')");
+                $('.fa-file-pdf-o').prop('title', "@lang('label.pdf')");
+                $('.fa-file-excel-o').prop('title', "@lang('label.excel')");
+                $('.fa-copy').prop('title', "@lang('label.copy')");
             });
 
             $('.backup').click(function () {
                 swal({
                     icon: 'warning',
-                    title: '@lang('sidebar.backup')',
-                    text: '@lang('confirm.backup_text')',
+                    title: "@lang('sidebar.backup')",
+                    text: "@lang('confirm.backup_text')",
                     closeOnClickOutside: false,
                     allowOutsideClick: false,
                     closeOnEsc: false,
                     buttons: {
                         cancel: {
-                            text: ' @lang('confirm.no')',
+                            text: " @lang('confirm.no')",
                             value: false,
                             visible: true,
                             closeModal: true,
                             className: "btn bg-red fa fa-close"
                         },
                         confirm: {
-                            text: ' @lang('confirm.yes')',
+                            text: " @lang('confirm.yes')",
                             value: true,
                             visible: true,
                             closeModal: true,
@@ -724,14 +726,14 @@ if ($emp->lang === 'fr')
             //                 content: {
             //                     element: 'input',
             //                     attributes: {
-            //                         placeholder: '@lang('placeholder.password')',
+            //                         placeholder: "@lang('placeholder.password')",
             //                         type: 'password',
             //                         autocapitalize: 'off',
             //                     }
             //                 },
             //                 buttons: {
             //                     confirm: {
-            //                         text: ' @lang('label.verify')',
+            //                         text: " @lang('label.verify')",
             //                         visible: true,
             //                         closeModal: false,
             //                         className: "btn bg-green fa fa-check"

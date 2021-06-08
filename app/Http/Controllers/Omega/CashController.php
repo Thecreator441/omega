@@ -26,8 +26,8 @@ class CashController extends Controller
         }
 
         if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $cashes = Cash::getPaginate();
-            $accounts = AccPlan::getAccPlans();
+            $cashes = Cash::getCashes();
+            $accplans = AccPlan::getAccPlans();
             $employees = Employee::getEmpUsers();
             $moneys = Money::getMoneys();
             $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
@@ -35,7 +35,7 @@ class CashController extends Controller
             return view('omega.pages.cash', compact(
                 'menu',
                 'cashes',
-                'accounts',
+                'accplans',
                 'employees',
                 'moneys'
             ));
@@ -45,146 +45,106 @@ class CashController extends Controller
 
     public function store()
     {
-        dd(Request::all());
+        // dd(Request::all());
         DB::beginTransaction();
         try {
           $emp = Session::get('employee');
 
           $idcash = Request::input('idcash');
-          $cashes = Cash::getCashes();
-          $cashacc = Request::input('cashacc');
-          $institution = Institution::getInstitution($emp->institution);
           $cash = null;
 
             if ($idcash === null) {
                 $cash = new Cash();
-    
-                if ($cashes->count() === 0) {
-                  $main = Account::getAccount($cashacc);
-                  
-                  $cash_acc = Account::getAccountBy(['accnumb' => $main->accnumb, 'accounts.institution' => $emp->institution]);
-                  if($emp->level === 'B') {
-                      $cash_acc = Account::getAccountBy(['accnumb' => $main->accnumb, 'accounts.branch' => $emp->branch]);
-                  }
-                  
-                  if($cash_acc === null) {
-                    $cash_acc = new Account();
-                    $cash_acc->class = $main->class;
-                    $cash_acc->idplan = $main->idplan;
-                    $cash_acc->accnumb = $main->accnumb;
-                    $cash_acc->acctype = $main->acctype;
-                    $cash_acc->labeleng = Request::input('casheng');
-                    $cash_acc->labelfr = Request::input('cashfr');
-                    $cash_acc->network = $emp->network;
-                    $cash_acc->zone = $emp->zone;
-                    $cash_acc->institution = $emp->institution;
-                    $cash_acc->branch = $emp->branch;
-                    $cash_acc->save();
-                  } else {
-                    $cash_acc->class = $main->class;
-                    $cash_acc->idplan = $main->idplan;
-                    $cash_acc->accnumb = $main->accnumb;
-                    $cash_acc->acctype = $main->acctype;
-                    $cash_acc->update((array)$cash_acc);
-                  }
-    
-                    $cashacc = $cash_acc->idaccount;
-    
-                    $mon1 = Request::input('B1');
-                    $mon2 = Request::input('B2');
-                    $mon3 = Request::input('B3');
-                    $mon4 = Request::input('B4');
-                    $mon5 = Request::input('B5');
-                    $mon6 = Request::input('P1');
-                    $mon7 = Request::input('P2');
-                    $mon8 = Request::input('P3');
-                    $mon9 = Request::input('P4');
-                    $mon10 = Request::input('P5');
-                    $mon11 = Request::input('P6');
-                    $mon12 = Request::input('P7');
-    
-                    if ($mon1 !== null) {
-                        $cash->mon1 += trimOver($mon1, ' ');
-                    }
-                    if ($mon2 !== null) {
-                        $cash->mon2 += trimOver($mon2, ' ');
-                    }
-                    if ($mon3 !== null) {
-                        $cash->mon3 += trimOver($mon3, ' ');
-                    }
-                    if ($mon4 !== null) {
-                        $cash->mon4 += trimOver($mon4, ' ');
-                    }
-                    if ($mon5 !== null) {
-                        $cash->mon5 += trimOver($mon5, ' ');
-                    }
-                    if ($mon6 !== null) {
-                        $cash->mon6 += trimOver($mon6, ' ');
-                    }
-                    if ($mon7 !== null) {
-                        $cash->mon7 += trimOver($mon7, ' ');
-                    }
-                    if ($mon8 !== null) {
-                        $cash->mon8 += trimOver($mon8, ' ');
-                    }
-                    if ($mon9 !== null) {
-                        $cash->mon9 += trimOver($mon9, ' ');
-                    }
-                    if ($mon10 !== null) {
-                        $cash->mon10 += trimOver($mon10, ' ');
-                    }
-                    if ($mon11 !== null) {
-                        $cash->mon11 += trimOver($mon11, ' ');
-                    }
-                    if ($mon12 !== null) {
-                        $cash->mon12 += trimOver($mon12, ' ');
-                    }
-                } else {
-                  $main = Account::getAccount($cashacc);
-                  
-                  $new_cash_acc = pad(substr($main->accnumb, 0, 6) . '' . pad($cashes->count()), 12, 'right');
-                  
-                  $cash_acc = Account::getAccountBy(['accnumb' => $new_cash_acc, 'accounts.institution' => $emp->institution]);
-                  if($emp->level === 'B') {
-                      $cash_acc = Account::getAccountBy(['accnumb' => $new_cash_acc, 'accounts.branch' => $emp->branch]);
-                  }
-                //   dd($new_cash_acc);
-                  if($cash_acc === null) {
-                    $cash_acc = new Account();
-                    $cash_acc->class = $main->class;
-                    $cash_acc->idplan = $main->idplan;
-                    $cash_acc->accnumb = $new_cash_acc;
-                    $cash_acc->acctype = $main->acctype;
-                    $cash_acc->labeleng = Request::input('casheng');
-                    $cash_acc->labelfr = Request::input('cashfr');
-                    $cash_acc->network = $emp->network;
-                    $cash_acc->zone = $emp->zone;
-                    $cash_acc->institution = $emp->institution;
-                    $cash_acc->branch = $emp->branch;
-                    $cash_acc->save();
-                  } else {
-                    $cash_acc->class = $main->class;
-                    $cash_acc->idplan = $main->idplan;
-                    $cash_acc->accnumb = $new_cash_acc;
-                    $cash_acc->acctype = $main->acctype;
-                    $cash_acc->update((array)$cash_acc);
-                  }
-                  $cashacc = $cash_acc->idaccount;
-                }
             } else {
                 $cash = Cash::getCash($idcash);
             }
     
-            $cash->cashcode = Request::input('cashcode');
-            $cash->labelfr = Request::input('cashfr');
-            $cash->labeleng = Request::input('casheng');
-            $cash->cashacc = $cashacc;
+            $cash->cashcode = pad(Request::input('cash_code'), 3);
+            $cash->labelfr = Request::input('labelfr');
+            $cash->labeleng = Request::input('labeleng');
             $cash->employee = Request::input('employee');
+
+            $cashAcc_Plan = AccPlan::getAccPlan(Request::input('cashacc'));
+            $cashAcc_Numb = pad($cashAcc_Plan->plan_code, 6, 'right') . '' . pad(Request::input('cash_code'), 3, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
+            $cashAcc = Account::getAccountBy(['accnumb' => $cashAcc_Numb]);
+            if ($cashAcc === null) {
+                $cashAcc = new Account();
+
+                $cashAcc->idplan = $cashAcc_Plan->idaccplan;
+                $cashAcc->accnumb = $cashAcc_Numb;
+                $cashAcc->labelfr = Request::input('labelfr');
+                $cashAcc->labeleng = Request::input('labeleng');
+                $cashAcc->class = $cashAcc_Plan->class;
+                $cashAcc->acctype = $cashAcc_Plan->acc_type;
+                $cashAcc->network = $emp->network;
+                $cashAcc->zone = $emp->zone;
+                $cashAcc->institution = $emp->institution;
+                $cashAcc->branch = $emp->branch;
+
+                $cashAcc->save();
+            }
+            $cash->cashacc = $cashAcc->idaccount;
+            
+            $misAcc_Plan = AccPlan::getAccPlan(Request::input('misacc'));
+            $misAcc_Numb = pad($misAcc_Plan->plan_code, 6, 'right') . '' . pad(Request::input('cash_code'), 3, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
+            $misAcc = Account::getAccountBy(['accnumb' => $misAcc_Numb]);
+            if ($misAcc === null) {
+                $misAcc = new Account();
+
+                $misAcc->idplan = $misAcc_Plan->idaccplan;
+                $misAcc->accnumb = $misAcc_Numb;
+                $misAcc->labelfr = Request::input('labelfr') . ' ' . $misAcc_Plan->labelfr;
+                $misAcc->labeleng = Request::input('labeleng') . ' ' . $misAcc_Plan->labeleng;
+                $misAcc->class = $misAcc_Plan->class;
+                $misAcc->acctype = $misAcc_Plan->acc_type;
+                $misAcc->network = $emp->network;
+                $misAcc->zone = $emp->zone;
+                $misAcc->institution = $emp->institution;
+                $misAcc->branch = $emp->branch;
+
+                $misAcc->save();
+            }
+            $cash->misacc = $misAcc->idaccount;
+
+            $excAcc_Plan = AccPlan::getAccPlan(Request::input('excacc'));
+            $excAcc_Numb = pad($excAcc_Plan->plan_code, 6, 'right') . '' . pad(Request::input('cash_code'), 3, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
+            $excAcc = Account::getAccountBy(['accnumb' => $excAcc_Numb]);
+            if ($excAcc === null) {
+                $excAcc = new Account();
+
+                $excAcc->idplan = $excAcc_Plan->idaccplan;
+                $excAcc->accnumb = $excAcc_Numb;
+                $excAcc->labelfr = Request::input('labelfr') . ' ' . $excAcc_Plan->labelfr;
+                $excAcc->labeleng = Request::input('labeleng') . ' ' . $excAcc_Plan->labeleng;
+                $excAcc->class = $excAcc_Plan->class;
+                $excAcc->acctype = $excAcc_Plan->acc_type;
+                $excAcc->network = $emp->network;
+                $excAcc->zone = $emp->zone;
+                $excAcc->institution = $emp->institution;
+                $excAcc->branch = $emp->branch;
+
+                $excAcc->save();
+            }
+            $cash->excacc = $excAcc->idaccount;
+
+            $cash->mon1 += trimOver(Request::input('B1'), ' ');
+            $cash->mon2 += trimOver(Request::input('B2'), ' ');
+            $cash->mon3 += trimOver(Request::input('B3'), ' ');
+            $cash->mon4 += trimOver(Request::input('B4'), ' ');
+            $cash->mon5 += trimOver(Request::input('B5'), ' ');
+            $cash->mon6 += trimOver(Request::input('P1'), ' ');
+            $cash->mon7 += trimOver(Request::input('P2'), ' ');
+            $cash->mon8 += trimOver(Request::input('P3'), ' ');
+            $cash->mon9 += trimOver(Request::input('P4'), ' ');
+            $cash->mon10 += trimOver(Request::input('P5'), ' ');
+            $cash->mon11 += trimOver(Request::input('P6'), ' ');
+            $cash->mon12 += trimOver(Request::input('P7'), ' ');
+            
             $cash->network = $emp->network;
             $cash->zone = $emp->zone;
             $cash->institution = $emp->institution;
             $cash->branch = $emp->branch;
-    
+    // dd($cash);
             if ($idcash === null) {
                 $cash->save();
             } else {
@@ -193,20 +153,21 @@ class CashController extends Controller
     
             DB::commit();
             if ($idcash === null) {
-                Log::info(trans('alertSuccess.cashsave'));
-                return Redirect::back()->with('success', trans('alertSuccess.cashsave'));
+                Log::info(trans('alertSuccess.cash_save'));
+                return Redirect::back()->with('success', trans('alertSuccess.cash_save'));
             }
             Log::info(trans('alertSuccess.cashedit'));
-            return Redirect::back()->with('success', trans('alertSuccess.cashedit'));
+            return Redirect::back()->with('success', trans('alertSuccess.cash_edit'));
         } catch (\Exception $ex) {
             DB::rollBack();
             Log::error($ex->getMessage());
+            dd($ex);
             if ($idcash === null) {
-                Log::error(trans('alertDanger.cashsave'));
-                return Redirect::back()->with('danger', trans('alertDanger.cashsave'));
+                Log::error(trans('alertDanger.cash_save'));
+                return Redirect::back()->with('danger', trans('alertDanger.cash_save'));
             }
-            Log::error(trans('alertDanger.cashedit'));
-            return Redirect::back()->with('danger', trans('alertDanger.cashedit'));
+            Log::error(trans('alertDanger.cash_edit'));
+            return Redirect::back()->with('danger', trans('alertDanger.cash_edit'));
         }
     }
 
@@ -217,13 +178,13 @@ class CashController extends Controller
             Cash::getCash(Request::input('idcash'))->delete();
 
             DB::commit();
-            Log::info(trans('alertSuccess.cashdel'));
-            return Redirect::route('o-collect')->with('success', trans('alertSuccess.cashdel'));
+            Log::info(trans('alertSuccess.cash_delete'));
+            return Redirect::route('o-collect')->with('success', trans('alertSuccess.cash_delete'));
         } catch (\Exception $ex) {
             DB::rollBack();
             Log::error($ex->getMessage());
-            Log::error(trans('alertDanger.cashdel'));
-            return Redirect::back()->with('danger', trans('alertDanger.cashdel'));
+            Log::error(trans('alertDanger.cash_delete'));
+            return Redirect::back()->with('danger', trans('alertDanger.cash_delete'));
         }
     }
 }
