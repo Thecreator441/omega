@@ -24,21 +24,19 @@ class Cash extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
-     */
-    public static function getEm001ash(int $iduser)
-    {
-        return self::query()->where('employee', $iduser)->first();
-    }
-
-    /**
      * @return \Illuminate\Support\Collection
      */
     public static function getCashBy(array $where)
     {
         $emp = Session::get('employee');
 
-        return self::query()->where(static function ($query) use ($emp) {
+        return self::query()->select('cashes.*', 'cA.accnumb AS casAcc_Numb', 'mA.accnumb AS misAcc_Numb', 'eA.accnumb AS excAcc_Numb', 'E.name', 'E.surname')
+            ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
+            ->join('accounts AS mA', 'cashes.misacc', '=', 'mA.idaccount')
+            ->join('accounts AS eA', 'cashes.excacc', '=', 'eA.idaccount')
+            ->join('users AS U', 'cashes.employee', '=', 'U.iduser')
+            ->join('employees AS E', 'E.idemp', '=', 'U.employee')
+            ->where(static function ($query) use ($emp) {
             if ($emp->level === 'N') {
                 $query->where('cashes.network', $emp->network);
             }
@@ -60,9 +58,37 @@ class Cash extends Model
     public static function getCashes(array $where = [])
     {
         $emp = Session::get('employee');
-
+        
         if ($where !== null) {
-            return self::query()->where(static function ($query) use ($emp) {
+            return self::query()->select('cashes.*', 'cA.accnumb AS casAcc_Numb', 'mA.accnumb AS misAcc_Numb', 'eA.accnumb AS excAcc_Numb', 'E.name', 'E.surname')
+                ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
+                ->join('accounts AS mA', 'cashes.misacc', '=', 'mA.idaccount')
+                ->join('accounts AS eA', 'cashes.excacc', '=', 'eA.idaccount')
+                ->join('users AS U', 'cashes.employee', '=', 'U.iduser')
+                ->join('employees AS E', 'E.idemp', '=', 'U.employee')
+                ->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'N') {
+                        $query->where('cashes.network', $emp->network);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('cashes.zone', $emp->zone);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('cashes.institution', $emp->institution);
+                    }
+                    if ($emp->level === 'B') {
+                        $query->where('cashes.branch', $emp->branch);
+                    }
+                })->where($where)->orderBy('cashcode')->get();
+        }
+
+        return self::query()->select('cashes.*', 'cA.accnumb AS casAcc_Numb', 'mA.accnumb AS misAcc_Numb', 'eA.accnumb AS excAcc_Numb', 'E.name', 'E.surname')
+            ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
+            ->join('accounts AS mA', 'cashes.misacc', '=', 'mA.idaccount')
+            ->join('accounts AS eA', 'cashes.excacc', '=', 'eA.idaccount')
+            ->join('users AS U', 'cashes.employee', '=', 'U.iduser')
+            ->join('employees AS E', 'E.idemp', '=', 'U.employee')
+            ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'N') {
                     $query->where('cashes.network', $emp->network);
                 }
@@ -75,23 +101,7 @@ class Cash extends Model
                 if ($emp->level === 'B') {
                     $query->where('cashes.branch', $emp->branch);
                 }
-            })->where($where)->orderBy('cashcode')->get();
-        }
-
-        return self::query()->where(static function ($query) use ($emp) {
-            if ($emp->level === 'N') {
-                $query->where('cashes.network', $emp->network);
-            }
-            if ($emp->level === 'Z') {
-                $query->where('cashes.zone', $emp->zone);
-            }
-            if ($emp->level === 'I') {
-                $query->where('cashes.institution', $emp->institution);
-            }
-            if ($emp->level === 'B') {
-                $query->where('cashes.branch', $emp->branch);
-            }
-        })->orderBy('cashcode')->get();
+            })->orderBy('cashcode')->get();
     }
 
     /**
@@ -163,7 +173,7 @@ class Cash extends Model
      * @param int|null $collector
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getEm001ashOpen(int $collector = null)
+    public static function getEmpCashOpen(int $collector = null)
     {
         $emp = Session::get('employee');
 
@@ -181,7 +191,7 @@ class Cash extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getEm001ashReopen()
+    public static function getEmpCashReopen()
     {
         $emp = Session::get('employee');
 

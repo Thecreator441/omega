@@ -1,5 +1,9 @@
 <?php
 $lang = Session::get('lang');
+$backURL = null;
+
+if (isset($backURI))
+    $backURL = $backURI;
 
 if ($lang === 'fr')
     App::setLocale('fr')
@@ -70,9 +74,8 @@ if ($lang === 'fr')
                         <div class="col-md-6">
                             <div class="form-group">
                                 <select class="form-control select2" id="lang" name="lang">
-
-                                    <option value="eng" @if($lang=='eng') selected @endif> @lang('label.eng')</option>
-                                    <option value="fr" @if($lang=='fr') selected @endif> @lang('label.fr')</option>
+                                    <option id="eng" value="eng" @if($lang=='eng') selected @endif> @lang('label.eng')</option>
+                                    <option id="fr" value="fr" @if($lang=='fr') selected @endif> @lang('label.fr')</option>
                                 </select>
                             </div>
                         </div>
@@ -82,10 +85,18 @@ if ($lang === 'fr')
                         <input type="hidden" name="device_version" id="device_version">
                         <input type="hidden" name="device_model" id="device_model">
                         <input type="hidden" name="time" id="time">
+                        <input type="hidden" name="backURL" value="{{ $backURL }}">
 
                         <div class="col-md-12">
-                            <button type="submit" class="btn btn-primary bg-blue-gradient btn-raised pull-right">
-                                <i class="fa fa-sign-in"></i>&nbsp; @lang('label.signin')
+                            <button type="submit" id="login" class="btn btn-primary bg-blue-gradient btn-raised pull-right">
+                                <i class="fa fa-sign-in"></i>&nbsp; 
+                                <span id="loginText">
+                                    @if ($backURL === null)
+                                        @lang('label.login')
+                                    @else
+                                        @lang('label.reconnect')
+                                    @endif
+                                </span>
                             </button>
                         </div>
                     </div>
@@ -123,8 +134,8 @@ if ($lang === 'fr')
 
             $('#time').val(time_off_mins);
 
-            console.log(parser.getResult());
-            console.log(time_off_mins);
+        //    console.log(parser.getResult());
+        //    console.log(time_off_mins);
 
             $('form').attr('autocomplete', 'off');
 
@@ -146,6 +157,22 @@ if ($lang === 'fr')
         });
         password.on('keyup', function () {
             $('#password_text').text('');
+        });
+
+        $('#lang').change(function () {
+            if ($(this).val() === 'fr') {
+                name.prop('placeholder', "Noms");
+                password.prop('placeholder', "Mot de Passe");
+                $('#eng').text('Anglais');
+                $('#fr').text('Français');
+                $('#loginText').text("S'identifier");
+            } else {
+                name.prop('placeholder', "Name");
+                password.prop('placeholder', "Password");
+                $('#eng').text('English');
+                $('#fr').text('French');
+                $('#loginText').text("Login");
+            }
         });
 
         // $(document).on('change', '#lang', function () {

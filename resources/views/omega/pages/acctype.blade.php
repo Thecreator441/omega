@@ -42,38 +42,38 @@ if ($emp->lang == 'fr') {
                         @if($emp->lang == 'fr')
                             <div class="col-md-6 col-xs-12">
                                 <div class="form-group has-error">
-                                    <label for="labelfr" class="col-md-3 col-xs-5 control-label">@lang('label.acctype_fr')<span class="text-red text-bold">*</span></label>
+                                    <label for="labelfr" class="col-md-3 col-xs-5 control-label">@lang('label.acc_type_fr')<span class="text-red text-bold">*</span></label>
                                     <div class="col-md-9 col-xs-7">
                                         <input type="text" class="form-control" name="labelfr" id="labelfr" required>
-                                        <div class="help-block">@lang('placeholder.acctype_fr')</div>
+                                        <div class="help-block">@lang('placeholder.acc_type_fr')</div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6 col-xs-12">
                                 <div class="form-group has-error">
-                                    <label for="labeleng" class="col-md-3 col-xs-5 control-label">@lang('label.acctype_eng')<span class="text-red text-bold">*</span></label>
+                                    <label for="labeleng" class="col-md-3 col-xs-5 control-label">@lang('label.acc_type_eng')<span class="text-red text-bold">*</span></label>
                                     <div class="col-md-9 col-xs-7">
                                         <input type="text" class="form-control" name="labeleng" id="labeleng" required>
-                                        <div class="help-block">@lang('placeholder.acctype_eng')</div>
+                                        <div class="help-block">@lang('placeholder.acc_type_eng')</div>
                                     </div>
                                 </div>
                             </div>
                         @else
                             <div class="col-md-6 col-xs-12">
                                 <div class="form-group has-error">
-                                    <label for="labeleng" class="col-md-3 col-xs-5 control-label">@lang('label.acctype_eng')<span class="text-red text-bold">*</span></label>
+                                    <label for="labeleng" class="col-md-3 col-xs-5 control-label">@lang('label.acc_type_eng')<span class="text-red text-bold">*</span></label>
                                     <div class="col-md-9 col-xs-7">
                                         <input type="text" class="form-control" name="labeleng" id="labeleng" required>
-                                        <div class="help-block">@lang('placeholder.acctype_eng')</div>
+                                        <div class="help-block">@lang('placeholder.acc_type_eng')</div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6 col-xs-12">
                                 <div class="form-group has-error">
-                                    <label for="labelfr" class="col-md-3 col-xs-5 control-label">@lang('label.acctype_fr')<span class="text-red text-bold">*</span></label>
+                                    <label for="labelfr" class="col-md-3 col-xs-5 control-label">@lang('label.acc_type_fr')<span class="text-red text-bold">*</span></label>
                                     <div class="col-md-9 col-xs-7">
                                         <input type="text" class="form-control" name="labelfr" id="labelfr" required>
-                                        <div class="help-block">@lang('placeholder.acctype_fr')</div>
+                                        <div class="help-block">@lang('placeholder.acc_type_fr')</div>
                                     </div>
                                 </div>
                             </div>
@@ -97,8 +97,7 @@ if ($emp->lang == 'fr') {
             <h3 class="box-title text-bold">{{$title}}</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-success bg-green btn-sm pull-right" id="insertForm">
-                    <i class="fa fa-plus"></i>&nbsp; @if($emp->lang == 'fr') Nouveau Type de compte @else New Account
-                    Type @endif
+                    <i class="fa fa-plus"></i>&nbsp; @lang('label.new_acctype')
                 </button>
             </div>
         </div>

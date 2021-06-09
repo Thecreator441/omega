@@ -12,448 +12,352 @@ if ($emp->lang == 'fr') {
 @section('title', $title)
 
 @section('content')
-    <div class="box">
-        <div class="box-header">
-            <div class="box-tools">
-                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>
-            </div>
+<div class="box" id="form" style="display: block;">
+    <div class="box-header with-border">
+        <h3 class="box-title text-bold" id="title"> @lang('label.new_loan_type')</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-alert bg-red btn-sm pull-right" id="exitForm">
+                <i class="fa fa-close"></i>
+            </button>
         </div>
-        <div class="box-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="col-md-12">
-                        {{ $loantypes->links('layouts.includes.pagination') }}
+    </div>
+    <div class="box-body">
+        <form action="{{ route('loantype/store') }}" method="post" role="form" id="loan_typeForm" class="needs-validation">
+            {{ csrf_field() }}
+
+            <div class="fillform">
+                <input type="hidden" id="idloan_type" name="idloan_type" value="">
+
+                <div class="row">
+                    <div class="col-md-2 col=xs-12">
+                        <div class="form-group has-error">
+                            <label for="loan_type_code" class="col-md-4 col-xs-3 control-label">@lang('label.code')<span class="text-red text-bold">*</span></label>
+                            <div class="col-md-8 col-xs-9">
+                                <input type="text" name="loan_type_code" id="loan_type_code" class="form-control text-right code_" value="{{ (int)$loan_types->count() + 1 }}" readonly required>
+                                <div class="help-block">@lang('placeholder.code')</div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <form action="{{ route('loantype/store') }}" method="post" role="form" id="loanTypeForm">
-                {{ csrf_field() }}
-                <div id="form">
-                    @if ($loantypes->count() == 0)
-                        <div class="box-header with-border">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="loaneng"
-                                               class="col-md-3 control-label">@lang('label.labeleng')</label>
-                                        <div class="col-md-9">
-                                            <input type="text" name="loaneng" id="loaneng" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="loanfr"
-                                               class="col-md-3 control-label">@lang('label.labelfr')</label>
-                                        <div class="col-md-9">
-                                            <input type="text" name="loanfr" id="loanfr" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="maxdur"
-                                               class="col-md-6 control-label">@lang('label.maxdur')</label>
-                                        <div class="col-md-6">
-                                            <input type="text" name="maxdur" id="maxdur"
-                                                   class="form-control text-right">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="maxamt"
-                                               class="col-md-6 control-label">@lang('label.maxamt')</label>
-                                        <div class="col-md-6">
-                                            <input type="text" name="maxamt" id="maxamt"
-                                                   class="form-control text-right text-bold">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="inst&pen"
-                                               class="col-md-6 control-label">@lang('label.inst&pen')</label>
-                                        <div class="col-md-6">
-                                            <input type="text" name="inst&pen" id="inst&pen" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="loanacc"
-                                               class="col-md-6 control-label">@lang('label.loanacc')</label>
-                                        <div class="col-md-6">
-                                            <select name="loanacc" id="loanacc" class="form-control select2">
-                                                <option value=""></option>
-                                                @foreach ($accounts as $account)
-                                                    <option
-                                                        value="{{$account->idaccount}}">{{$account->accplan}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="period"
-                                               class="col-md-5 control-label">@lang('label.periodicity')</label>
-                                        <div class="col-md-7">
-                                            <select id="period" name="period" class="form-control select2">
-                                                <option value=""></option>
-                                                <option value="D">@lang('label.daily')</option>
-                                                <option value="W">@lang('label.weekly')</option>
-                                                <option value="B">@lang('label.bimens')</option>
-                                                <option value="M" selected>@lang('label.mens')</option>
-                                                <option value="T">@lang('label.trim')</option>
-                                                <option value="S">@lang('label.sem')</option>
-                                                <option value="A">@lang('label.ann')</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="intpayacc"
-                                               class="col-md-3 control-label">@lang('label.intpayacc')</label>
-                                        <div class="col-md-3">
-                                            <div class="row">
-                                                <select name="intpayacc" id="intpayacc" class="form-control select2">
-                                                    <option value=""></option>
-                                                    @foreach ($accounts as $account)
-                                                        @if (substrWords($account->accnumb, 1) == 7)
-                                                            <option
-                                                                value="{{$account->idaccount}}">{{$account->accnumb}}</option>
-                                                        @endif
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <input type="text" name="intacc_name" id="intacc_name" class="form-control"
-                                                   disabled>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <label for="penreg">
-                                                    <input type="checkbox" name="penreg" id="penreg" value="Y">&nbsp;&nbsp;
-                                                    @lang('label.penreg')</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row" id="penRegInfo" style="display: none">
-                                    <div class="col-md-12">
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="taxpen"
-                                                       class="col-md-6 control-label">@lang('label.taxpen')</label>
-                                                <div class="col-md-6">
-                                                    <input type="text" name="taxpen" id="taxpen"
-                                                           class="form-control text-right">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="penacc"
-                                                       class="col-md-5 control-label">@lang('label.penacc')</label>
-                                                <div class="col-md-7">
-                                                    <select name="penacc" id="penacc" class="form-control select2">
-                                                        <option value=""></option>
-                                                        @foreach ($accounts as $account)
-                                                            @if (substrWords($account->accnumb, 1) == 6)
-                                                                <option
-                                                                    value="{{$account->idaccount}}">{{$account->accnumb}}</option>
-                                                            @endif
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <input type="text" name="penacc_name" id="penacc_name"
-                                                           class="form-control">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                    @if($emp->lang == 'fr')
+                        <div class="col-md-5 col-xs-12">
+                            <div class="form-group has-error">
+                                <label for="labelfr" class="col-md-2 control-label">@lang('label.loan_type_fr')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" name="labelfr" id="labelfr" required>
+                                    <div class="help-block">@lang('placeholder.loan_type_fr')</div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="col-md-12">
-                                    <div class="col-md-12">
-                                        <button type="button" id="delete" disabled
-                                                class="btn btn-sm bg-red pull-right btn-raised fa fa-trash">
-                                        </button>
-                                        <button type="button" id="update" disabled
-                                                class="btn btn-sm bg-aqua pull-right btn-raised fa fa-recycle">
-                                        </button>
-                                        <button type="button" id="save"
-                                                class="btn btn-sm bg-blue pull-right btn-raised fa fa-save">
-                                        </button>
-                                    </div>
+                        <div class="col-md-5 col-xs-12">
+                            <div class="form-group has-error">
+                                <label for="labeleng" class="col-md-2 control-label">@lang('label.loan_type_eng')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" name="labeleng" id="labeleng" required>
+                                    <div class="help-block">@lang('placeholder.loan_type_eng')</div>
                                 </div>
                             </div>
                         </div>
                     @else
-                        @foreach ($loantypes as $loantype)
-                            <input type="hidden" id="idloantype" name="idloantype" value="{{$loantype->idltype}}">
-                            <div class="box-header with-border">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="loaneng"
-                                                   class="col-md-3 control-label">@lang('label.labeleng')</label>
-                                            <div class="col-md-9">
-                                                <input type="text" name="loaneng" id="loaneng" class="form-control"
-                                                       value="{{$loantype->labeleng}}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="loanfr"
-                                                   class="col-md-3 control-label">@lang('label.labelfr')</label>
-                                            <div class="col-md-9">
-                                                <input type="text" name="loanfr" id="loanfr" class="form-control"
-                                                       value="{{$loantype->labelfr}}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="maxdur"
-                                                   class="col-md-6 control-label">@lang('label.maxdur')</label>
-                                            <div class="col-md-6">
-                                                <input type="text" name="maxdur" id="maxdur"
-                                                       class="form-control text-right" readonly
-                                                       value="{{$loantype->maxdur}}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="maxamt"
-                                                   class="col-md-6 control-label">@lang('label.maxamt')</label>
-                                            <div class="col-md-6">
-                                                <input type="text" name="maxamt" id="maxamt"
-                                                       class="form-control text-right text-bold" readonly
-                                                       value="{{money((int)$loantype->maxamt)}}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="inst&pen"
-                                                   class="col-md-6 control-label">@lang('label.inst&pen')</label>
-                                            <div class="col-md-6">
-                                                <input type="text" name="inst&pen" id="inst&pen" class="form-control"
-                                                       readonly
-                                                       value="{{$loantype->datescapepen}}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="loanacc"
-                                                   class="col-md-6 control-label">@lang('label.loanacc')</label>
-                                            <div class="col-md-6">
-                                                <select name="loanacc" id="loanacc" class="form-control select2"
-                                                        disabled>
-                                                    <option></option>
-                                                    @foreach ($accounts as $account)
-                                                        @if ($account->idaccount == $loantype->loanaccart)
-                                                            <option value="{{$account->idaccount}}"
-                                                                    selected>{{$account->accplan}}</option>
-                                                        @else
-                                                            <option
-                                                                value="{{$account->idaccount}}">{{$account->accplan}}</option>
-                                                        @endif
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="period"
-                                                   class="col-md-5 control-label">@lang('label.periodicity')</label>
-                                            <div class="col-md-7">
-                                                <select id="period" name="period" class="form-control select2">
-                                                    <option value=""></option>
-                                                    <option value="D"
-                                                            @if ($loantype->period == 'D') selected @endif>@lang('label.daily')</option>
-                                                    <option value="W"
-                                                            @if ($loantype->period == 'W') selected @endif>@lang('label.weekly')</option>
-                                                    <option value="B"
-                                                            @if ($loantype->period == 'B') selected @endif>@lang('label.bimens')</option>
-                                                    <option value="M"
-                                                            @if ($loantype->period == 'M') selected @endif>@lang('label.mens')</option>
-                                                    <option value="T"
-                                                            @if ($loantype->period == 'T') selected @endif>@lang('label.trim')</option>
-                                                    <option value="S"
-                                                            @if ($loantype->period == 'S') selected @endif>@lang('label.sem')</option>
-                                                    <option value="A"
-                                                            @if ($loantype->period == 'A') selected @endif>@lang('label.ann')</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="intpayacc"
-                                                   class="col-md-3 control-label">@lang('label.intpayacc')</label>
-                                            <div class="col-md-3">
-                                                <div class="row">
-                                                    <select name="intpayacc" id="intpayacc" class="form-control select2"
-                                                            disabled>
-                                                        <option value=""></option>
-                                                        @foreach ($accounts as $account)
-                                                            @if (substrWords($account->accnumb, 1) == 7)
-                                                                @if ($account->idaccount == $loantype->intacc)
-                                                                    <option value="{{$account->idaccount}}"
-                                                                            selected>{{$account->accnumb}}</option>
-                                                                @else
-                                                                    <option
-                                                                        value="{{$account->idaccount}}">{{$account->accnumb}}</option>
-                                                                @endif
-                                                            @endif
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                @foreach ($accounts as $account)
-                                                    @if (substrWords($account->accnumb, 1) == 7)
-                                                        @if ($account->idaccount == $loantype->intacc)
-                                                            <input type="text" name="intacc_name" id="intacc_name"
-                                                                   class="form-control" disabled
-                                                                   value="@if ($emp->lang == 'fr') {{$account->labelfr}} @else {{$account->labeleng}} @endif">
-                                                        @endif
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <div class="col-md-12">
-                                                <div class="checkbox">
-                                                    <label for="penreg">
-                                                        <input type="checkbox" name="penreg" id="penreg" value="Y"
-                                                               @if ($loantype->penreq == 'Y') checked @endif disabled>&nbsp;&nbsp;
-                                                        @lang('label.penreg')</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row" id="penRegInfo" style="display: none">
-                                        <div class="col-md-12">
-                                            <div class="col-md-1"></div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="taxpen"
-                                                           class="col-md-6 control-label">@lang('label.taxpen')</label>
-                                                    <div class="col-md-6">
-                                                        <input type="text" name="taxpen" id="taxpen" readonly
-                                                               value="{{round($loantype->pentax)}}"
-                                                               class="form-control text-right">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="penacc"
-                                                           class="col-md-5 control-label">@lang('label.penacc')</label>
-                                                    <div class="col-md-7">
-                                                        <select name="penacc" id="penacc" class="form-control select2"
-                                                                disabled>
-                                                            <option></option>
-                                                            @foreach ($accounts as $account)
-                                                                @if (substrWords($account->accnumb, 1) == 6)
-                                                                    @if ($account->idaccount == $loantype->penacc)
-                                                                        <option value="{{$account->idaccount}}"
-                                                                                selected>{{$account->accnumb}}</option>
-                                                                    @else
-                                                                        <option
-                                                                            value="{{$account->idaccount}}">{{$account->accnumb}}</option>
-                                                                    @endif
-                                                                @endif
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        @foreach ($accounts as $account)
-                                                            @if (substrWords($account->accnumb, 1) == 6)
-                                                                @if ($account->idaccount == $loantype->penacc)
-                                                                    <input type="text" name="penacc_name"
-                                                                           id="penacc_name"
-                                                                           class="form-control" disabled
-                                                                           value="@if ($emp->lang == 'fr') {{$account->labelfr}} @else {{$account->labeleng}} @endif">
-                                                                @endif
-                                                            @endIf
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                        <div class="col-md-5 col-xs-12">
+                            <div class="form-group has-error">
+                                <label for="labeleng" class="col-md-2 control-label">@lang('label.loan_type_eng')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" name="labeleng" id="labeleng" required>
+                                    <div class="help-block">@lang('placeholder.loan_type_eng')</div>
                                 </div>
                             </div>
-
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="col-md-12">
-                                        <button type="button" id="delete"
-                                                class="btn btn-sm bg-red pull-right btn-raised fa fa-trash">
-                                        </button>
-                                        <button type="button" id="update"
-                                                class="btn btn-sm bg-aqua pull-right btn-raised fa fa-recycle">
-                                        </button>
-                                        <button type="button" id="insert"
-                                                class="btn btn-sm bg-blue pull-right btn-raised fa fa-file-o">
-                                        </button>
-                                    </div>
+                        </div>
+                        <div class="col-md-5 col-xs-12">
+                            <div class="form-group has-error">
+                                <label for="labelfr" class="col-md-2 control-label">@lang('label.loan_type_fr')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" name="labelfr" id="labelfr" required>
+                                    <div class="help-block">@lang('placeholder.loan_type_fr')</div>
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
                     @endif
                 </div>
-            </form>
-        </div>
+
+                <div class="row">
+                    <div class="col-md-3 col-xs-12">
+                        <div class="form-group has-info">
+                            <label for="loan_per" class="col-md-4 col-xs-3 control-label">@lang('label.loan_per')</label>
+                            <div class="col-md-8 col-xs-9">
+                                <select id="loan_per" name="loan_per" class="form-control select2">
+                                    <option value="Al" selected>@lang('label.al_period')</option>
+                                    <option value="D">@lang('label.daily')</option>
+                                    <option value="W">@lang('label.weekly')</option>
+                                    <option value="B">@lang('label.bimens')</option>
+                                    <option value="M">@lang('label.mens')</option>
+                                    <option value="T">@lang('label.trim')</option>
+                                    <option value="S">@lang('label.sem')</option>
+                                    <option value="A">@lang('label.ann')</option>
+                                </select>
+                                <div class="help-block">@lang('placeholder.loan_per')</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-6">
+                        <div class="form-group has-info">
+                            <label for="max_dur" class="col-md-6 control-label">@lang('label.max_dur')</label>
+                            <div class="col-md-6">
+                                <input type="text" name="max_dur" id="max_dur" class="form-control text-right">
+                                <div class="help-block">@lang('placeholder.max_dur')</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-6">
+                        <div class="form-group has-info">
+                            <label for="max_amt" class="col-md-5 control-label">@lang('label.max_amt')</label>
+                            <div class="col-md-7">
+                                <input type="text" name="max_amt" id="max_amt" class="form-control text-right text-bold">
+                                <div class="help-block">@lang('placeholder.max_amt')</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-6">
+                        <div class="form-group has-info">
+                            <label for="inst_pen_day_space" class="col-md-8 control-label">@lang('label.inst_pen_day_space')</label>
+                            <div class="col-md-4">
+                                <input type="text" name="inst_pen_day_space" id="inst_pen_day_space" class="form-control text-right">
+                                <div class="help-block">@lang('placeholder.inst_pen_day_space')</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-7 col-xs-12">
+                        <div class="form-group has-error">
+                            <label for="int_paid_acc" class="col-md-4 control-label">@lang('label.int_paid_acc')<span class="text-red text-bold">*</span></label>
+                            <div class="col-md-8">
+                                <select name="int_paid_acc" id="int_paid_acc" class="select2" required>
+                                    <option value=""></option>
+                                    @foreach ($accplans as $accplan)
+                                        <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>
+                                    @endforeach
+                                </select>
+                                <div class="help-block">@lang('placeholder.int_paid_acc')</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-xs-6">
+                        <div class="form-group has-error">
+                            <label for="loan_acc" class="col-md-4 control-label">@lang('label.loan_acc')<span class="text-red text-bold">*</span></label>
+                            <div class="col-md-8">
+                                <select name="loan_acc" id="loan_acc" class="select2" required>
+                                    <option value=""></option>
+                                    @foreach ($accplans as $accplan)
+                                        @if ($accplan->accabbr === 'Co')
+                                            <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <div class="help-block">@lang('placeholder.loan_acc')</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-header with-border">
+                    <div class="row">
+                        <div class="row">
+                            <div class="col-md-4 col-xs-12">
+                                <div class="form-group col-md-12">
+                                    <label for="">@lang('label.seicomaker')</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-xs-6">
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <label for="seicomaker_Y">
+                                            <input type="radio" name="seicomaker" value="Y" id="seicomaker_Y" class="">&nbsp;&nbsp;
+                                            @lang('label.yes')
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-xs-6">
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <label for="seicomaker_N">
+                                            <input type="radio" name="seicomaker" value="N" id="seicomaker_N" class="">&nbsp;&nbsp;
+                                            @lang('label.no')
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-header with-border">
+                    <div class="row">
+                        <div class="row">
+                            <div class="col-md-3 col-xs-12">
+                                <div class="form-group col-md-12">
+                                    <label for="">@lang('label.block_acc')</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-xs-6">
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <label for="none">
+                                            <input type="radio" name="block_acc" value="N" id="none" class="">&nbsp;&nbsp;
+                                            @lang('label.none')
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-xs-6">
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <label for="mem_acc">
+                                            <input type="radio" name="block_acc" value="M" id="mem_acc" class="">&nbsp;&nbsp;
+                                            @lang('label.mem_acc')
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-xs-12">
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <label for="mem&co">
+                                            <input type="radio" name="block_acc" value="MC" id="mem&co" class="">&nbsp;&nbsp;
+                                            @lang('label.mem&co')
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-header with-border">
+                    <div class="row">
+                        <div class="row">
+                            <div class="col-md-2 col-xs-12">
+                                <div class="form-group col-md-12">
+                                    <label for="">@lang('label.pay_tax')</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-xs-12">
+                                <div class="form-group">
+                                    <label for="pay_tax_rate" class="col-md-4 control-label">@lang('label.rate')</label>
+                                    <div class="col-md-8">
+                                        <input type="text" name="pay_tax_rate" id="pay_tax_rate" class="rate form-control text-right">
+                                        <div class="help-block">@lang('placeholder.pay_tax_rate')</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 col-xs-12">
+                                <div class="form-group">
+                                    <label for="pay_tax_acc" class="col-md-2 control-label">@lang('label.account')</label>
+                                    <div class="col-md-10">
+                                        <select name="pay_tax_acc" id="pay_tax_acc" class="form-control select2">
+                                            <option value=""></option>
+                                            @foreach($accplans as $accplan)
+                                                <option value="{{ $accplan->idaccplan }}">
+                                                    {{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{$accplan->labelfr}} @else {{$accplan->labeleng}} @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <div class="help-block">@lang('placeholder.pay_tax_acc')</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-header with-border">
+                    <div class="row">
+                        <div class="row">
+                            <div class="col-md-2 col-xs-12">
+                                <div class="form-group col-md-12">
+                                    <label for="">@lang('label.use_quod')</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-xs-12">
+                                <div class="form-group">
+                                    <label for="use_quod_rate" class="col-md-4 control-label">@lang('label.rate')</label>
+                                    <div class="col-md-8">
+                                        <input type="text" name="use_quod_rate" id="use_quod_rate" class="rate form-control text-right">
+                                        <div class="help-block">@lang('placeholder.use_quod_rate')</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 col-xs-12">
+                                <div class="form-group">
+                                    <label for="use_quod_acc" class="col-md-2 control-label">@lang('label.account')</label>
+                                    <div class="col-md-10">
+                                        <select name="use_quod_acc" id="use_quod_acc" class="form-control select2">
+                                            <option value=""></option>
+                                            @foreach($accplans as $accplan)
+                                                <option value="{{ $accplan->idaccplan }}">
+                                                    {{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{$accplan->labelfr}} @else {{$accplan->labeleng}} @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <div class="help-block">@lang('placeholder.use_quod_acc')</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-header">
+                    <div class="row">
+                        <div class="row">
+                            <div class="col-md-2 col-xs-12">
+                                <div class="form-group col-md-12">
+                                    <label for="">@lang('label.pen_req')</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-xs-12">
+                                <div class="form-group">
+                                    <label for="pen_req_tax" class="col-md-4 control-label">@lang('label.tax')</label>
+                                    <div class="col-md-8">
+                                        <input type="text" name="pen_req_tax" id="pen_req_tax" class="rate form-control text-right">
+                                        <div class="help-block">@lang('placeholder.pen_req_tax')</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 col-xs-12">
+                                <div class="form-group">
+                                    <label for="pen_req_acc" class="col-md-2 control-label">@lang('label.account')</label>
+                                    <div class="col-md-10">
+                                        <select name="pen_req_acc" id="pen_req_acc" class="form-control select2">
+                                            <option value=""></option>
+                                            @foreach($accplans as $accplan)
+                                                <option value="{{ $accplan->idaccplan }}">
+                                                    {{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{$accplan->labelfr}} @else {{$accplan->labeleng}} @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <div class="help-block">@lang('placeholder.pen_req_acc')</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-12">
+                        <button type="submit" id="save" class="btn btn-sm bg-blue pull-right fa fa-save btn-raised"></button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
+</div>
 @stop
 
 @section('script')
@@ -462,7 +366,7 @@ if ($emp->lang == 'fr') {
             verifCheckbox();
         });
 
-        $('#maxamt').on('input', function () {
+        $('#max_amt').on('input', function () {
             $(this).val(money($(this).val()));
         });
 
@@ -490,26 +394,26 @@ if ($emp->lang == 'fr') {
 
         $('#intpayacc').change(function () {
             $.ajax({
-                url: "{{ url('getAccount') }}",
+                url: "{{ url('getaccplan') }}",
                 method: 'get',
                 data: {
-                    account: $(this).val()
+                    accplan: $(this).val()
                 },
-                success: function (account) {
-                    $('#intacc_name').val("@if($emp->lang == 'fr') " + account.labelfr + " @else " + account.labeleng + " @endif ");
+                success: function (accplan) {
+                    $('#intacc_name').val("@if($emp->lang == 'fr') " + accplan.labelfr + " @else " + accplan.labeleng + " @endif ");
                 }
             });
         });
 
         $('#penacc').change(function () {
             $.ajax({
-                url: "{{ url('getAccount') }}",
+                url: "{{ url('getaccplan') }}",
                 method: 'get',
                 data: {
-                    account: $(this).val()
+                    accplan: $(this).val()
                 },
-                success: function (account) {
-                    $('#penacc_name').val("@if($emp->lang == 'fr') " + account.labelfr + " @else " + account.labeleng + " @endif ");
+                success: function (accplan) {
+                    $('#penacc_name').val("@if($emp->lang == 'fr') " + accplan.labelfr + " @else " + accplan.labeleng + " @endif ");
                 }
             });
         });

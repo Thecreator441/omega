@@ -20,8 +20,20 @@ class LoanType extends Model
      */
     public static function getLoanType(int $id)
     {
-        return self::query()->where('idltype', $id)->join('accounts AS A', 'loanacc', '=', 'A.idaccount')
-            ->select('loan_types.*', 'A.accnumb')->first();
+        return self::query()->select('loan_types.*', 'A.accnumb')
+            ->join('accounts AS A', 'loanacc', '=', 'A.idaccount')
+            ->where('idltype', $id)->first();
+    }
+
+    /**
+     * @param int $id
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getLoanTypeBy(arrar $where)
+    {
+        return self::query()->select('loan_types.*', 'A.accnumb')
+            ->join('accounts AS A', 'loanacc', '=', 'A.idaccount')
+            ->where($where)->first();
     }
 
     /**

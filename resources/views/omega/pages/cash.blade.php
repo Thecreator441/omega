@@ -12,7 +12,7 @@ if ($emp->lang == 'fr') {
 @section('title', $title)
 
 @section('content')
-<div class="box" id="form" style="display: block;">
+<div class="box" id="form" style="display: none;">
     <div class="box-header with-border">
         <h3 class="box-title text-bold" id="title"> @lang('label.new_cash')</h3>
         <div class="box-tools pull-right">
@@ -200,7 +200,7 @@ if ($emp->lang == 'fr') {
                     </div>
                 </div>
 
-                <div class="box-header with-border">
+                <div class="box-header">
                     <div class="row">
                         <div class="row">
                             <div class="col-md-12 col-xs-12">
@@ -228,11 +228,11 @@ if ($emp->lang == 'fr') {
                                             <td id="bil">{{money($money->value)}}</td>
                                             <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
                                             <td class="input">
-                                                <input type="text" class="tot" name="{{$money->moncode}}" id="{{$money->moncode}}"
+                                                <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
                                                        oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
                                             </td>
-                                            <td class="sum text-right" id="{{$money->moncode}}Sum"></td>
-                                            <td class="text-light-blue word"></td>
+                                            <td class="sum text-right {{ $money->moncode }}Sum" id="{{$money->moncode}}Sum"></td>
+                                            <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
                                         </tr>
                                     @endif
                                 @endforeach
@@ -249,11 +249,11 @@ if ($emp->lang == 'fr') {
                                             <td id="bil">{{money($money->value)}}</td>
                                             <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
                                             <td class="input">
-                                                <input type="text" class="tot" name="{{$money->moncode}}" id="{{$money->moncode}}"
+                                                <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
                                                        oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
                                             </td>
-                                            <td class="sum text-right" id="{{$money->moncode}}Sum"></td>
-                                            <td class="text-light-blue word"></td>
+                                            <td class="sum text-right {{ $money->moncode }}Sum" id="{{$money->moncode}}Sum"></td>
+                                            <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
                                         </tr>
                                     @endif
                                 @endforeach
@@ -315,9 +315,9 @@ if ($emp->lang == 'fr') {
                         <td class="text-center">{{pad($cash->branch, 3)}}-{{pad($cash->cashcode, 3)}}</td>
                         <td>@if($emp->lang == 'fr') {{ $cash->labelfr }} @else {{ $cash->labeleng }} @endif</td>
                         <td class="text-center">{{ $cash->casAcc_Numb }}</td>
-                        <td class="text-center">{{ $cash->misacc_Numb }}</td>
-                        <td class="text-center">{{ $cash->excacc_Numb }}</td>
-                        <td>{{ $cash->user }}</td>
+                        <td class="text-center">{{ $cash->misAcc_Numb }}</td>
+                        <td class="text-center">{{ $cash->excAcc_Numb }}</td>
+                        <td>{{ $cash->name }} {{ $cash->surname }}</td>
                         <td class="text-center">{{changeFormat($cash->created_at)}}</td>
                         <td class="text-center">
                             <button type="button" class="btn bg-green btn-sm fa fa-eye" onclick="view('{{$cash->idcash}}')"></button>
@@ -370,11 +370,11 @@ if ($emp->lang == 'fr') {
             let sumIn = 0;
 
             $('.sum').each(function () {
-                let input = trimOver($(this).text(), null);
+                var input = trimOver($(this).text(), null);
+                
                 if (parseInt(input)) {
-                    // $(this).after("<td class='text-light-blue text-bold word'></td>");
-                    $(this).after("<td class='text-light-blue text-bold word'>" + toWord(input, '{{$emp->lang}}') + "</td>");
                     sumIn += parseInt(input);
+                    $('.' + $(this).prop('id') + 'Word').text(toWord(input, '{{$emp->lang}}'));
                 }
             });
 
@@ -401,10 +401,10 @@ if ($emp->lang == 'fr') {
 
         function view(idcash) {
             $.ajax({
-                url: "{{ url('getcash') }}",
+                url: "{{ url('getCash') }}",
                 method: 'get',
                 data: {
-                    id: idcash
+                    cash: idcash
                 },
                 success: function (cash) {
                     setDisabled(true);
@@ -424,7 +424,7 @@ if ($emp->lang == 'fr') {
                             id: cash.cashacc
                         },
                         success: function (cashAcc) {
-                            $('#theiracc').val(cashAcc.idplan).select2();
+                            $('#cashacc').val(cashAcc.idplan).select2();
                         }
                     });
 
@@ -435,7 +435,7 @@ if ($emp->lang == 'fr') {
                             id: cash.misacc
                         },
                         success: function (misAcc) {
-                            $('#theiracc').val(misAcc.idplan).select2();
+                            $('#misacc').val(misAcc.idplan).select2();
                         }
                     });
 
@@ -446,7 +446,7 @@ if ($emp->lang == 'fr') {
                             id: cash.excacc
                         },
                         success: function (excAcc) {
-                            $('#theiracc').val(excAcc.idplan).select2();
+                            $('#excacc').val(excAcc.idplan).select2();
                         }
                     });
 
@@ -460,10 +460,10 @@ if ($emp->lang == 'fr') {
 
         function edit(idcash) {
             $.ajax({
-                url: "{{ url('getcash') }}",
+                url: "{{ url('getCash') }}",
                 method: 'get',
                 data: {
-                    id: idcash
+                    cash: idcash
                 },
                 success: function (cash) {
                     setDisabled(false);
@@ -482,7 +482,7 @@ if ($emp->lang == 'fr') {
                             id: cash.cashacc
                         },
                         success: function (cashAcc) {
-                            $('#theiracc').val(cashAcc.idplan).select2();
+                            $('#cashacc').val(cashAcc.idplan).select2();
                         }
                     });
 
@@ -493,7 +493,7 @@ if ($emp->lang == 'fr') {
                             id: cash.misacc
                         },
                         success: function (misAcc) {
-                            $('#theiracc').val(misAcc.idplan).select2();
+                            $('#misacc').val(misAcc.idplan).select2();
                         }
                     });
 
@@ -504,7 +504,7 @@ if ($emp->lang == 'fr') {
                             id: cash.excacc
                         },
                         success: function (excAcc) {
-                            $('#theiracc').val(excAcc.idplan).select2();
+                            $('#excacc').val(excAcc.idplan).select2();
                         }
                     });
 

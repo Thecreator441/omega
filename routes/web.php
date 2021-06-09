@@ -62,7 +62,6 @@ use App\Models\User;
 use App\Models\ValWriting;
 use App\Models\Writing;
 use App\Models\Zone;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
@@ -88,10 +87,7 @@ Route::get('change_logout', 'Omega\LoginController@changeLogout')->name('change_
  ********** HOME **********
  ***************************/
 
-Route::get('omega', static function () {
-    return view('omega.index');
-})->name('omega');
-
+Route::get('omega', 'Omega\OmegaController@index')->name('omega');
 
 /***************************
  ********** FILES **********
@@ -1587,9 +1583,14 @@ Route::get('getLoanPur', static function () {
     return LoanPur::getLoanPur(Request::input('loanpur'));
 });
 
-//      Get Cash Description
+//      Get Cash
 Route::get('getCash', static function () {
     return Cash::getCash(Request::input('cash'));
+});
+
+//      Get Cashes
+Route::get('getCashes', static function () {
+    return Cash::getCashes(['cashes.branch' => Request::input('branch')]);
 });
 
 //      Get Operation

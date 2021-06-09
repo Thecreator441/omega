@@ -17,7 +17,7 @@ class MenuLevelIIIController extends Controller
     {
         $emp = verifSession('employee');
         if($emp === null) {
-            return Redirect::route('/');
+            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
         if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {

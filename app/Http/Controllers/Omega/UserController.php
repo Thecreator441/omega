@@ -31,7 +31,7 @@ class UserController extends Controller
     {
         $emp = verifSession('employee');
         if($emp === null) {
-            return Redirect::route('/');
+            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
         
         if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
@@ -391,7 +391,7 @@ class UserController extends Controller
 
             DB::commit();
             Log::info("{$emp->username} " . trans('label.logout') . " " . trans('label.at') . " " . getsDateTime(now()));
-            return Redirect::route('/');
+            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         } catch (\Exception $ex) {
             DB::rollBack();
             Log::error($ex->getMessage());

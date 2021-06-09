@@ -14,19 +14,6 @@ class Bank extends Model
     protected $fillable = ['banks'];
 
     /**
-     * @param array $where
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public static function getPaginate(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
-    {
-        $emp = Session::get('employee');
-
-        return self::query()->where('branch', $emp->branch)
-            ->orderBy('idbank', 'ASC')
-            ->paginate(1);
-    }
-
-    /**
      * @param int $id
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
@@ -35,6 +22,32 @@ class Bank extends Model
         $emp = Session::get('employee');
 
         return self::query()->where(['idbank' => $id, 'branch' => $emp->branch])->first();
+    }
+
+    /**
+     * @param array|null $where
+    * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getBankBy(array $where)
+    {
+        $emp = Session::get('employee');
+
+        return self::query()->select('banks.*', 'A.idaccount', 'A.accnumb')
+            ->join('accounts AS A', 'theiracc', '=', 'A.idaccount')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'N') {
+                    $query->where('banks.network', $emp->network);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('banks.zone', $emp->zone);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('banks.institution', $emp->institution);
+                }
+                if ($emp->level === 'B') {
+                    $query->where('banks.branch', $emp->branch);
+                }
+            })->where($where)->orderBy('bankcode')->first();
     }
 
     /**
@@ -50,10 +63,10 @@ class Bank extends Model
             ->join('accounts AS A', 'theiracc', '=', 'A.idaccount')
             ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'N') {
-                    $query->where('banks.network ', $emp->network);
+                    $query->where('banks.network', $emp->network);
                 }
                 if ($emp->level === 'Z') {
-                    $query->where('banks.zone ', $emp->zone);
+                    $query->where('banks.zone', $emp->zone);
                 }
                 if ($emp->level === 'I') {
                     $query->where('banks.institution', $emp->institution);
@@ -68,10 +81,10 @@ class Bank extends Model
             ->join('accounts AS A', 'theiracc', '=', 'A.idaccount')
             ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'N') {
-                    $query->where('banks.network ', $emp->network);
+                    $query->where('banks.network', $emp->network);
                 }
                 if ($emp->level === 'Z') {
-                    $query->where('banks.zone ', $emp->zone);
+                    $query->where('banks.zone', $emp->zone);
                 }
                 if ($emp->level === 'I') {
                     $query->where('banks.institution', $emp->institution);

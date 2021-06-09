@@ -7,7 +7,6 @@ use App\Models\Account;
 use App\Models\AccPlan;
 use App\Models\Cash;
 use App\Models\Employee;
-use App\Models\Institution;
 use App\Models\Money;
 use App\Models\Priv_Menu;
 use Illuminate\Support\Facades\DB;
@@ -22,13 +21,13 @@ class CashController extends Controller
     {
         $emp = verifSession('employee');
         if($emp === null) {
-            return Redirect::route('/');
+            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
         if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
             $cashes = Cash::getCashes();
             $accplans = AccPlan::getAccPlans();
-            $employees = Employee::getEmpUsers();
+            $employees = Employee::getEmployees();
             $moneys = Money::getMoneys();
             $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 

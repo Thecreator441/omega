@@ -23,23 +23,29 @@ class Employee extends Model
     }
 
     /**
-     * @param array $where
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @param int $id
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getEmpUsers(array $where = null)
+    public static function getEmployeeBy(array $where)
     {
         $emp = Session::get('employee');
 
-        if ($where !== null) {
-            return self::query()->select('employees.*', 'U.*')
-                ->join('users AS U', 'employees.idemp', '=', 'U.employee')
-                ->where($where)->where('employees.branch', $emp->branch)->orderBy('empmat')->get();
-        }
-
         return self::query()->select('employees.*', 'U.*')
             ->join('users AS U', 'employees.idemp', '=', 'U.employee')
-            ->where('employees.branch', $emp->branch)
-            ->orderBy('empmat')->get();
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('employees.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('employees.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('employees.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('employees.network', $emp->network);
+                }
+            })->where($where)->first();
     }
 
     /**
@@ -51,47 +57,48 @@ class Employee extends Model
         $emp = Session::get('employee');
 
         if ($where !== null) {
-            return self::query()->where($where)
+            return self::query()->select('employees.*', 'U.*')
+                ->join('users AS U', 'employees.idemp', '=', 'U.employee')
                 ->where(static function ($query) use ($emp) {
                     if ($emp->level === 'B') {
-                        $query->where('branch', $emp->branch);
+                        $query->where('employees.branch', $emp->branch);
                     }
                     if ($emp->level === 'I') {
-                        $query->where('institution', $emp->institution);
+                        $query->where('employees.institution', $emp->institution);
                     }
                     if ($emp->level === 'Z') {
-                        $query->where('zone ', $emp->zone);
+                        $query->where('employees.zone', $emp->zone);
                     }
                     if ($emp->level === 'N') {
-                        $query->where('network ', $emp->network);
+                        $query->where('employees.network', $emp->network);
                     }
-                })->orderBy('empmat')->get();
+                })->where($where)->orderBy('empmat')->get();
         }
 
-        return self::query()->where(static function ($query) use ($emp) {
-            if ($emp->level === 'B') {
-                $query->where('branch', $emp->branch);
-            }
-            if ($emp->level === 'I') {
-                $query->where('institution', $emp->institution);
-            }
-            if ($emp->level === 'Z') {
-                $query->where('zone ', $emp->zone);
-            }
-            if ($emp->level === 'N') {
-                $query->where('network ', $emp->network);
-            }
-        })->orderBy('empmat')->get();
+        return self::query()->select('employees.*', 'U.*')
+            ->join('users AS U', 'employees.idemp', '=', 'U.employee')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('employees.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('employees.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('employees.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('employees.network', $emp->network);
+                }
+            })->orderBy('empmat')->get();
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getLast()
+    public static function getLast(array $where)
     {
-        $emp = Session::get('employee');
-
-        return self::query()->where('institution', $emp->institution)->orderByDesc('empmat')->first();
+        return self::query()->where($where)->orderByDesc('empmat')->first();
     }
 
     /**
@@ -109,27 +116,27 @@ class Employee extends Model
             $employees = self::query()
                 ->where(static function ($query) use ($emp) {
                     if ($emp->level === 'B') {
-                        $query->where('branch', $emp->branch);
+                        $query->where('employees.branch', $emp->branch);
                     }
                     if ($emp->level === 'I') {
-                        $query->where('institution', $emp->institution);
+                        $query->where('employees.institution', $emp->institution);
                     }
                     if ($emp->level === 'Z') {
-                        $query->where('zone ', $emp->zone);
+                        $query->where('employees.zone', $emp->zone);
                     }
                     if ($emp->level === 'N') {
-                        $query->where('network ', $emp->network);
+                        $query->where('employees.network', $emp->network);
                     }
                 })->orderBy('empmat')->get();
         }
         if ($inst !== null && $branch === null) {
-            $employees = self::query()->where('institution', $inst)->orderBy('empmat')->get();
+            $employees = self::query()->where('employees.institution', $inst)->orderBy('empmat')->get();
         }
         if ($inst === null && $branch !== null) {
-            $employees = self::query()->where('branch', $branch)->orderBy('empmat')->get();
+            $employees = self::query()->where('employees.branch', $branch)->orderBy('empmat')->get();
         }
         if ($inst !== null && $branch !== null) {
-            $employees = self::query()->where('branch', $branch)->orderBy('empmat')->get();
+            $employees = self::query()->where('employees.branch', $branch)->orderBy('empmat')->get();
         }
 
 //        foreach ($employees as $employee) {

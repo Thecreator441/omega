@@ -26,8 +26,15 @@ class LoginController extends Controller
     public function index()
     {
         if (Session::has('employee')) {
-            return Redirect::route('omega');
+            return Redirect::back();
         }
+
+        if (Session::has('backURI')) {
+            $backURI = explode('/', Session::get('backURI'))[1];
+            
+            return view('omega.login', compact('backURI'));
+        }
+        
         return view('omega.login');
     }
 
@@ -38,6 +45,7 @@ class LoginController extends Controller
      */
     public function login()
     {
+        // dd(Request::all());
         $lang = Request::input('lang');
 
         if ($lang === 'fr') {
@@ -111,6 +119,12 @@ class LoginController extends Controller
 
                         Log::info("{$user->username} " . trans('label.login') . " " . trans('label.at') . " " . getsDateTime(now()));
 
+                        if (Request::input('backURL') !== null) {
+                            $backURL = explode('?', Request::input('backURL'));
+                            $params = explode('&', $backURL[1]);
+                            
+                            return Redirect::route($backURL[0], [$params[0], $params[1]]);
+                        }
                         return Redirect::route('omega');
                     }
                     return Redirect::back()->with('danger', trans('auth.blocked'))->withInput(\request(['name']));

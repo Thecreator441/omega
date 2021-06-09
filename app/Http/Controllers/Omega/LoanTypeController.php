@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Omega;
 
 use App\Models\Account;
+use App\Models\AccPlan;
 use App\Models\LoanType;
 use App\Models\Priv_Menu;
 use App\Http\Controllers\Controller;
@@ -18,15 +19,15 @@ class LoanTypeController extends Controller
     {
         $emp = verifSession('employee');
         if($emp === null) {
-            return Redirect::route('/');
+            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
         if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $loantypes = LoanType::getPaginates();
-            $accounts = Account::getAccounts();
+            $loan_types = LoanType::getLoanTypes();
+            $accplans = AccPlan::getAccPlans();
             $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-            return view('omega.pages.loantype', compact('menu', 'loantypes', 'accounts'));
+            return view('omega.pages.loantype', compact('menu', 'loan_types', 'accplans'));
         }
         return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
     }
