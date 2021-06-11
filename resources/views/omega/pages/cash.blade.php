@@ -12,7 +12,7 @@ if ($emp->lang == 'fr') {
 @section('title', $title)
 
 @section('content')
-<div class="box" id="form" style="display: block;">
+<div class="box" id="form" style="display: none;">
     <div class="box-header with-border">
         <h3 class="box-title text-bold" id="title"> @lang('label.new_cash')</h3>
         <div class="box-tools pull-right">
@@ -238,7 +238,7 @@ if ($emp->lang == 'fr') {
                             @foreach ($moneys as $money)
                                 @if ($money->format == 'B')
                                     <tr>
-                                        <td id="bil">{{money($money->value)}}</td>
+                                        <td id="bil">{{$money->value}}</td>
                                         <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
                                         <td class="input">
                                             <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
@@ -249,17 +249,17 @@ if ($emp->lang == 'fr') {
                                     </tr>
                                 @endif
                             @endforeach
-                            </tbody>
-                            <thead>
                             <tr>
-                                <th colspan="5" class="bg-gray"></th>
+                                <td class="bg-gray"></td>
+                                <td class="bg-gray"></td>
+                                <td class="bg-gray"></td>
+                                <td class="bg-gray"></td>
+                                <td class="bg-gray"></td>
                             </tr>
-                            </thead>
-                            <tbody>
                             @foreach ($moneys as $money)
                                 @if ($money->format == 'C')
                                     <tr>
-                                        <td id="bil">{{money($money->value)}}</td>
+                                        <td id="bil">{{$money->value}}</td>
                                         <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
                                         <td class="input">
                                             <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
@@ -330,7 +330,7 @@ if ($emp->lang == 'fr') {
                         <td class="text-center">{{ $cash->casAcc_Numb }}</td>
                         <td class="text-center">{{ $cash->misAcc_Numb }}</td>
                         <td class="text-center">{{ $cash->excAcc_Numb }}</td>
-                        <td>{{ $cash->name }} {{ $cash->surname }}</td>
+                        <td>{{ explode(' ', $cash->name)[0] }} {{ explode(' ', $cash->surname)[0] }}</td>
                         <td class="text-right text-bold">{{money($cash->totalCash)}}</td>
                         <td class="text-center">{{changeFormat($cash->created_at)}}</td>
                         <td class="text-center">

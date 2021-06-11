@@ -25,7 +25,7 @@ class CashCloseInitController extends Controller
                 if (cashOpen()) {
                     $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
                     $cashes = Cash::getCashesPaginate(['cashes.employee' => $emp->iduser, 'cashes.status' => 'O']);
-                    if ($cash->) {
+                    if ($cash->view_other_tills === 'Y') {
                         $cashes = Cash::getCashesPaginate(['cashes.status' => 'O']);
                     }
                     $moneys = Money::getMoneys();

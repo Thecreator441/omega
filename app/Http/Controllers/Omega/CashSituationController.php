@@ -22,7 +22,10 @@ class CashSituationController extends Controller
             if (dateOpen()) {
                 if (cashOpen()) {
                     $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
-                    $cashes = Cash::getCashesPaginate();
+                    $cashes = Cash::getCashesPaginate(['cashes.employee' => $emp->iduser]);
+                    if ($cash->view_other_tills === 'Y') {
+                        $cashes = Cash::getCashesPaginate();
+                    }
                     $moneys = Money::getMoneys();
                     $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
                     $menu->pLevel = Request::input("level");
