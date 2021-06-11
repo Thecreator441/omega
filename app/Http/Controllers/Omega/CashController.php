@@ -31,6 +31,10 @@ class CashController extends Controller
             $moneys = Money::getMoneys();
             $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
+            foreach ($cashes as $cash) {
+                $cash->totalCash = Cash::getSumBillet($cash->idcash)->total;
+            }
+
             return view('omega.pages.cash', compact(
                 'menu',
                 'cashes',
@@ -39,7 +43,7 @@ class CashController extends Controller
                 'moneys'
             ));
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised')); 
+        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
     }
 
     public function store()
@@ -57,7 +61,7 @@ class CashController extends Controller
             } else {
                 $cash = Cash::getCash($idcash);
             }
-    
+
             $cash->cashcode = pad(Request::input('cash_code'), 3);
             $cash->labelfr = Request::input('labelfr');
             $cash->labeleng = Request::input('labeleng');
@@ -83,7 +87,7 @@ class CashController extends Controller
                 $cashAcc->save();
             }
             $cash->cashacc = $cashAcc->idaccount;
-            
+
             $misAcc_Plan = AccPlan::getAccPlan(Request::input('misacc'));
             $misAcc_Numb = pad($misAcc_Plan->plan_code, 6, 'right') . '' . pad(Request::input('cash_code'), 3, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
             $misAcc = Account::getAccountBy(['accnumb' => $misAcc_Numb]);
@@ -138,18 +142,19 @@ class CashController extends Controller
             $cash->mon10 += trimOver(Request::input('P5'), ' ');
             $cash->mon11 += trimOver(Request::input('P6'), ' ');
             $cash->mon12 += trimOver(Request::input('P7'), ' ');
-            
+
+            $cash->view_other_tills = Request::input('view_other_tills');
             $cash->network = $emp->network;
             $cash->zone = $emp->zone;
             $cash->institution = $emp->institution;
             $cash->branch = $emp->branch;
-    // dd($cash);
+    
             if ($idcash === null) {
                 $cash->save();
             } else {
                 $cash->update((array)$cash);
             }
-    
+            
             DB::commit();
             if ($idcash === null) {
                 Log::info(trans('alertSuccess.cash_save'));

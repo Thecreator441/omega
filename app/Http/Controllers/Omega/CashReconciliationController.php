@@ -10,7 +10,7 @@ use App\Models\Cash_Diff;
 use App\Models\Cash_Writing;
 use App\Models\Money;
 use App\Models\Operation;
-use App\Models\User;
+use App\Models\Priv_Menu;
 use App\Models\Writing;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -22,35 +22,33 @@ class CashReconciliationController extends Controller
 {
     public function index()
     {
-        if (dateOpen()) {
-            if (cashOpen()) {
-                $emp = Session::get('employee');
-
-                $cashes = null;
-
-                if ($emp->privilege === 5) {
-                    $cashes = Cash::getPaginateOpen();
-                } else {
-                    $cashes = Cash::getEmpCashOpen();
-                }
-
-                $employees = User::getCollectors();
-                $moneys = Money::getMoneys();
-
-                return view('omega.pages.cash_reconciliation', compact(
-                    'cashes',
-                    'employees',
-                    'moneys'
-                ));
-            }
-            return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
+        $emp = verifSession('employee');
+        if($emp === null) {
+            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
-        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+
+        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
+            if (dateOpen()) {
+                if (cashOpen()) {
+                    $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
+                    $cashes = Cash::getCashesPaginate(['cashes.status' => 'O']);
+                    $moneys = Money::getMoneys();
+                    $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+                    $menu->pLevel = Request::input("level");
+                    $menu->pMenu = Request::input("menu");
+
+                    return view('omega.pages.cash_reconciliation', compact('cashes', 'moneys', 'menu'));
+                }
+                return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
+            }
+            return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+        }
+        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
     }
 
     public function store()
     {
-//dd(Request::all());
+        // dd(Request::all());
         DB::beginTransaction();
         try {
             $emp = Session::get('employee');
@@ -65,58 +63,21 @@ class CashReconciliationController extends Controller
             $cashto = Cash::getEmpCashOpen();
             $accdate = AccDate::getOpenAccDate();
 
-            $mon1 = Request::input('B1');
-            $mon2 = Request::input('B2');
-            $mon3 = Request::input('B3');
-            $mon4 = Request::input('B4');
-            $mon5 = Request::input('B5');
-            $mon6 = Request::input('P1');
-            $mon7 = Request::input('P2');
-            $mon8 = Request::input('P3');
-            $mon9 = Request::input('P4');
-            $mon10 = Request::input('P5');
-            $mon11 = Request::input('P6');
-            $mon12 = Request::input('P7');
-
             if ($totin < $totbil) {
-                if ($mon1 !== null) {
-                    $cash->mon1 = trimOver($mon1, ' ');
-                }
-                if ($mon2 !== null) {
-                    $cash->mon2 = trimOver($mon2, ' ');
-                }
-                if ($mon3 !== null) {
-                    $cash->mon3 = trimOver($mon3, ' ');
-                }
-                if ($mon4 !== null) {
-                    $cash->mon4 = trimOver($mon4, ' ');
-                }
-                if ($mon5 !== null) {
-                    $cash->mon5 = trimOver($mon5, ' ');
-                }
-                if ($mon6 !== null) {
-                    $cash->mon6 = trimOver($mon6, ' ');
-                }
-                if ($mon7 !== null) {
-                    $cash->mon7 = trimOver($mon7, ' ');
-                }
-                if ($mon8 !== null) {
-                    $cash->mon8 = trimOver($mon8, ' ');
-                }
-                if ($mon9 !== null) {
-                    $cash->mon9 = trimOver($mon9, ' ');
-                }
-                if ($mon10 !== null) {
-                    $cash->mon10 = trimOver($mon10, ' ');
-                }
-                if ($mon11 !== null) {
-                    $cash->mon11 = trimOver($mon11, ' ');
-                }
-                if ($mon12 !== null) {
-                    $cash->mon12 = trimOver($mon12, ' ');
-                }
-                $cash->update((array)$cash);
+                $cash->mon1 = trimOver(Request::input('B1'), ' ');
+                $cash->mon2 = trimOver(Request::input('B2'), ' ');
+                $cash->mon3 = trimOver(Request::input('B3'), ' ');
+                $cash->mon4 = trimOver(Request::input('B4'), ' ');
+                $cash->mon5 = trimOver(Request::input('B5'), ' ');
+                $cash->mon6 = trimOver(Request::input('P1'), ' ');
+                $cash->mon7 = trimOver(Request::input('P2'), ' ');
+                $cash->mon8 = trimOver(Request::input('P3'), ' ');
+                $cash->mon9 = trimOver(Request::input('P4'), ' ');
+                $cash->mon10 = trimOver(Request::input('P5'), ' ');
+                $cash->mon11 = trimOver(Request::input('P6'), ' ');
+                $cash->mon12 = trimOver(Request::input('P7'), ' ');
 
+                $cash->update((array)$cash);
 
                 $writnumb = getWritNumb();
 
@@ -173,42 +134,19 @@ class CashReconciliationController extends Controller
                     Log::info($opera2->labeleng);
                 }
             } elseif ($totin > $totbil) {
-                if ($mon1 !== null) {
-                    $cash->mon1 = trimOver($mon1, ' ');
-                }
-                if ($mon2 !== null) {
-                    $cash->mon2 = trimOver($mon2, ' ');
-                }
-                if ($mon3 !== null) {
-                    $cash->mon3 = trimOver($mon3, ' ');
-                }
-                if ($mon4 !== null) {
-                    $cash->mon4 = trimOver($mon4, ' ');
-                }
-                if ($mon5 !== null) {
-                    $cash->mon5 = trimOver($mon5, ' ');
-                }
-                if ($mon6 !== null) {
-                    $cash->mon6 = trimOver($mon6, ' ');
-                }
-                if ($mon7 !== null) {
-                    $cash->mon7 = trimOver($mon7, ' ');
-                }
-                if ($mon8 !== null) {
-                    $cash->mon8 = trimOver($mon8, ' ');
-                }
-                if ($mon9 !== null) {
-                    $cash->mon9 = trimOver($mon9, ' ');
-                }
-                if ($mon10 !== null) {
-                    $cash->mon10 = trimOver($mon10, ' ');
-                }
-                if ($mon11 !== null) {
-                    $cash->mon11 = trimOver($mon11, ' ');
-                }
-                if ($mon12 !== null) {
-                    $cash->mon12 = trimOver($mon12, ' ');
-                }
+                $cash->mon1 = trimOver(Request::input('B1'), ' ');
+                $cash->mon2 = trimOver(Request::input('B2'), ' ');
+                $cash->mon3 = trimOver(Request::input('B3'), ' ');
+                $cash->mon4 = trimOver(Request::input('B4'), ' ');
+                $cash->mon5 = trimOver(Request::input('B5'), ' ');
+                $cash->mon6 = trimOver(Request::input('P1'), ' ');
+                $cash->mon7 = trimOver(Request::input('P2'), ' ');
+                $cash->mon8 = trimOver(Request::input('P3'), ' ');
+                $cash->mon9 = trimOver(Request::input('P4'), ' ');
+                $cash->mon10 = trimOver(Request::input('P5'), ' ');
+                $cash->mon11 = trimOver(Request::input('P6'), ' ');
+                $cash->mon12 = trimOver(Request::input('P7'), ' ');
+
                 $cash->update((array)$cash);
 
                 $writnumb = getWritNumb();
@@ -270,42 +208,19 @@ class CashReconciliationController extends Controller
             if ($cash->cashcode !== 'PC') {
                 $writnumb = getCashWritNumb();
 
-                if ($mon1 !== null) {
-                    $cashto->mon1 += trimOver($mon1, ' ');
-                }
-                if ($mon2 !== null) {
-                    $cashto->mon2 += trimOver($mon2, ' ');
-                }
-                if ($mon3 !== null) {
-                    $cashto->mon3 += trimOver($mon3, ' ');
-                }
-                if ($mon4 !== null) {
-                    $cashto->mon4 += trimOver($mon4, ' ');
-                }
-                if ($mon5 !== null) {
-                    $cashto->mon5 += trimOver($mon5, ' ');
-                }
-                if ($mon6 !== null) {
-                    $cashto->mon6 += trimOver($mon6, ' ');
-                }
-                if ($mon7 !== null) {
-                    $cashto->mon7 += trimOver($mon7, ' ');
-                }
-                if ($mon8 !== null) {
-                    $cashto->mon8 += trimOver($mon8, ' ');
-                }
-                if ($mon9 !== null) {
-                    $cashto->mon9 += trimOver($mon9, ' ');
-                }
-                if ($mon10 !== null) {
-                    $cashto->mon10 += trimOver($mon10, ' ');
-                }
-                if ($mon11 !== null) {
-                    $cashto->mon11 += trimOver($mon11, ' ');
-                }
-                if ($mon12 !== null) {
-                    $cashto->mon12 += trimOver($mon12, ' ');
-                }
+                $cashto->mon1 += trimOver(Request::input('B1'), ' ');
+                $cashto->mon2 += trimOver(Request::input('B2'), ' ');
+                $cashto->mon3 += trimOver(Request::input('B3'), ' ');
+                $cashto->mon4 += trimOver(Request::input('B4'), ' ');
+                $cashto->mon5 += trimOver(Request::input('B5'), ' ');
+                $cashto->mon6 += trimOver(Request::input('P1'), ' ');
+                $cashto->mon7 += trimOver(Request::input('P2'), ' ');
+                $cashto->mon8 += trimOver(Request::input('P3'), ' ');
+                $cashto->mon9 += trimOver(Request::input('P4'), ' ');
+                $cashto->mon10 += trimOver(Request::input('P5'), ' ');
+                $cashto->mon11 += trimOver(Request::input('P6'), ' ');
+                $cashto->mon12 += trimOver(Request::input('P7'), ' ');
+
                 $cashto->update((array)$cashto);
 
                 $writing = new Cash_Writing();
@@ -326,42 +241,19 @@ class CashReconciliationController extends Controller
                 $cashtoBal->available += $totbil;
                 $cashtoBal->update((array)$cashtoBal);
 
-                if ($mon1 !== null) {
-                    $cash->mon1 -= trimOver($mon1, ' ');
-                }
-                if ($mon2 !== null) {
-                    $cash->mon2 -= trimOver($mon2, ' ');
-                }
-                if ($mon3 !== null) {
-                    $cash->mon3 -= trimOver($mon3, ' ');
-                }
-                if ($mon4 !== null) {
-                    $cash->mon4 -= trimOver($mon4, ' ');
-                }
-                if ($mon5 !== null) {
-                    $cash->mon5 -= trimOver($mon5, ' ');
-                }
-                if ($mon6 !== null) {
-                    $cash->mon6 -= trimOver($mon6, ' ');
-                }
-                if ($mon7 !== null) {
-                    $cash->mon7 -= trimOver($mon7, ' ');
-                }
-                if ($mon8 !== null) {
-                    $cash->mon8 -= trimOver($mon8, ' ');
-                }
-                if ($mon9 !== null) {
-                    $cash->mon9 -= trimOver($mon9, ' ');
-                }
-                if ($mon10 !== null) {
-                    $cash->mon10 -= trimOver($mon10, ' ');
-                }
-                if ($mon11 !== null) {
-                    $cash->mon11 -= trimOver($mon11, ' ');
-                }
-                if ($mon12 !== null) {
-                    $cash->mon12 -= trimOver($mon12, ' ');
-                }
+                $cash->mon1 -= trimOver(Request::input('B1'), ' ');
+                $cash->mon2 -= trimOver(Request::input('B2'), ' ');
+                $cash->mon3 -= trimOver(Request::input('B3'), ' ');
+                $cash->mon4 -= trimOver(Request::input('B4'), ' ');
+                $cash->mon5 -= trimOver(Request::input('B5'), ' ');
+                $cash->mon6 -= trimOver(Request::input('P1'), ' ');
+                $cash->mon7 -= trimOver(Request::input('P2'), ' ');
+                $cash->mon8 -= trimOver(Request::input('P3'), ' ');
+                $cash->mon9 -= trimOver(Request::input('P4'), ' ');
+                $cash->mon10 -= trimOver(Request::input('P5'), ' ');
+                $cash->mon11 -= trimOver(Request::input('P6'), ' ');
+                $cash->mon12 -= trimOver(Request::input('P7'), ' ');
+
                 $cash->update((array)$cash);
 
                 $writing = new Cash_Writing();

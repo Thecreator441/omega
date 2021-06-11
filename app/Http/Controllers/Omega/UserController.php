@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\URL;
 
 class UserController extends Controller
 {
@@ -33,7 +32,7 @@ class UserController extends Controller
         if($emp === null) {
             return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
-        
+
         if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
             $countries = Country::getCountries();
             $regions = Region::getRegions();
@@ -64,20 +63,20 @@ class UserController extends Controller
                         $user->$index = $value;
                     }
                 }
-                    
+
                 $empl = null;
                 if ($user->platform !== null) {
                     $empl = Platform::getPlatform($user->platform);
                 } elseif ($user->employee !== null) {
                     $empl = Employee::getEmployee($user->employee);
                 }
-                
+
                 if($empl !== null) {
                     foreach ($empl->getAttributes() as $index => $value) {
                         if ($user->offsetExists($index) === false) {
                             $user->$index = $value;
                         }
-                    }   
+                    }
                 }
             }
 
@@ -101,9 +100,14 @@ class UserController extends Controller
 
     public function store()
     {
-    //   dd(Request::input());
+        // dd(Request::input());
         DB::beginTransaction();
         try {
+            $emp = verifSession('employee');
+            if($emp === null) {
+                return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
+            }
+
             $idemployee = Request::input('idemp');
             $iduser = Request::input('idinstitute');
             $empmat = 1;
@@ -207,14 +211,22 @@ class UserController extends Controller
             $emplo->address = Request::input('address');
             $emplo->quarter = Request::input('quarter');
             $emplo->post = Request::input('post');
-            if ($privilege->level !== 'P') {
+            if ($emp->level !== 'P') {
                 $emplo->empdate = getsDate(now());
-                $emplo->network = Request::input('network');
-                $emplo->zone = Request::input('zone');
-                $emplo->institution = Request::input('institution');
-                $emplo->branch = Request::input('branch');
-            } elseif ($privilege->level === 'P') {
-                $emplo->platdate = getsDate(now());
+                $emplo->network = $emp->network;
+                $emplo->zone = $emp->zone;
+                $emplo->institution = $emp->institution;
+                $emplo->branch = $emp->branch;
+            } elseif ($emp->level === 'P') {
+                if ($privilege->level !== 'P') {
+                    $emplo->empdate = getsDate(now());
+                    $emplo->network = Request::input('network');
+                    $emplo->zone = Request::input('zone');
+                    $emplo->institution = Request::input('institution');
+                    $emplo->branch = Request::input('branch');
+                } elseif ($privilege->level === 'P') {
+                    $emplo->platdate = getsDate(now());
+                }
             }
 
             if ($idemployee === null) {
@@ -267,7 +279,7 @@ class UserController extends Controller
             // $errorInfo = $ex->getPrevious()->errorInfo;
             // $index = array_key_last($errorInfo);
             // return Redirect::back()->with('danger', $errorInfo[$index]);
-            
+
             if ($idemployee === null) {
                 return Redirect::back()->with('danger', trans('alertDanger.usersave'));
             }

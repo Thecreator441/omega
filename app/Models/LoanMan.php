@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Session;
 
 class LoanMan extends Model
 {
@@ -11,15 +10,7 @@ class LoanMan extends Model
 
     protected $primaryKey = 'idloanman';
 
-    private $idloanman;
-
-    private $employee;
-
-    private $member;
-
-    private $created_at;
-
-    private $updated_at;
+    protected $fillable = ['loan_mans'];
 
     /**
      * @param int $member

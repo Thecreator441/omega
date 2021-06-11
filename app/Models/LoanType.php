@@ -20,8 +20,9 @@ class LoanType extends Model
      */
     public static function getLoanType(int $id)
     {
-        return self::query()->select('loan_types.*', 'A.accnumb')
-            ->join('accounts AS A', 'loanacc', '=', 'A.idaccount')
+        return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb')
+            ->join('accounts AS iA', 'int_paid_acc', '=', 'iA.idaccount')
+            ->join('accounts AS lA', 'loan_acc', '=', 'lA.idaccount')
             ->where('idltype', $id)->first();
     }
 
@@ -29,11 +30,12 @@ class LoanType extends Model
      * @param int $id
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getLoanTypeBy(arrar $where)
+    public static function getLoanTypeBy(array $where)
     {
-        return self::query()->select('loan_types.*', 'A.accnumb')
-            ->join('accounts AS A', 'loanacc', '=', 'A.idaccount')
-            ->where($where)->first();
+        return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb')
+            ->join('accounts AS iA', 'int_paid_acc', '=', 'iA.idaccount')
+            ->join('accounts AS lA', 'loan_acc', '=', 'lA.idaccount')
+            ->where($where)->orderBy('loan_type_code')->first();
     }
 
     /**
@@ -45,40 +47,40 @@ class LoanType extends Model
         $emp = Session::get('employee');
 
         if ($where !== null) {
-            return self::query()->where($where)->where('institution', $emp->institution)->orderBy('lcode')->get();
+            return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb')
+                ->join('accounts AS iA', 'int_paid_acc', '=', 'iA.idaccount')
+                ->join('accounts AS lA', 'loan_acc', '=', 'lA.idaccount')
+                ->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'N') {
+                        $query->where('loan_types.network', $emp->network);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('loan_types.zone', $emp->zone);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('loan_types.institution', $emp->institution);
+                    }
+                    if ($emp->level === 'B') {
+                        $query->where('loan_types.branch', $emp->branch);
+                    }
+                })->where($where)->orderBy('loan_type_code')->get();
         }
-        return self::query()->where('institution', $emp->institution)->orderBy('lcode')->get();
-    }
-
-    /**
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public static function getPaginates()
-    {
-        $emp = Session::get('employee');
-
-        return self::query()->where('institution', $emp->institution)
-            ->distinct('idltype')->orderBy('lcode')->paginate(1);
-    }
-
-    /**
-     * @param int $id
-     * @return Builder|Model|object|null
-     */
-    public static function getAccChart(int $id)
-    {
-        return self::query()->where('idltype', $id)
-            ->join('accounts AS A', 'loanaccart', '=', 'idaccount')
-            ->orderBy('accnumb', 'ASC')->first();
-    }
-
-    /**
-     * @return string
-     */
-    public static function getLast()
-    {
-        $emp = Session::get('employee');
-
-        return self::query()->where('institution', $emp->institution)->orderByDesc('lcode')->first();
+        return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb')
+            ->join('accounts AS iA', 'int_paid_acc', '=', 'iA.idaccount')
+            ->join('accounts AS lA', 'loan_acc', '=', 'lA.idaccount')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'N') {
+                    $query->where('loan_types.network', $emp->network);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('loan_types.zone', $emp->zone);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('loan_types.institution', $emp->institution);
+                }
+                if ($emp->level === 'B') {
+                    $query->where('loan_types.branch', $emp->branch);
+                }
+            })->orderBy('loan_type_code')->get();
     }
 }

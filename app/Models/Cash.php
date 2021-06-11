@@ -58,7 +58,7 @@ class Cash extends Model
     public static function getCashes(array $where = [])
     {
         $emp = Session::get('employee');
-        
+
         if ($where !== null) {
             return self::query()->select('cashes.*', 'cA.accnumb AS casAcc_Numb', 'mA.accnumb AS misAcc_Numb', 'eA.accnumb AS excAcc_Numb', 'E.name', 'E.surname')
                 ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
@@ -102,6 +102,58 @@ class Cash extends Model
                     $query->where('cashes.branch', $emp->branch);
                 }
             })->orderBy('cashcode')->get();
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getCashesPaginate(array $where = null)
+    {
+        $emp = Session::get('employee');
+
+        if ($where !== null) {
+            return self::query()->select('cashes.*', 'cA.accnumb AS casAcc_Numb', 'mA.accnumb AS misAcc_Numb', 'eA.accnumb AS excAcc_Numb', 'E.name', 'E.surname')
+                ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
+                ->join('accounts AS mA', 'cashes.misacc', '=', 'mA.idaccount')
+                ->join('accounts AS eA', 'cashes.excacc', '=', 'eA.idaccount')
+                ->join('users AS U', 'cashes.employee', '=', 'U.iduser')
+                ->join('employees AS E', 'E.idemp', '=', 'U.employee')
+                ->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'N') {
+                        $query->where('cashes.network', $emp->network);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('cashes.zone', $emp->zone);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('cashes.institution', $emp->institution);
+                    }
+                    if ($emp->level === 'B') {
+                        $query->where('cashes.branch', $emp->branch);
+                    }
+                })->where($where)->orderBy('cashcode')->paginate(1);
+        }
+
+        return self::query()->select('cashes.*', 'cA.accnumb AS casAcc_Numb', 'mA.accnumb AS misAcc_Numb', 'eA.accnumb AS excAcc_Numb', 'E.name', 'E.surname')
+            ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
+            ->join('accounts AS mA', 'cashes.misacc', '=', 'mA.idaccount')
+            ->join('accounts AS eA', 'cashes.excacc', '=', 'eA.idaccount')
+            ->join('users AS U', 'cashes.employee', '=', 'U.iduser')
+            ->join('employees AS E', 'E.idemp', '=', 'U.employee')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'N') {
+                    $query->where('cashes.network', $emp->network);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('cashes.zone', $emp->zone);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('cashes.institution', $emp->institution);
+                }
+                if ($emp->level === 'B') {
+                    $query->where('cashes.branch', $emp->branch);
+                }
+            })->orderBy('cashcode')->paginate(1);
     }
 
     /**

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class SMS extends Model
 {
@@ -33,7 +32,7 @@ class SMS extends Model
         }
         return self::query()->orderBy('created_at')->get();
     }
-    
+
     public static function getNoSMS(array $where = null, string $date1 = null, string $date2 = null)
     {
         if($where === null) {

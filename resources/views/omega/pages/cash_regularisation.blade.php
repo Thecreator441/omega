@@ -19,18 +19,13 @@ if ($emp->lang == 'fr')
                 {{ csrf_field() }}
 
                 <div class="row">
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <h3 class="bg-antiquewhite text-blue text-bold text-center">@lang('label.break')</h3>
-                        </div>
-                    </div>
-                    <div class="col-md-10">
+                    <div class="col-md-12">
                         <div class="row">
                             <div class="row">
-                                <div class="col-md-5">
+                                <div class="col-md-3 col-xs-12">
                                     <div class="form-group">
-                                        <label for="collector" class="col-md-3 control-label">@lang('label.cash')</label>
-                                        <div class="col-md-9">
+                                        <label for="collector" class="col-md-2 col-xs-3 control-label">@lang('label.cash')</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <select class="form-control select2" id="collector" name="collector">
                                                 <option value=""></option>
                                                 @foreach($cashes as $cashs)
@@ -40,16 +35,21 @@ if ($emp->lang == 'fr')
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-7">
+                                <div class="col-md-5 col-xs-12">
                                     <div class="form-group">
-                                        <label for="cash_diff" class="col-md-2 control-label">@lang('label.diff')s</label>
-                                        <div class="col-md-7">
+                                        <label for="cash_diff" class="col-md-3 col-xs-3 control-label">@lang('label.diff')s</label>
+                                        <div class="col-md-9 col-xs-9">
                                             <select class="form-control select2" name="cash_diff" id="cash_diff">
                                                 <option value=""></option>
                                             </select>
                                         </div>
-                                        <div class="col-md-3">
-                                            <input type="text" name="amount" class="form-control text-right text-bold" placeholder="@lang('label.amount')" id="amount" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-xs-12">
+                                    <div class="form-group">
+                                        <label for="cash_diff" class="col-md-3 col-xs-3 control-label">@lang('label.amount')s</label>
+                                        <div class="col-md-9 col-xs-9">
+                                            <input type="text" name="amount" class="form-control text-right text-bold" id="amount" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -60,8 +60,8 @@ if ($emp->lang == 'fr')
 
                 <div class="row">
                     <div class="col-md-6">
-                        <table id="tableInput"
-                               class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
+                        <table id="tableInput" class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
+                            <caption class="bg-antiquewhite text-blue text-bold text-center">@lang('label.break')</caption>
                             <thead>
                             <tr>
                                 <th colspan="2" class="bg-purples">@lang('label.notes')</th>
@@ -99,8 +99,8 @@ if ($emp->lang == 'fr')
                         </table>
                     </div>
                     <div class="col-md-6">
-                        <table id="tableInput2"
-                               class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
+                        <table id="tableInput2" class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
+                            <caption class="bg-antiquewhite text-blue text-bold text-center">@lang('label.break')</caption>
                             <thead>
                             <tr>
                                 <th colspan="2" class="bg-purples">@lang('label.coins')</th>
@@ -129,14 +129,6 @@ if ($emp->lang == 'fr')
                         <table class="table table-responsive" id="tableInput">
                             <thead>
                             <tr class="text-bold text-blue bg-antiquewhite text-left">
-                                {{--                                @foreach($accounts as $account)--}}
-                                {{--                                    @if ($cash->cashacc == $account->idaccount)--}}
-                                {{--                                        <td style="width: 25%">--}}
-                                {{--                                            @if($emp->lang == 'fr') {{$account->labelfr }} @else {{$account->labeleng }} @endif--}}
-                                {{--                                        </td>--}}
-                                {{--                                        <td>{{$account->accnumb }}</td>--}}
-                                {{--                                    @endif--}}
-                                {{--                                @endforeach--}}
                                 <td>@lang('label.totrans')</td>
                                 <td style="width: 15%"><input type="text" style="text-align: left" name="totrans"
                                                               id="totrans" readonly></td>

@@ -9,8 +9,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
-class CashCloseController extends Controller
+class CashCloseInitController extends Controller
 {
     public function index()
     {
@@ -29,7 +30,7 @@ class CashCloseController extends Controller
                     $menu->pLevel = Request::input("level");
                     $menu->pMenu = Request::input("menu");
     
-                    return view('omega.pages.cash_close', compact('cashes', 'moneys', 'menu'));
+                    return view('omega.pages.cash_close_init', compact('cashes', 'moneys', 'menu'));
                 }
                 return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
             }
@@ -40,7 +41,6 @@ class CashCloseController extends Controller
 
     public function store()
     {
-        // dd(Request::all());
         DB::beginTransaction();
         try {
             $cash = Cash::getCash(Request::input('idcash'));

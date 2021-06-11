@@ -12,7 +12,7 @@ if ($emp->lang == 'fr') {
 @section('title', $title)
 
 @section('content')
-<div class="box" id="form" style="display: none;">
+<div class="box" id="form" style="display: block;">
     <div class="box-header with-border">
         <h3 class="box-title text-bold" id="title"> @lang('label.new_cash')</h3>
         <div class="box-tools pull-right">
@@ -200,74 +200,86 @@ if ($emp->lang == 'fr') {
                     </div>
                 </div>
 
-                <div class="box-header">
-                    <div class="row">
-                        <div class="row">
-                            <div class="col-md-12 col-xs-12">
-                                <div class="col-md-12 col-xs-12">
-                                    <h3 class="row text-blue text-muted">@lang('label.break')</h3>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group has-info">
+                                <div class="checkbox">
+                                    <label for="view_other_tills">@lang('label.view_other_tills')
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="view_other_tills" value="Y" id="view_other_tills">
+                                    </label>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="col-md-12" id="tableInput">
-                            <table id="billet-data-table" class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
-                                <thead>
-                                <tr class="text-blue">
-                                    <th>@lang('label.value')</th>
-                                    <th>@lang('label.label')</th>
-                                    <th>@lang('label.in')</th>
-                                    <th>@lang('label.amount')</th>
-                                    <th>@lang('label.letters')</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach ($moneys as $money)
-                                    @if ($money->format == 'B')
-                                        <tr>
-                                            <td id="bil">{{money($money->value)}}</td>
-                                            <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
-                                            <td class="input">
-                                                <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
-                                                       oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
-                                            </td>
-                                            <td class="sum text-right {{ $money->moncode }}Sum" id="{{$money->moncode}}Sum"></td>
-                                            <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-                                </tbody>
-                                <thead>
-                                <tr>
-                                    <th colspan="5" class="bg-gray"></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach ($moneys as $money)
-                                    @if ($money->format == 'C')
-                                        <tr>
-                                            <td id="bil">{{money($money->value)}}</td>
-                                            <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
-                                            <td class="input">
-                                                <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
-                                                       oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
-                                            </td>
-                                            <td class="sum text-right {{ $money->moncode }}Sum" id="{{$money->moncode}}Sum"></td>
-                                            <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-                                </tbody>
-                                <tfoot>
-                                <tr class="bg-green-active">
-                                    <td colspan="3"
-                                        style="text-align: center !important;">@lang('label.tobreak')</td>
-                                    <td class="text-right text-bold" id="totbil"></td>
-                                    <td class="text-left text-bold" id="totopera"></td>
-                                </tr>
-                                </tfoot>
-                            </table>
+                <div class="row">
+                    <div class="row">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="form-group col-md-12">
+                                <label for="" class="text-blue text-bold">@lang('label.break')</label>
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="col-md-12" id="tableInput">
+                        <table id="billet-data-table" class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
+                            <thead>
+                            <tr class="text-blue">
+                                <th>@lang('label.value')</th>
+                                <th>@lang('label.label')</th>
+                                <th>@lang('label.in')</th>
+                                <th>@lang('label.amount')</th>
+                                <th>@lang('label.letters')</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach ($moneys as $money)
+                                @if ($money->format == 'B')
+                                    <tr>
+                                        <td id="bil">{{money($money->value)}}</td>
+                                        <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
+                                        <td class="input">
+                                            <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
+                                                    oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
+                                        </td>
+                                        <td class="sum text-right {{ $money->moncode }}Sum" id="{{$money->moncode}}Sum"></td>
+                                        <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                            </tbody>
+                            <thead>
+                            <tr>
+                                <th colspan="5" class="bg-gray"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach ($moneys as $money)
+                                @if ($money->format == 'C')
+                                    <tr>
+                                        <td id="bil">{{money($money->value)}}</td>
+                                        <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
+                                        <td class="input">
+                                            <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
+                                                    oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
+                                        </td>
+                                        <td class="sum text-right {{ $money->moncode }}Sum" id="{{$money->moncode}}Sum"></td>
+                                        <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                            </tbody>
+                            <tfoot>
+                            <tr class="bg-green-active">
+                                <td colspan="3"
+                                    style="text-align: center !important;">@lang('label.tobreak')</td>
+                                <td class="text-right text-bold" id="totbil"></td>
+                                <td class="text-left text-bold" id="totopera"></td>
+                            </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -305,6 +317,7 @@ if ($emp->lang == 'fr') {
                     <th>@lang('label.misacc')</th>
                     <th>@lang('label.excacc')</th>                    
                     <th>@lang('label.employee')</th>
+                    <th>@lang('label.amount')</th>
                     <th>@lang('label.date')</th>
                     <th>Action</th>
                 </tr>
@@ -318,6 +331,7 @@ if ($emp->lang == 'fr') {
                         <td class="text-center">{{ $cash->misAcc_Numb }}</td>
                         <td class="text-center">{{ $cash->excAcc_Numb }}</td>
                         <td>{{ $cash->name }} {{ $cash->surname }}</td>
+                        <td class="text-right text-bold">{{money($cash->totalCash)}}</td>
                         <td class="text-center">{{changeFormat($cash->created_at)}}</td>
                         <td class="text-center">
                             <button type="button" class="btn bg-green btn-sm fa fa-eye" onclick="view('{{$cash->idcash}}')"></button>
@@ -400,6 +414,8 @@ if ($emp->lang == 'fr') {
         });
 
         function view(idcash) {
+            setDisabled(true);
+            
             $.ajax({
                 url: "{{ url('getCash') }}",
                 method: 'get',
@@ -407,8 +423,6 @@ if ($emp->lang == 'fr') {
                     cash: idcash
                 },
                 success: function (cash) {
-                    setDisabled(true);
-                    
                     $('#title').text("@if($emp->lang === 'fr') " + cash.labelfr + " @else " + cash.labeleng + "@endif");
 
                     $('#idcash').val(cash.idcash);
@@ -450,6 +464,10 @@ if ($emp->lang == 'fr') {
                         }
                     });
 
+                    if (cash.view_other_tills === 'Y') {
+                        $('#view_other_tills').prop('checked', true);
+                    }
+
                     $('#save').replaceWith('<button type="submit" id="save" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit" style="display: none"></button>');
                     $('.edit').replaceWith('<button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save" style="display: none"></button>');
 
@@ -459,6 +477,8 @@ if ($emp->lang == 'fr') {
         }
 
         function edit(idcash) {
+            setDisabled(false);
+
             $.ajax({
                 url: "{{ url('getCash') }}",
                 method: 'get',
@@ -466,7 +486,6 @@ if ($emp->lang == 'fr') {
                     cash: idcash
                 },
                 success: function (cash) {
-                    setDisabled(false);
                     $('#title').text("@lang('label.edit') @if($emp->lang === 'fr') " + cash.labelfr + " @else " + cash.labeleng + "@endif");
 
                     $('#idcash').val(cash.idcash);
@@ -507,6 +526,10 @@ if ($emp->lang == 'fr') {
                             $('#excacc').val(excAcc.idplan).select2();
                         }
                     });
+
+                    if (cash.view_other_tills === 'Y') {
+                        $('#view_other_tills').prop('checked', true);
+                    }
 
                     $('#save').replaceWith('<button type="submit" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit edit"></button>');
 

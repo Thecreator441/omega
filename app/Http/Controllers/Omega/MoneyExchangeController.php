@@ -4,263 +4,77 @@ namespace App\Http\Controllers\Omega;
 
 use App\Models\Cash;
 use App\Models\Money;
+use App\Models\Priv_Menu;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
 
 class MoneyExchangeController extends Controller
 {
     public function index()
     {
-        if (dateOpen()) {
-            if (cashOpen()) {
-                $cash = Cash::getEmpCashOpen();
-                $moneys = Money::getMoneys();
-
-                return view('omega.pages.money_exchange', [
-                    'cash' => $cash,
-                    'moneys' => $moneys
-                ]);
-            }
-            return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
+        $emp = verifSession('employee');
+        if($emp === null) {
+            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
-        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+
+        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
+            if (dateOpen()) {
+                if (cashOpen()) {
+                    $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
+                    $moneys = Money::getMoneys();
+                    $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+    
+                    return view('omega.pages.money_exchange', compact('cash', 'moneys', 'menu'));
+                }
+                return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
+            }
+            return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+        }
+        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
     }
 
     public function store()
     {
-//        return Request::all();
-        $toke = Request::input('_token');
-
+        dd(Request::all());        
         DB::beginTransaction();
-        if ($toke === null) {
-            $mon1In = Request::input('B1In');
-            $mon2In = Request::input('B2In');
-            $mon3In = Request::input('B3In');
-            $mon4In = Request::input('B4In');
-            $mon5In = Request::input('B5In');
-            $mon6In = Request::input('P1In');
-            $mon7In = Request::input('P2In');
-            $mon8In = Request::input('P3In');
-            $mon9In = Request::input('P4In');
-            $mon10In = Request::input('P5In');
-            $mon11In = Request::input('P6In');
-            $mon12In = Request::input('P7In');
+        try {
+            $cash = Cash::getCash(Request::input('idcash'));
 
-            $mon1Out = Request::input('B1Out');
-            $mon2Out = Request::input('B2Out');
-            $mon3Out = Request::input('B3Out');
-            $mon4Out = Request::input('B4Out');
-            $mon5Out = Request::input('B5Out');
-            $mon6Out = Request::input('P1Out');
-            $mon7Out = Request::input('P2Out');
-            $mon8Out = Request::input('P3Out');
-            $mon9Out = Request::input('P4Out');
-            $mon10Out = Request::input('P5Out');
-            $mon11Out = Request::input('P6Out');
-            $mon12Out = Request::input('P7Out');
+            $cash->mon1 += trimOver(Request::input('B1In'), ' ');
+            $cash->mon2 += trimOver(Request::input('B2In'), ' ');
+            $cash->mon3 += trimOver(Request::input('B3In'), ' ');
+            $cash->mon4 += trimOver(Request::input('B4In'), ' ');
+            $cash->mon5 += trimOver(Request::input('B5In'), ' ');
+            $cash->mon6 += trimOver(Request::input('P1In'), ' ');
+            $cash->mon7 += trimOver(Request::input('P2In'), ' ');
+            $cash->mon8 += trimOver(Request::input('P3In'), ' ');
+            $cash->mon9 += trimOver(Request::input('P4In'), ' ');
+            $cash->mon10 += trimOver(Request::input('P5In'), ' ');
+            $cash->mon11 += trimOver(Request::input('P6In'), ' ');
+            $cash->mon12 += trimOver(Request::input('P7In'), ' ');
+            
+            $cash->mon1 -= trimOver(Request::input('B1Out'), ' ');
+            $cash->mon2 -= trimOver(Request::input('B2Out'), ' ');
+            $cash->mon3 -= trimOver(Request::input('B3Out'), ' ');
+            $cash->mon4 -= trimOver(Request::input('B4Out'), ' ');
+            $cash->mon5 -= trimOver(Request::input('B5Out'), ' ');
+            $cash->mon6 -= trimOver(Request::input('P1Out'), ' ');
+            $cash->mon7 -= trimOver(Request::input('P2Out'), ' ');
+            $cash->mon8 -= trimOver(Request::input('P3Out'), ' ');
+            $cash->mon9 -= trimOver(Request::input('P4Out'), ' ');
+            $cash->mon10 -= trimOver(Request::input('P5Out'), ' ');
+            $cash->mon11 -= trimOver(Request::input('P6Out'), ' ');
+            $cash->mon12 -= trimOver(Request::input('P7Out'), ' ');
+            
+            $cash->update((array)$cash);
 
-            try {
-                $cash = Cash::getEmpCashOpen(Request::input('collector'));
-
-                if ($mon1In !== null) {
-                    $cash->mon1 += trimOver($mon1In, ' ');
-                }
-                if ($mon2In !== null) {
-                    $cash->mon2 += trimOver($mon2In, ' ');
-                }
-                if ($mon3In !== null) {
-                    $cash->mon3 += trimOver($mon3In, ' ');
-                }
-                if ($mon4In !== null) {
-                    $cash->mon4 += trimOver($mon4In, ' ');
-                }
-                if ($mon5In !== null) {
-                    $cash->mon5 += trimOver($mon5In, ' ');
-                }
-                if ($mon6In !== null) {
-                    $cash->mon6 += trimOver($mon6In, ' ');
-                }
-                if ($mon7In !== null) {
-                    $cash->mon7 += trimOver($mon7In, ' ');
-                }
-                if ($mon8In !== null) {
-                    $cash->mon8 += trimOver($mon8In, ' ');
-                }
-                if ($mon9In !== null) {
-                    $cash->mon9 += trimOver($mon9In, ' ');
-                }
-                if ($mon10In !== null) {
-                    $cash->mon10 += trimOver($mon10In, ' ');
-                }
-                if ($mon11In !== null) {
-                    $cash->mon11 += trimOver($mon11In, ' ');
-                }
-                if ($mon12In !== null) {
-                    $cash->mon12 += trimOver($mon12In, ' ');
-                }
-
-
-                if ($mon1Out !== null) {
-                    $cash->mon1 -= trimOver($mon1Out, ' ');
-                }
-                if ($mon2Out !== null) {
-                    $cash->mon2 -= trimOver($mon2Out, ' ');
-                }
-                if ($mon3Out !== null) {
-                    $cash->mon3 -= trimOver($mon3Out, ' ');
-                }
-                if ($mon4Out !== null) {
-                    $cash->mon4 -= trimOver($mon4Out, ' ');
-                }
-                if ($mon5Out !== null) {
-                    $cash->mon5 -= trimOver($mon5Out, ' ');
-                }
-                if ($mon6Out !== null) {
-                    $cash->mon6 -= trimOver($mon6Out, ' ');
-                }
-                if ($mon7Out !== null) {
-                    $cash->mon7 -= trimOver($mon7Out, ' ');
-                }
-                if ($mon8Out !== null) {
-                    $cash->mon8 -= trimOver($mon8Out, ' ');
-                }
-                if ($mon9Out !== null) {
-                    $cash->mon9 -= trimOver($mon9Out, ' ');
-                }
-                if ($mon10Out !== null) {
-                    $cash->mon10 -= trimOver($mon10Out, ' ');
-                }
-                if ($mon11Out !== null) {
-                    $cash->mon11 -= trimOver($mon11Out, ' ');
-                }
-                if ($mon12Out !== null) {
-                    $cash->mon12 -= trimOver($mon12Out, ' ');
-                }
-
-                $cash->update((array)$cash);
-
-                DB::commit();
-                return ['success' => trans('alertSuccess.monexc')];
-            } catch (\Exception $ex) {
-                DB::rollBack();
-                return ['danger' => trans('alertDanger.monexc')];
-            }
-        } else {
-            $mon1In = Request::input('B1In');
-            $mon2In = Request::input('B2In');
-            $mon3In = Request::input('B3In');
-            $mon4In = Request::input('B4In');
-            $mon5In = Request::input('B5In');
-            $mon6In = Request::input('P1In');
-            $mon7In = Request::input('P2In');
-            $mon8In = Request::input('P3In');
-            $mon9In = Request::input('P4In');
-            $mon10In = Request::input('P5In');
-            $mon11In = Request::input('P6In');
-            $mon12In = Request::input('P7In');
-
-            $mon1Out = Request::input('B1Out');
-            $mon2Out = Request::input('B2Out');
-            $mon3Out = Request::input('B3Out');
-            $mon4Out = Request::input('B4Out');
-            $mon5Out = Request::input('B5Out');
-            $mon6Out = Request::input('P1Out');
-            $mon7Out = Request::input('P2Out');
-            $mon8Out = Request::input('P3Out');
-            $mon9Out = Request::input('P4Out');
-            $mon10Out = Request::input('P5Out');
-            $mon11Out = Request::input('P6Out');
-            $mon12Out = Request::input('P7Out');
-
-            try {
-                $cash = Cash::getEmpCashOpen();
-
-                if ($mon1In !== null) {
-                    $cash->mon1 += trimOver($mon1In, ' ');
-                }
-                if ($mon2In !== null) {
-                    $cash->mon2 += trimOver($mon2In, ' ');
-                }
-                if ($mon3In !== null) {
-                    $cash->mon3 += trimOver($mon3In, ' ');
-                }
-                if ($mon4In !== null) {
-                    $cash->mon4 += trimOver($mon4In, ' ');
-                }
-                if ($mon5In !== null) {
-                    $cash->mon5 += trimOver($mon5In, ' ');
-                }
-                if ($mon6In !== null) {
-                    $cash->mon6 += trimOver($mon6In, ' ');
-                }
-                if ($mon7In !== null) {
-                    $cash->mon7 += trimOver($mon7In, ' ');
-                }
-                if ($mon8In !== null) {
-                    $cash->mon8 += trimOver($mon8In, ' ');
-                }
-                if ($mon9In !== null) {
-                    $cash->mon9 += trimOver($mon9In, ' ');
-                }
-                if ($mon10In !== null) {
-                    $cash->mon10 += trimOver($mon10In, ' ');
-                }
-                if ($mon11In !== null) {
-                    $cash->mon11 += trimOver($mon11In, ' ');
-                }
-                if ($mon12In !== null) {
-                    $cash->mon12 += trimOver($mon12In, ' ');
-                }
-
-
-                if ($mon1Out !== null) {
-                    $cash->mon1 -= trimOver($mon1Out, ' ');
-                }
-                if ($mon2Out !== null) {
-                    $cash->mon2 -= trimOver($mon2Out, ' ');
-                }
-                if ($mon3Out !== null) {
-                    $cash->mon3 -= trimOver($mon3Out, ' ');
-                }
-                if ($mon4Out !== null) {
-                    $cash->mon4 -= trimOver($mon4Out, ' ');
-                }
-                if ($mon5Out !== null) {
-                    $cash->mon5 -= trimOver($mon5Out, ' ');
-                }
-                if ($mon6Out !== null) {
-                    $cash->mon6 -= trimOver($mon6Out, ' ');
-                }
-                if ($mon7Out !== null) {
-                    $cash->mon7 -= trimOver($mon7Out, ' ');
-                }
-                if ($mon8Out !== null) {
-                    $cash->mon8 -= trimOver($mon8Out, ' ');
-                }
-                if ($mon9Out !== null) {
-                    $cash->mon9 -= trimOver($mon9Out, ' ');
-                }
-                if ($mon10Out !== null) {
-                    $cash->mon10 -= trimOver($mon10Out, ' ');
-                }
-                if ($mon11Out !== null) {
-                    $cash->mon11 -= trimOver($mon11Out, ' ');
-                }
-                if ($mon12Out !== null) {
-                    $cash->mon12 -= trimOver($mon12Out, ' ');
-                }
-
-                $cash->update((array)$cash);
-
-                DB::commit();
-                return Redirect::route('omega')->with('success', trans('alertSuccess.monexc'));
-            } catch (\Exception $ex) {
-                DB::rollBack();
-                return Redirect::back()->with('danger', trans('alertDanger.monexc'));
-            }
+            DB::commit();
+            return Redirect::route('omega')->with('success', trans('alertSuccess.monexc'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return Redirect::back()->with('danger', trans('alertDanger.monexc'));
         }
     }
 }

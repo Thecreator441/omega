@@ -24,10 +24,11 @@ if ($emp->lang == 'fr') {
                     </div>
                 </div>
             </div>
-
-            <form action="{{ url('cash_reconciliation/store') }}" method="post" role="form" id="cashReconForm">
+            
+            <form action="{{ url('cash_close_init/store') }}" method="post" role="form" id="cashclose_initForm">
                 {{csrf_field()}}
-                <div class="box-header with-border" id="form">
+
+                <div class="box-header with-border">
                     @foreach ($cashes as $cash)
                         <input type="hidden" id="idcash" name="idcash" value="{{$cash->idcash}}">
 
@@ -151,6 +152,14 @@ if ($emp->lang == 'fr') {
                         </div>
                     @endforeach
                 </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-12">
+                            <button type="button" id="close_init" class="btn btn-sm bg-blue pull-right btn-raised fa fa-folder"></button>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -161,79 +170,22 @@ if ($emp->lang == 'fr') {
         $(document).ready(function () {
             let sumIn = 0;
 
-            $('.inamt').each(function () {
-                if (parseInt(trimOver($(this).text(), null)))
-                    sumIn += parseInt(trimOver($(this).text(), null));
-            });
-            $('#totin').val(money(parseInt(sumIn)));
-            $('#totinword').text(toWord(sumIn, '{{$emp->lang}}'));
-        });
-
-        function sum(amount, valueId, sumId) {
-            $(valueId).val(money($(valueId).val()));
-            $(sumId).val(money(amount * trimOver($(valueId).val(), null)));
-
-            sumAmount();
-        }
-
-        $(document).on('input', '.amount', function () {
-            $(this).val(money($(this).val()));
-
-            sumAmount();
-        });
-
-        function sumAmount() {
-            let sumIn = 0;
-
-            $('.sum').each(function () {
-                let input = trimOver($(this).val(), null);
+            $('.amount').each(function () {
+                var input = trimOver($(this).text(), null);
+                
                 if (parseInt(input)) {
                     sumIn += parseInt(input);
+                    $('.' + $(this).prop('id') + 'Word').text(toWord(input, '{{$emp->lang}}'));
                 }
             });
-            $('#totbil').val(money(sumIn));
-            $('#totopera').text(toWord(sumIn, '{{$emp->lang}}'));
+            $('#totamt').text(money(parseInt(sumIn)));
+            $('#totinword').text(toWord(sumIn, '{{$emp->lang}}'));
 
-            setDisplay();
-        }
-
-        $('.tot').each(function () {
-            $(this).keyup(function () {
-                if (parseInt(trimOver($('#totbil').val(), null)))
-                    setDisplay();
-            });
+            $('#cash_amt').val(money(parseInt(sumIn)));
         });
 
-        function setDisplay() {
-            let diff = Math.abs(parseInt(trimOver($('#totin').val(), null)) - parseInt(trimOver($('#totbil').val(), null)));
-
-            $('#diff').val(money(diff));
-            $('#diffinword').text(toWord(diff, '{{$emp->lang}}'));
-            $('#closure').css('display', 'block');
-
-            if (diff < 0 || diff > 0) {
-                $('#diff').attr('class', 'text-red');
-            } else {
-                $('#diff').attr('class', 'text-white');
-            }
-        }
-
-        $('#close').click(function () {
-            let totin = parseInt(trimOver($('#totin').val(), null));
-            let totbil = parseInt(trimOver($('#totbil').val(), null));
-
-            let icon = 'info';
-            let text = '@lang('confirm.close_text')';
-
-            if (totin < totbil) {
-                icon = 'error';
-                text = '@lang('confirm.excess_text')';
-            } else if (totin > totbil) {
-                icon = 'error';
-                text = '@lang('confirm.shortage_text')';
-            }
-
-            mySwal("{{ $title }}", text, '@lang('confirm.no')', '@lang('confirm.yes')', '#cashReconForm', icon);
+        $('#close_init').click(function () {
+            mySwal("{{ $title }}", "@lang('confirm.close_init_text')", '@lang('confirm.no')', '@lang('confirm.yes')', '#cashclose_initForm');
         })
     </script>
 @stop

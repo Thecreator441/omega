@@ -134,10 +134,18 @@ Route::prefix('membership')->group(static function () {
     Route::post('store', 'Omega\MembershipController@store')->name('membership/store');
 });
 
-//    Cash Open
+//    Cash Open, Close Initialisation and Closing
 Route::prefix('cash_open')->group(static function () {
     Route::get('/', 'Omega\CashOpenController@index')->name('cash_open');
     Route::post('store', 'Omega\CashOpenController@store')->name('cash_open/store');
+});
+Route::prefix('cash_close_init')->group(static function () {
+    Route::get('/', 'Omega\CashCloseInitController@index')->name('cash_close_init');
+    Route::post('store', 'Omega\CashCloseInitController@store')->name('cash_close_init/store');
+});
+Route::prefix('cash_close')->group(static function () {
+    Route::get('/', 'Omega\CashCloseController@index')->name('cash_close');
+    Route::post('store', 'Omega\CashCloseController@store')->name('cash_close/store');
 });
 
 //    Cash In and Out
@@ -1336,7 +1344,7 @@ Route::get('getMemBal', static function () {
 
 // O-COLLECT MOBILE
 
-//Route::post('loginMob', 'O_Collect\LoginController@loginMob');
+//Route::post('loginMob', 'Omega\LoginController@loginMob');
 
 //      getMembersByColl
 Route::get('getMembersByColl', static function () {
@@ -1482,19 +1490,7 @@ Route::get('getCustomers', static function () {
 });
 
 //      Registration
-Route::get('registration/store', 'O_Collect\RegistrationController@store');
-
-//      Till Opening
-Route::get('till_opening/store', 'O_Collect\CashOpenController@store');
-
-//      Till In
-Route::get('cash_in/store', 'O_Collect\CashInController@store');
-
-//      Till Out
-Route::get('cash_out/store', 'O_Collect\CashOutController@store');
-
-//      Money Exchange
-Route::get('money_exchange/store', 'O_Collect\MoneyExchangeController@store');
+Route::get('registration/store', 'Omega\RegistrationController@store');
 
 //      GetCustomerBalance
 Route::get('getCustomerBalance', static function () {
@@ -1570,7 +1566,7 @@ Route::get('getFilterDemLoans', static function () {
 
 //      Get Loan Type
 Route::get('getLoanType', static function () {
-    return LoanType::getLoanType(Request::input('ltype'));
+    return LoanType::getLoanType(Request::input('id'));
 });
 
 //      Get Loan Types

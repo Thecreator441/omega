@@ -9,9 +9,9 @@
     "use strict";
 
     window.addEventListener("load", function () {
-        let forms = document.getElementsByClassName("needs-validation");
+        var forms = document.getElementsByClassName("needs-validation");
 
-        let validator = Array.prototype.filter.call(forms, function (form) {
+        var validator = Array.prototype.filter.call(forms, function (form) {
             form.addEventListener("submit", function (event) {
                 if (form.checkValidity() === false) {
                     event.preventDefault();
@@ -72,7 +72,7 @@ $('#home, .home').on('click', function () {
     $('#homePage').trigger('submit');
 });
 
-$('td .fa-edit').on('click', function () {
+$('td button').on('click', function () {
     location.href = "#page-top";
 });
 
@@ -141,11 +141,14 @@ function setDisabled(choice) {
  * @param type
  * @returns {*}
  */
-function trimOver(text, type) {
-    if (type === null) {
-        return text.replace(/ /g, '');
+function trimOver(text = null, type = null) {
+    if (text !== null) {
+        if (type === null) {
+            return text.replace(/ /g, '');
+        }
+        return text.replace(/,/g, ' ');
     }
-    return text.replace(/,/g, ' ');
+    return 0;
 }
 
 /**
@@ -154,7 +157,7 @@ function trimOver(text, type) {
  * @returns {*}
  */
 function money(number, type = ',') {
-    let amount = accounting.formatNumber(number);
+    var amount = accounting.formatNumber(number);
 
     return trimOver(amount, type);
 }
@@ -180,17 +183,17 @@ function toWord(number, lang) {
  * @returns {string|*}
  */
 function pad(text, size = 2, type = 'left') {
-    let length = text.toString().length;
-    let output = '';
+    var length = text.toString().length;
+    var output = '';
 
     if (type === 'left') {
-        for (let i = 0; i < (size - length); i++) {
+        for (var i = 0; i < (size - length); i++) {
             output += '0';
         }
         return output + '' + text;
     } else {
         output = text;
-        for (let i = 0; i < (size - length); i++) {
+        for (var i = 0; i < (size - length); i++) {
             output += '0';
         }
         return output;
@@ -203,7 +206,7 @@ function pad(text, size = 2, type = 'left') {
  * @returns {string}
  */
 function userDate(userDate) {
-    let date = new Date(userDate);
+    var date = new Date(userDate);
     return Date.parse(date).toString('dd/MM/yyyy');
 }
 
@@ -213,7 +216,7 @@ function userDate(userDate) {
  * @returns {string}
  */
 function sysDate(sysDate) {
-    let date = new Date(sysDate);
+    var date = new Date(sysDate);
     return Date.parse(date).toString('yyyy-MM-dd');
 }
 
@@ -223,7 +226,7 @@ function sysDate(sysDate) {
  * @returns {string}
  */
 function formDate(days) {
-    let date = new Date();
+    var date = new Date();
     date = date.addDays(parseInt(days));
     return Date.parse(date).toString('yyyy-MM-dd');
 }

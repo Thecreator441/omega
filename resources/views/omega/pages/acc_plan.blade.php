@@ -684,7 +684,7 @@ if ($emp->lang == 'fr') {
             in_out_form();
         });
 
-        $(document).on('click', '#save, #edit', function () {
+        $(document).on('click', '#save, .edit', function () {
             let text = '';
             if ($('#idaccplan').val() === '')
                 text = '@lang('confirm.accpsave_text')';

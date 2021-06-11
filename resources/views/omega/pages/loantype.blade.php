@@ -12,7 +12,7 @@ if ($emp->lang == 'fr') {
 @section('title', $title)
 
 @section('content')
-<div class="box" id="form" style="display: block;">
+<div class="box" id="form" style="display: none;">
     <div class="box-header with-border">
         <h3 class="box-title text-bold" id="title"> @lang('label.new_loan_type')</h3>
         <div class="box-tools pull-right">
@@ -102,7 +102,7 @@ if ($emp->lang == 'fr') {
                         <div class="form-group has-info">
                             <label for="max_dur" class="col-md-6 control-label">@lang('label.max_dur')</label>
                             <div class="col-md-6">
-                                <input type="text" name="max_dur" id="max_dur" class="form-control text-right">
+                                <input type="text" name="max_dur" id="max_dur" class="form-control digit text-right">
                                 <div class="help-block">@lang('placeholder.max_dur')</div>
                             </div>
                         </div>
@@ -111,7 +111,7 @@ if ($emp->lang == 'fr') {
                         <div class="form-group has-info">
                             <label for="max_amt" class="col-md-5 control-label">@lang('label.max_amt')</label>
                             <div class="col-md-7">
-                                <input type="text" name="max_amt" id="max_amt" class="form-control text-right text-bold">
+                                <input type="text" name="max_amt" id="max_amt" class="form-control amount text-right text-bold">
                                 <div class="help-block">@lang('placeholder.max_amt')</div>
                             </div>
                         </div>
@@ -120,7 +120,7 @@ if ($emp->lang == 'fr') {
                         <div class="form-group has-info">
                             <label for="inst_pen_day_space" class="col-md-8 control-label">@lang('label.inst_pen_day_space')</label>
                             <div class="col-md-4">
-                                <input type="text" name="inst_pen_day_space" id="inst_pen_day_space" class="form-control text-right">
+                                <input type="text" name="inst_pen_day_space" id="inst_pen_day_space" class="form-control digit text-right">
                                 <div class="help-block">@lang('placeholder.inst_pen_day_space')</div>
                             </div>
                         </div>
@@ -150,7 +150,7 @@ if ($emp->lang == 'fr') {
                                     <option value=""></option>
                                     @foreach ($accplans as $accplan)
                                         @if ($accplan->accabbr === 'Co')
-                                            <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>
+                                            <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 4) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>
                                         @endif
                                     @endforeach
                                 </select>
@@ -172,7 +172,7 @@ if ($emp->lang == 'fr') {
                                 <div class="form-group">
                                     <div class="checkbox">
                                         <label for="seicomaker_Y">
-                                            <input type="radio" name="seicomaker" value="Y" id="seicomaker_Y" class="">&nbsp;&nbsp;
+                                            <input type="radio" name="seicomaker" value="Y" id="seicomaker_Y" class="seicomaker">&nbsp;&nbsp;
                                             @lang('label.yes')
                                         </label>
                                     </div>
@@ -182,7 +182,7 @@ if ($emp->lang == 'fr') {
                                 <div class="form-group">
                                     <div class="checkbox">
                                         <label for="seicomaker_N">
-                                            <input type="radio" name="seicomaker" value="N" id="seicomaker_N" class="">&nbsp;&nbsp;
+                                            <input type="radio" name="seicomaker" value="N" id="seicomaker_N" class="seicomaker">&nbsp;&nbsp;
                                             @lang('label.no')
                                         </label>
                                     </div>
@@ -205,7 +205,7 @@ if ($emp->lang == 'fr') {
                                 <div class="form-group">
                                     <div class="checkbox">
                                         <label for="none">
-                                            <input type="radio" name="block_acc" value="N" id="none" class="">&nbsp;&nbsp;
+                                            <input type="radio" name="block_acc" value="N" id="none" class="block_acc">&nbsp;&nbsp;
                                             @lang('label.none')
                                         </label>
                                     </div>
@@ -215,7 +215,7 @@ if ($emp->lang == 'fr') {
                                 <div class="form-group">
                                     <div class="checkbox">
                                         <label for="mem_acc">
-                                            <input type="radio" name="block_acc" value="M" id="mem_acc" class="">&nbsp;&nbsp;
+                                            <input type="radio" name="block_acc" value="M" id="mem_acc" class="block_acc">&nbsp;&nbsp;
                                             @lang('label.mem_acc')
                                         </label>
                                     </div>
@@ -225,7 +225,7 @@ if ($emp->lang == 'fr') {
                                 <div class="form-group">
                                     <div class="checkbox">
                                         <label for="mem&co">
-                                            <input type="radio" name="block_acc" value="MC" id="mem&co" class="">&nbsp;&nbsp;
+                                            <input type="radio" name="block_acc" value="MC" id="mem&co" class="block_acc">&nbsp;&nbsp;
                                             @lang('label.mem&co')
                                         </label>
                                     </div>
@@ -298,7 +298,7 @@ if ($emp->lang == 'fr') {
                                             <option value=""></option>
                                             @foreach($accplans as $accplan)
                                                 <option value="{{ $accplan->idaccplan }}">
-                                                    {{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{$accplan->labelfr}} @else {{$accplan->labeleng}} @endif
+                                                    {{ substrWords($accplan->plan_code, 4) }} : @if($emp->lang == 'fr') {{$accplan->labelfr}} @else {{$accplan->labeleng}} @endif
                                                 </option>
                                             @endforeach
                                         </select>
@@ -358,127 +358,390 @@ if ($emp->lang == 'fr') {
         </form>
     </div>
 </div>
+
+<div class="box">
+    <div class="box-header with-border">
+        <h3 class="box-title text-bold">{{ $title }}</h3>
+        @if ($emp->level === 'B')
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-success bg-green btn-sm pull-right" id="new_loan_type">
+                    <i class="fa fa-plus"></i>&nbsp;@lang('label.new_loan_type')
+                </button>
+            </div>
+        @endif
+    </div>
+    <div class="box-body">
+        <table id="admin-data-table" class="table table-condensed table-striped table-responsive table-hover table-responsive-xl table-bordered">
+            <thead>
+            <tr>
+                <th>@lang('label.code')</th>
+                <th>{{ $title }}</th>
+                <th>@lang('label.loan_acc')</th>
+                <th>@lang('label.int_paid_acc')</th>
+                <th>@lang('label.loan_per')</th>
+                <th>@lang('label.max_amt')</th>
+                <th>@lang('label.date')</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach ($loan_types as $loan_type)
+                <tr>
+                    <td class="text-center">{{pad($loan_type->loan_type_code, 3)}}</td>
+                    <td>@if($emp->lang == 'fr') {{ $loan_type->labelfr }} @else {{ $loan_type->labeleng }} @endif</td>
+                    <td class="text-center">{{ $loan_type->laccnumb }}</td>
+                    <td class="text-center">{{ $loan_type->iaccnumb }}</td>
+                    <td>
+                        @if ($loan_type->loan_per === 'D')
+                            @lang('label.daily')
+                        @elseif ($loan_type->loan_per === 'W')
+                            @lang('label.weekly')
+                        @elseif ($loan_type->loan_per === 'B')
+                            @lang('label.bimens')
+                        @elseif ($loan_type->loan_per === 'M')
+                            @lang('label.mens')
+                        @elseif ($loan_type->loan_per === 'T')
+                            @lang('label.trim')
+                        @elseif ($loan_type->loan_per === 'S')
+                            @lang('label.sem')
+                        @elseif ($loan_type->loan_per === 'A')
+                            @lang('label.ann')
+                        @else
+                            @lang('label.al_period')
+                        @endif
+                    </td>
+                    <td class="text-right text-bold">{{ money((int)$loan_type->max_amt) }}</td>
+                    <td class="text-center">{{changeFormat($loan_type->created_at)}}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn bg-green btn-sm fa fa-eye" onclick="view('{{$loan_type->idltype}}')"></button>
+                        @if ($emp->level === 'B')
+                            <button type="button" class="btn bg-aqua btn-sm fa fa-edit" onclick="edit('{{$loan_type->idltype}}')"></button>
+                            <button type="button" class="btn bg-red btn-sm fa fa-trash-o" onclick="remove('{{$loan_type->idltype}}')"></button>
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+        <form action="{{route('loantype/delete')}}" method="post" role="form" id="delForm" style="display: none">
+            {{ csrf_field() }}
+            <input type="hidden" name="loan_type" id="loan_type" value="">
+        </form>
+    </div>
+</div>
 @stop
 
 @section('script')
     <script>
         $(document).ready(function () {
-            verifCheckbox();
+            $('.rate').verifTax();
         });
 
-        $('#max_amt').on('input', function () {
+        $('.amount').on('input', function () {
             $(this).val(money($(this).val()));
         });
 
-        $('#insert').click(function () {
-            setEditable();
-            $('#form :input').val('');
-            $('#form input[type="radio"], #loanTypeForm input[type="checkbox"]').removeAttr('checked');
-            $('.select2').select2().trigger('change');
-            $(this).replaceWith('<button class="btn btn-sm bg-blue pull-right btn-raised fa fa-save" id="save" type="button"></button>');
-            $('.bg-aqua').replaceWith('<button class="btn btn-sm bg-aqua pull-right btn-raised fa fa-recycle" disabled id="update" type="button"></button>');
-            $('#form .bg-red').attr('disabled', true);
-            verifCheckbox();
+        $('.code_, .digit').on('input', function () {
+            $(this).val(accounting.formatNumber($(this).val()).replace(/,/g, ''));
         });
 
-        $('#update').click(function () {
-            setEditable();
-            $(this).replaceWith('<button type="button" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit"></button>');
-        });
+        $('#new_loan_type').click(function () {
+            in_out_form();
 
-        $('input[type="checkbox"]').each(function () {
-            $(this).click(function () {
-                verifCheckbox();
-            })
-        });
-
-        $('#intpayacc').change(function () {
             $.ajax({
-                url: "{{ url('getaccplan') }}",
+                url: "{{ url('getLoanTypes') }}",
                 method: 'get',
                 data: {
-                    accplan: $(this).val()
+                    institution: "{{ $emp->institution }}",
+                    branch: "{{ $emp->branch }}"
                 },
-                success: function (accplan) {
-                    $('#intacc_name').val("@if($emp->lang == 'fr') " + accplan.labelfr + " @else " + accplan.labeleng + " @endif ");
+                success: function (loan_typees) {
+                    $('#loan_type_code').val(loan_typees.length + 1);
                 }
             });
+
+            $('#form').show();
         });
 
-        $('#penacc').change(function () {
+        function view(idloan_type) {
+            setDisabled(true);
+
             $.ajax({
-                url: "{{ url('getaccplan') }}",
+                url: "{{ url('getLoanType') }}",
                 method: 'get',
                 data: {
-                    accplan: $(this).val()
+                    id: idloan_type
                 },
-                success: function (accplan) {
-                    $('#penacc_name').val("@if($emp->lang == 'fr') " + accplan.labelfr + " @else " + accplan.labeleng + " @endif ");
+                success: function (loan_type) {
+                    $('#title').text("@if($emp->lang === 'fr') " + loan_type.labelfr + " @else " + loan_type.labeleng + "@endif");
+
+                    $('#idloan_type').val(loan_type.idloan_type);
+                    $('#loan_type_code').val(loan_type.loan_type_code);
+                    $('#labeleng').val(loan_type.labeleng);
+                    $('#labelfr').val(loan_type.labelfr);
+                    $('#loan_per').val(loan_type.loan_per).select2();
+                    $('#max_dur').val(loan_type.max_dur);
+                    $('#max_amt').val(money(loan_type.max_amt));
+                    $('#inst_pen_day_space').val(loan_type.inst_pen_day_space);
+
+                    $.ajax({
+                        url: "{{ url('getAccount') }}",
+                        method: 'get',
+                        data: {
+                            id: loan_type.int_paid_acc
+                        },
+                        success: function (int_paid_Acc) {
+                            $('#int_paid_acc').val(int_paid_Acc.idplan).select2();
+                        }
+                    });
+
+                    $.ajax({
+                        url: "{{ url('getAccount') }}",
+                        method: 'get',
+                        data: {
+                            id: loan_type.loan_acc
+                        },
+                        success: function (loan_Acc) {
+                            $('#loan_acc').val(loan_Acc.idplan).select2();
+                        }
+                    });
+
+                    $('.seicomaker').each(function () {
+                        if ($(this).val() === loan_type.seicomaker) {
+                            $(this).prop('checked', true)
+                        } else {
+                            $(this).prop('checked', false)
+                        }
+                    });
+
+                    $('.block_acc').each(function () {
+                        if ($(this).val() === loan_type.block_acc) {
+                            $(this).prop('checked', true)
+                        } else {
+                            $(this).prop('checked', false)
+                        }
+                    });
+
+                    if (parseInt(loan_type.pay_tax_rate) > 0 && loan_type.pay_tax_acc !== null) {
+                        $('#pay_tax_rate').val(loan_type.pay_tax_rate);
+
+                        $.ajax({
+                            url: "{{ url('getAccount') }}",
+                            method: 'get',
+                            data: {
+                                id: loan_type.pay_tax_acc
+                            },
+                            success: function (pay_tax_Acc) {
+                                $('#pay_tax_acc').val(pay_tax_Acc.idplan).select2();
+                            }
+                        });
+                    }
+
+                    if (parseInt(loan_type.use_quod_rate) > 0 && loan_type.use_quod_acc !== null) {
+                        $('#use_quod_rate').val(loan_type.use_quod_rate);
+
+                        $.ajax({
+                            url: "{{ url('getAccount') }}",
+                            method: 'get',
+                            data: {
+                                id: loan_type.use_quod_acc
+                            },
+                            success: function (use_quod_Acc) {
+                                $('#use_quod_acc').val(use_quod_Acc.idplan).select2();
+                            }
+                        });
+                    }
+
+                    if (parseInt(loan_type.pen_req_tax) > 0 && loan_type.pen_req_acc !== null) {
+                        $('#pen_req_tax').val(loan_type.pen_req_tax);
+
+                        $.ajax({
+                            url: "{{ url('getAccount') }}",
+                            method: 'get',
+                            data: {
+                                id: loan_type.pen_req_acc
+                            },
+                            success: function (pen_req_Acc) {
+                                $('#pen_req_acc').val(pen_req_Acc.idplan).select2();
+                            }
+                        });
+                    }
+                    
+
+                    $('#save').replaceWith('<button type="submit" id="save" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit" style="display: none"></button>');
+                    $('.edit').replaceWith('<button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save" style="display: none"></button>');
+
+                    $('#form').show();
                 }
             });
-        });
-
-        $(document).on('click', '#save, #edit', function () {
-            let text = '';
-            if ($('#idloantype').val() === '')
-                text = '@lang('confirm.ltypesave_text')';
-            else
-                text = '@lang('confirm.ltypeedit_text')';
-
-            swal({
-                    title: '@lang('sidebar.loantype')',
-                    text: text,
-                    type: 'info',
-                    showCancelButton: true,
-                    cancelButtonClass: 'bg-red',
-                    confirmButtonClass: 'bg-green',
-                    confirmButtonText: '@lang('confirm.yes')',
-                    cancelButtonText: '@lang('confirm.no')',
-                    closeOnConfirm: true,
-                    closeOnCancel: true
-                },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        $('#loanTypeForm').submit();
-                    }
-                }
-            );
-        });
-
-        $('#delete').click(function () {
-            swal({
-                    title: '@lang('sidebar.loantype')',
-                    text: '@lang('confirm.ltypedel_text')',
-                    type: 'info',
-                    showCancelButton: true,
-                    cancelButtonClass: 'bg-red',
-                    confirmButtonClass: 'bg-green',
-                    confirmButtonText: '@lang('confirm.yes')',
-                    cancelButtonText: '@lang('confirm.no')',
-                    closeOnConfirm: true,
-                    closeOnCancel: true
-                },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        let form = $('#loanTypeForm');
-                        form.attr('action', 'loantype/delete');
-                        form.submit();
-                    }
-                }
-            );
-        });
-
-        function setEditable() {
-            $('#form :input').removeAttr('readonly');
-            $('select, #form input[type="radio"], #form input[type="checkbox"]').removeAttr('disabled');
         }
 
-        function verifCheckbox() {
-            if ($('#penreg').is(':checked')) {
-                $('#penRegInfo').show();
-            } else {
-                $('#penRegInfo').hide();
+        function edit(idloan_type) {
+            setDisabled(false);
+
+            $.ajax({
+                url: "{{ url('getLoanType') }}",
+                method: 'get',
+                data: {
+                    id: idloan_type
+                },
+                success: function (loan_type) {
+                    $('#title').text("@lang('label.edit') @if($emp->lang === 'fr') " + loan_type.labelfr + " @else " + loan_type.labeleng + "@endif");
+
+                    $('#idloan_type').val(loan_type.idloan_type);
+                    $('#loan_type_code').val(loan_type.loan_type_code);
+                    $('#labeleng').val(loan_type.labeleng);
+                    $('#labelfr').val(loan_type.labelfr);
+                    $('#loan_per').val(loan_type.loan_per).select2();
+                    $('#max_dur').val(loan_type.max_dur);
+                    $('#max_amt').val(money(loan_type.max_amt));
+                    $('#inst_pen_day_space').val(loan_type.inst_pen_day_space);
+
+                    $.ajax({
+                        url: "{{ url('getAccount') }}",
+                        method: 'get',
+                        data: {
+                            id: loan_type.int_paid_acc
+                        },
+                        success: function (int_paid_Acc) {
+                            $('#int_paid_acc').val(int_paid_Acc.idplan).select2();
+                        }
+                    });
+
+                    $.ajax({
+                        url: "{{ url('getAccount') }}",
+                        method: 'get',
+                        data: {
+                            id: loan_type.loan_acc
+                        },
+                        success: function (loan_Acc) {
+                            $('#loan_acc').val(loan_Acc.idplan).select2();
+                        }
+                    });
+
+                    $('.seicomaker').each(function () {
+                        if ($(this).val() === loan_type.seicomaker) {
+                            $(this).prop('checked', true)
+                        } else {
+                            $(this).prop('checked', false)
+                        }
+                    });
+
+                    $('.block_acc').each(function () {
+                        if ($(this).val() === loan_type.block_acc) {
+                            $(this).prop('checked', true)
+                        } else {
+                            $(this).prop('checked', false)
+                        }
+                    });
+
+                    if (parseInt(loan_type.pay_tax_rate) > 0 && loan_type.pay_tax_acc !== null) {
+                        $('#pay_tax_rate').val(loan_type.pay_tax_rate);
+
+                        $.ajax({
+                            url: "{{ url('getAccount') }}",
+                            method: 'get',
+                            data: {
+                                id: loan_type.pay_tax_acc
+                            },
+                            success: function (pay_tax_Acc) {
+                                $('#pay_tax_acc').val(pay_tax_Acc.idplan).select2();
+                            }
+                        });
+                    }
+
+                    if (parseInt(loan_type.use_quod_rate) > 0 && loan_type.use_quod_acc !== null) {
+                        $('#use_quod_rate').val(loan_type.use_quod_rate);
+
+                        $.ajax({
+                            url: "{{ url('getAccount') }}",
+                            method: 'get',
+                            data: {
+                                id: loan_type.use_quod_acc
+                            },
+                            success: function (use_quod_Acc) {
+                                $('#use_quod_acc').val(use_quod_Acc.idplan).select2();
+                            }
+                        });
+                    }
+
+                    if (parseInt(loan_type.pen_req_tax) > 0 && loan_type.pen_req_acc !== null) {
+                        $('#pen_req_tax').val(loan_type.pen_req_tax);
+
+                        $.ajax({
+                            url: "{{ url('getAccount') }}",
+                            method: 'get',
+                            data: {
+                                id: loan_type.pen_req_acc
+                            },
+                            success: function (pen_req_Acc) {
+                                $('#pen_req_acc').val(pen_req_Acc.idplan).select2();
+                            }
+                        });
+                    }
+                    
+                    $('#save').replaceWith('<button type="button" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit edit"></button>');
+
+                    $('#form').show();
+                }
+            });
+        }
+
+        function remove(idloan_type) {
+            swal({
+                icon: 'warning',
+                title: "{{$title}}",
+                text: "@lang('confirm.loan_type_del_text')",
+                closeOnClickOutside: false,
+                allowOutsideClick: false,
+                closeOnEsc: false,
+                buttons: {
+                    cancel: {
+                        text: " @lang('confirm.no')",
+                        value: false,
+                        visible: true,
+                        closeModal: true,
+                        className: "btn bg-red fa fa-close"
+                    },
+                    confirm: {
+                        text: " @lang('confirm.yes')",
+                        value: true,
+                        visible: true,
+                        closeModal: true,
+                        className: "btn bg-green fa fa-check"
+                    },
+                },
+            }).then(function (isConfirm) {
+                if (isConfirm) {
+                    $('#loan_type').val(idloan_type);
+                    $('#delForm').submit();
+                }
+            });
+        }
+
+        $('#exitForm').click(function () {
+            $('#form').hide();
+            in_out_form();
+        });
+
+        $(document).on('click', '#save, .edit', function () {
+            var text = "@lang('confirm.loan_type_edit_text')";
+            if ($('#idloan_type').val() === '') {
+                text = "@lang('confirm.loan_type_save_text')";
             }
+                
+            mySwal("{{$title}}", text, "@lang('confirm.no')", "@lang('confirm.yes')", '#loan_typeForm');
+        });
+
+        function in_out_form() {
+            setDisabled(false);
+
+            $('#title').text("@lang('label.new_loan_type')");
+            $('#idloan_type').val('');
+            $('.fillform :input').val('');
+            $('.fillform :input[type="checkbox"]').prop('checked', false);
+            $('.select2').val('').select2();
+            $('.edit').replaceWith('<button type="button" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>');
         }
     </script>
 @stop
