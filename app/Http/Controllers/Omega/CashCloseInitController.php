@@ -24,7 +24,10 @@ class CashCloseInitController extends Controller
             if (dateOpen()) {
                 if (cashOpen()) {
                     $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
-                    $cashes = Cash::getCashesPaginate(['cashes.status' => 'O']);
+                    $cashes = Cash::getCashesPaginate(['cashes.employee' => $emp->iduser, 'cashes.status' => 'O']);
+                    if ($cash->) {
+                        $cashes = Cash::getCashesPaginate(['cashes.status' => 'O']);
+                    }
                     $moneys = Money::getMoneys();
                     $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
                     $menu->pLevel = Request::input("level");
