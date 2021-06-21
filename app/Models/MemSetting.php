@@ -23,16 +23,50 @@ class MemSetting extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @param array $where
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getMemSettings()
+    public static function getMemSettingBy(array $where = null )
     {
         $emp = Session::get('employee');
 
-        return self::query()->select('mem_settings.*', 'A.idaccount', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.accabbr')
+        if ($where !== null) {
+            return self::query()->select('mem_settings.*', 'A.idaccount', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.accabbr', 'O.idoper', 'O.labelfr AS olabelfr', 'O.labeleng AS olabeleng')
+                ->join('accounts AS A', 'mem_settings.account', '=', 'A.idaccount')
+                ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
+                ->join('operations AS O', 'mem_settings.operation', '=', 'O.idoper')
+                ->where('mem_settings.branch', $emp->branch)->where($where)
+                ->orderBy('A.accnumb', 'ASC')->first();
+        }
+        return self::query()->select('mem_settings.*', 'A.idaccount', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.accabbr', 'O.idoper', 'O.labelfr AS olabelfr', 'O.labeleng AS olabeleng')
             ->join('accounts AS A', 'mem_settings.account', '=', 'A.idaccount')
             ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
-            ->orWhere('mem_settings.branch', $emp->branch)
+            ->join('operations AS O', 'mem_settings.operation', '=', 'O.idoper')
+            ->where('mem_settings.branch', $emp->branch)
+            ->orderBy('A.accnumb', 'ASC')->first();
+    }
+
+    /**
+     * @param array $where
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getMemSettings(array $where = null )
+    {
+        $emp = Session::get('employee');
+
+        if ($where !== null) {
+            return self::query()->select('mem_settings.*', 'A.idaccount', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.accabbr', 'O.idoper', 'O.labelfr AS olabelfr', 'O.labeleng AS olabeleng')
+                ->join('accounts AS A', 'mem_settings.account', '=', 'A.idaccount')
+                ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
+                ->join('operations AS O', 'mem_settings.operation', '=', 'O.idoper')
+                ->where('mem_settings.branch', $emp->branch)->where($where)
+                ->orderBy('A.accnumb', 'ASC')->get();
+        }
+        return self::query()->select('mem_settings.*', 'A.idaccount', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.accabbr', 'O.idoper', 'O.labelfr AS olabelfr', 'O.labeleng AS olabeleng')
+            ->join('accounts AS A', 'mem_settings.account', '=', 'A.idaccount')
+            ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
+            ->join('operations AS O', 'mem_settings.operation', '=', 'O.idoper')
+            ->where('mem_settings.branch', $emp->branch)
             ->orderBy('A.accnumb', 'ASC')->get();
     }
 

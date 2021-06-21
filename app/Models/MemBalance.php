@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Session;
 
-class Balance extends Model
+class MemBalance extends Model
 {
-    protected $table = 'balances';
+    protected $table = 'mem_balances';
 
     protected $primaryKey = 'idbal';
 
-    protected $fillable = ['balances'];
+    protected $fillable = ['mem_balances'];
 
     /**
      * @param int $member
@@ -19,11 +19,10 @@ class Balance extends Model
      */
     public static function getMemBal(int $member)
     {
-        return self::query()->where('member', $member)
-            ->join('accounts AS A', 'balances.account', '=', 'A.idaccount')
-            ->join('operations AS O', 'balances.operation', '=', 'O.idoper')
-            ->select('balances.*')
-            ->distinct('member')->orderBy('A.accnumb', 'ASC')->get();
+        return self::query()->select('mem_mem_balances.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.labelfr AS atlabelfr', 'At.labeleng AS atlabeleng', 'At.accabbr')
+            ->join('accounts AS A', 'mem_mem_balances.account', '=', 'A.idaccount')
+            ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
+            ->where('member', $member)->orderBy('A.accnumb')->get();
     }
 
     /**
@@ -33,12 +32,10 @@ class Balance extends Model
      */
     public static function getMemAcc(int $member, int $account)
     {
-        return self::query()->where(['member' => $member, 'account' => $account])
-            ->join('accounts AS A', 'balances.account', '=', 'A.idaccount')
+        return self::query()->select('mem_mem_balances.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.labelfr AS atlabelfr', 'At.labeleng AS atlabeleng', 'At.accabbr')
+            ->join('accounts AS A', 'mem_mem_balances.account', '=', 'A.idaccount')
             ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
-            ->join('operations AS O', 'balances.operation', '=', 'O.idoper')
-            ->select('balances.*', 'A.accnumb', 'At.accabbr', 'A.labelfr', 'A.labeleng', 'O.labelfr AS operfr',
-                'O.labeleng AS opereng', 'O.debtfr', 'O.debteng', 'O.credtfr', 'O.credteng', 'A.idplan')->first();
+            ->where(['member' => $member, 'account' => $account])->first();
     }
 
     /**
@@ -79,7 +76,7 @@ class Balance extends Model
                 $description = $acc_bal->labelfr;
             }
 
-            if ($acc_bal->accabbr === 'O' || $acc_bal->accabbr === 'E') {
+            if ($acc_bal->accabbr === 'Or' || $acc_bal->accabbr === 'Co') {
                 $acc_bal->account = $acc_bal->accnumb;
                 $acc_bal->description = $description;
                 $acc_bal->amount = money($amount);
@@ -109,11 +106,9 @@ class Balance extends Model
     public static function getMemAccBal(int $member)
     {
         return self::query()->where('member', $member)
-            ->join('accounts AS A', 'balances.account', '=', 'A.idaccount')
+            ->join('accounts AS A', 'mem_balances.account', '=', 'A.idaccount')
             ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
-            ->join('operations AS O', 'balances.operation', '=', 'O.idoper')
-            ->select('balances.*', 'A.accnumb', 'At.accabbr', 'A.labelfr', 'A.labeleng', 'O.labelfr AS operfr',
-                'O.labeleng AS opereng', 'O.debtfr', 'O.debteng', 'O.credtfr', 'O.credteng', 'A.idplan')
+            ->select('mem_balances.*', 'A.accnumb', 'At.accabbr', 'A.labelfr', 'A.labeleng', 'A.idplan')
             ->distinct('member')->orderBy('A.accnumb')->get();
     }
 

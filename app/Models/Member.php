@@ -23,26 +23,82 @@ class Member extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @param array $where
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getMembers()
+    public static function getMemberBy(array $where = null)
     {
         $emp = Session::get('employee');
-
-        return self::query()->distinct('idmember')->where(static function ($query) use ($emp) {
+        
+        if ($where !== null) {
+            return self::query()->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('members.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('members.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('members.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('members.network', $emp->network);
+                }
+            })->where($where)->orderBy('memnumb')->first();
+        }
+        return self::query()->where(static function ($query) use ($emp) {
             if ($emp->level === 'B') {
-                $query->where('branch', $emp->branch);
+                $query->where('members.branch', $emp->branch);
             }
             if ($emp->level === 'I') {
-                $query->where('institution', $emp->branch);
+                $query->where('members.institution', $emp->institution);
             }
             if ($emp->level === 'Z') {
-                $query->where('zone', $emp->zone);
+                $query->where('members.zone', $emp->zone);
             }
             if ($emp->level === 'N') {
-                $query->where('network', $emp->network);
+                $query->where('members.network', $emp->network);
             }
-        })->get();
+        })->orderBy('memnumb')->first();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getMembers(array $where = null)
+    {
+        $emp = Session::get('employee');
+        
+        if ($where !== null) {
+            return self::query()->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('members.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('members.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('members.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('members.network', $emp->network);
+                }
+            })->where($where)->orderBy('memnumb')->get();
+        }
+        return self::query()->where(static function ($query) use ($emp) {
+            if ($emp->level === 'B') {
+                $query->where('members.branch', $emp->branch);
+            }
+            if ($emp->level === 'I') {
+                $query->where('members.institution', $emp->institution);
+            }
+            if ($emp->level === 'Z') {
+                $query->where('members.zone', $emp->zone);
+            }
+            if ($emp->level === 'N') {
+                $query->where('members.network', $emp->network);
+            }
+        })->orderBy('memnumb')->get();
     }
 
     /**

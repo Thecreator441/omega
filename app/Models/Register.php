@@ -15,13 +15,101 @@ class Register extends Model
     protected $fillable = ['registers'];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @param int $id
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getRegisters()
+    public static function getRegister(int $id)
+    {
+        return self::query()->where('idregister', $id)->first();
+    }
+
+    /**
+     * @param array $where
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getRegisterBy(array $where = null)
     {
         $emp = Session::get('employee');
 
-        return self::query()->where('branch', $emp->branch)->get();
+        if ($where !== null) {
+            return self::query()->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('registers.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('registers.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('registers.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('registers.network', $emp->network);
+                }
+            })->where($where)->orderBy('regnumb')->first();
+        }
+        return self::query()->where(static function ($query) use ($emp) {
+            if ($emp->level === 'B') {
+                $query->where('registers.branch', $emp->branch);
+            }
+            if ($emp->level === 'I') {
+                $query->where('registers.institution', $emp->institution);
+            }
+            if ($emp->level === 'Z') {
+                $query->where('registers.zone', $emp->zone);
+            }
+            if ($emp->level === 'N') {
+                $query->where('registers.network', $emp->network);
+            }
+        })->orderBy('regnumb')->first();
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getRegisters(array $where = null)
+    {
+        $emp = Session::get('employee');
+
+        if ($where !== null) {
+            return self::query()->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('registers.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('registers.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('registers.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('registers.network', $emp->network);
+                }
+            })->where($where)->orderBy('regnumb')->get();
+        }
+        return self::query()->where(static function ($query) use ($emp) {
+            if ($emp->level === 'B') {
+                $query->where('registers.branch', $emp->branch);
+            }
+            if ($emp->level === 'I') {
+                $query->where('registers.institution', $emp->institution);
+            }
+            if ($emp->level === 'Z') {
+                $query->where('registers.zone', $emp->zone);
+            }
+            if ($emp->level === 'N') {
+                $query->where('registers.network', $emp->network);
+            }
+        })->orderBy('regnumb')->get();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getLast()
+    {
+        $emp = Session::get('employee');
+
+        return self::query()->where('branch', $emp->branch)->orderByDesc('regnumb')->first();
     }
 
     /**
@@ -66,25 +154,6 @@ class Register extends Model
                 }
             })
             ->orderBy('regnumb')->get();
-    }
-
-    /**
-     * @param int $id
-     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
-     */
-    public static function getRegister(int $id)
-    {
-        return self::query()->where('idregister', $id)->first();
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
-     */
-    public static function getLast()
-    {
-        $emp = Session::get('employee');
-
-        return self::query()->where('branch', $emp->branch)->orderByDesc('regnumb')->first();
     }
 
 }

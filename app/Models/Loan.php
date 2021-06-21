@@ -245,6 +245,7 @@ class Loan extends Model
     public static function getFilterMemLoans(int $member, string $date = null)
     {
         $emp = Session::get('employee');
+        
         $loans = self::getMemLoans(['member' => $member]);
 
         foreach ($loans as $loan) {
@@ -335,28 +336,47 @@ class Loan extends Model
      * @param array $where
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getMemLoans(array $where)
+    public static function getMemLoans(array $where = null)
     {
         $emp = Session::get('employee');
 
-        return self::query()->where($where)->where('loanstat', 'Ar')->where(static function ($query) use ($emp) {
-            if ($emp->level === 'B') {
-                $query->where('loans.branch', $emp->branch);
-            }
-            if ($emp->level === 'I') {
-                $query->where('loans.institution', $emp->institution);
-            }
-            if ($emp->level === 'Z') {
-                $query->where('loans.zone', $emp->zone);
-            }
-            if ($emp->level === 'N') {
-                $query->where('loans.network', $emp->network);
-            }
-        })
+        if ($where != null) {
+            return self::query()->select('loans.*', 'Lt.pen_req_tax', 'A.accnumb', 'Lt.loan_acc', 'Lt.labelfr', 'Lt.labeleng')
+                ->join('loan_types AS Lt', 'loans.loantype', '=', 'Lt.idltype')
+                ->join('accounts AS A', 'Lt.loan_acc', '=', 'A.idaccount')
+                ->where('loanstat', 'Ar')->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'B') {
+                        $query->where('loans.branch', $emp->branch);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('loans.institution', $emp->institution);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('loans.zone', $emp->zone);
+                    }
+                    if ($emp->level === 'N') {
+                        $query->where('loans.network', $emp->network);
+                    }
+                })->where($where)->orderBy('loanno')->get();
+        }
+
+        return self::query()->select('loans.*', 'Lt.pen_req_tax', 'A.accnumb', 'Lt.loan_acc', 'Lt.labelfr', 'Lt.labeleng')
             ->join('loan_types AS Lt', 'loans.loantype', '=', 'Lt.idltype')
-            ->join('accounts AS A', 'Lt.loanacc', '=', 'A.idaccount')
-            ->select('loans.*', 'Lt.pentax', 'A.accnumb', 'Lt.loanacc', 'Lt.labelfr', 'Lt.labeleng')
-            ->orderBy('loanno')->get();
+            ->join('accounts AS A', 'Lt.loan_acc', '=', 'A.idaccount')
+            ->where('loanstat', 'Ar')->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('loans.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('loans.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('loans.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('loans.network', $emp->network);
+                }
+            })->orderBy('loanno')->get();
     }
 
 }

@@ -184,7 +184,7 @@ class UserController extends Controller
                 $emplo->platmat = $empmat;
             }
             $emplo->name = Request::input('name');
-            $emplo->surname = ucwords(Request::input('surname'));
+            $emplo->surname = ucwords(strtolower(Request::input('surname')));
             $emplo->dob = Request::input('dob');
             $emplo->pob = Request::input('pob');
             $emplo->gender = Request::input('gender');

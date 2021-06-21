@@ -507,6 +507,7 @@ return [
     'cash_fr' => 'Caisse(Fr)',
     'cash_eng' => 'Caisse(En)',
     'view_other_tills' => 'Voir Autre Caisses',
+    'symbol' => 'Symbole',
 
 
 ];

@@ -10,6 +10,8 @@ $emp = Session::get('employee');
 $menus_1 = Session::get('menus_1');
 $accdate = Session::get('accdate');
 $bParam = null;
+$level = null;
+$menu = null;
 
 if($emp->level === 'B') {
     $accdate = AccDate::getOpenAccDate();
@@ -32,8 +34,16 @@ if ($accdate !== null) {
     }
 }
 
-if ($emp->lang === 'fr')
-    App::setLocale('fr');
+if ($emp->lang === 'fr') {
+    App::setLocale('fr');   
+}
+
+$uri = explode('?', $_SERVER["REQUEST_URI"]);
+if (count($uri) > 1) {
+    $params = explode('&', $uri[1]);
+    $level = explode('=', $params[0])[1];
+    $menu = explode('=', $params[1])[1];
+}
 ?>
 
 <!DOCTYPE html>
@@ -375,6 +385,8 @@ if ($emp->lang === 'fr')
             // let plat_param = JSON.parse(localStorage.getItem('plat_param'));
 
             $(document).ready(function () {
+                $("form").prepend("<input type='hidden' name='level' value='{{ $level }}'><input type='hidden' name='menu' value='{{ $menu }}'>");
+                
                 // if ($('#edit').val() !== 'null') {
                 //     let changeURL = "{{url('user/change')}}";
                 //     if ($('#emp_level').val() !== 'A') {

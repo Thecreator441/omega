@@ -512,6 +512,7 @@ return [
     'cash_fr' => 'Till(Fr)',
     'cash_eng' => 'Till(En)',
     'view_other_tills' => 'View Other Tills',
+    'symbol' => 'Symbol',
 
 
 

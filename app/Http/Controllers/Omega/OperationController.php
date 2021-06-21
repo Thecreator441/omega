@@ -43,17 +43,19 @@ class OperationController extends Controller
                 $oper = Operation::getOperation($idoper);
             }
 
-            $oper->opercode = pad(Request::input('opercode'), 3);
+            $opercode = Operation::all()->count() - 1;
+
+            $oper->opercode = pad($opercode, 3);
             $oper->labelfr = Request::input('labelfr');
             $oper->labeleng = Request::input('labeleng');
             // $oper->debtfr = Request::input('debtfr');
             // $oper->debteng = Request::input('debteng');
             // $oper->credtfr = Request::input('credtfr');
             // $oper->credteng = Request::input('credteng');
-            // $oper->network = $emp->network;
-            // $oper->zone = $emp->zone;
-            // $oper->institution = $emp->institution;
-            // $oper->branch = $emp->branch;
+            $oper->network = $emp->network;
+            $oper->zone = $emp->zone;
+            $oper->institution = $emp->institution;
+            $oper->branch = $emp->branch;
 
             $oper->save();
 

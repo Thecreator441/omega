@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\AccPlan;
 use App\Models\MemSetting;
+use App\Models\Operation;
 use App\Models\Priv_Menu;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -48,30 +49,42 @@ class MemSettingController extends Controller
                 if (isset($accplans) AND count($accplans) > 0) {
                     foreach ($accplans as $index => $accplan) {
                         $mem_setting = new MemSetting();
-                        $account = new Account();
+                        $operation = new Operation();
 
                         $amount = (int)trimOver($amounts[$index], ' ');
 
-                        $acc_plan = AccPlan::getAccPlan($accplan);
+                        $memAcc_Plan = AccPlan::getAccPlan($accplan);
+                        $memAcc_Numb = pad($memAcc_Plan->plan_code, 9, 'right') . '' .  pad($emp->institution, 3) . '' . pad($emp->branch, 3);
+                        $memAcc = Account::getAccountBy(['accnumb' => $memAcc_Numb]);
+                        if ($memAcc === null) {
+                            $memAcc = new Account();
 
-                        $accnumb = pad($acc_plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
+                            $memAcc->idplan = $memAcc_Plan->idaccplan;
+                            $memAcc->accnumb = $memAcc_Numb;
+                            $memAcc->labelfr = Request::input('labelfr');
+                            $memAcc->labeleng = Request::input('labeleng');
+                            $memAcc->class = $memAcc_Plan->class;
+                            $memAcc->acctype = $memAcc_Plan->acc_type;
+                            $memAcc->network = $emp->network;
+                            $memAcc->zone = $emp->zone;
+                            $memAcc->institution = $emp->institution;
+                            $memAcc->branch = $emp->branch;
 
-                        $account->idplan = $acc_plan->idaccplan;
-                        $account->accnumb = $accnumb;
-                        $account->labelfr = $acc_plan->labelfr;
-                        $account->labeleng = $acc_plan->labeleng;
-                        $account->class = $acc_plan->class;
-                        $account->acctype = $acc_plan->acc_type;
-                        $account->network = $emp->network;
-                        $account->zone = $emp->zone;
-                        $account->institution = $emp->institution;
-                        $account->branch = $emp->branch;
+                            $memAcc->save();
+                        }
 
-                        $account->save();
+                        $opercode = Operation::all()->count() - 1;
+
+                        $operation->opercode = pad($opercode, 3);
+                        $operation->labelfr = "VERSEMENT ESPECES " . Request::input('labelfr');
+                        $operation->labeleng = "CASH IN " . Request::input('labeleng');
+
+                        $operation->save();
 
                         if ($amount > 0) {
-                            $mem_setting->account = $account->idaccount;
+                            $mem_setting->account = $memAcc->idaccount;
                             $mem_setting->amount = $amount;
+                            $mem_setting->operation = $operation->idoper;
                             $mem_setting->network = $emp->network;
                             $mem_setting->zone = $emp->zone;
                             $mem_setting->institution = $emp->institution;
@@ -85,7 +98,7 @@ class MemSettingController extends Controller
                 $accounts = Request::input('accounts');
                 $mem_settings = MemSetting::getMemSettings();
 
-                if (isset($accplans) AND count($accplans) > 0) {   
+                if (isset($accplans) AND count($accplans) > 0) {
                     if ($mem_settings->count() < count($accplans)) {
                         foreach ($accplans as $index => $accplan) {
                             $amount = (int)trimOver($amounts[$index], ' ');
@@ -120,7 +133,7 @@ class MemSettingController extends Controller
                                     $mem_settings[$index]->zone = $emp->zone;
                                     $mem_settings[$index]->institution = $emp->institution;
                                     $mem_settings[$index]->branch = $emp->branch;
-    
+
                                     $mem_settings[$index]->update((array)$mem_settings[$index]);
                                 }
                             } else {
@@ -153,7 +166,7 @@ class MemSettingController extends Controller
                                     $mem_setting->zone = $emp->zone;
                                     $mem_setting->institution = $emp->institution;
                                     $mem_setting->branch = $emp->branch;
-    
+
                                     $mem_setting->save();
                                 }
                             }
@@ -197,7 +210,7 @@ class MemSettingController extends Controller
                             }
                         }
                     }
-    
+
                     if ($mem_settings->count() > count($accplans)) {
                         foreach ($mem_settings as $index => $mem_setting) {
                             if (array_key_exists($index, $accplans)) {
@@ -231,7 +244,7 @@ class MemSettingController extends Controller
                                     $mem_setting->zone = $emp->zone;
                                     $mem_setting->institution = $emp->institution;
                                     $mem_setting->branch = $emp->branch;
-    
+
                                     $mem_setting->update((array)$mem_setting);
                                 }
                             } else {

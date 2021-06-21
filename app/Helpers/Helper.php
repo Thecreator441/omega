@@ -8,7 +8,6 @@ use App\Models\ValWriting;
 use App\Models\Writing;
 use Illuminate\Support\Facades\Session;
 
-
 if (!function_exists('verifySession')) {
     /**
      * @param $key
