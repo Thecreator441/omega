@@ -24,29 +24,47 @@ if (!function_exists('verifySession')) {
 
 if (!function_exists('verifPriv')) {
     /**
-     * @param string $subject
-     * @param $search
+     * @param int $level
+     * @param int $menu
+     * @param int $privilege
      * @return bolean
      */
     function verifPriv(int $level, int $menu, int $privilege): bool
     {
+        $result = true;
+
         switch ($level) {
             case 1:
-                return Priv_Menu::getVerifPrivMenu("menu_1", $menu, $privilege) !== null;
+                $priv = Priv_Menu::getVerifPrivMenu("menu_1", $menu, $privilege);
+                if ($priv === null) {
+                    $result = false;
+                }
                 break;
             case 2:
-                return Priv_Menu::getVerifPrivMenu("menu_2", $menu, $privilege) !== null;
+                $priv = Priv_Menu::getVerifPrivMenu("menu_2", $menu, $privilege);
+                if ($priv === null) {
+                    $result = false;
+                }
                 break;
             case 3:
-                return Priv_Menu::getVerifPrivMenu("menu_3", $menu, $privilege) !== null;
+                $priv = Priv_Menu::getVerifPrivMenu("menu_3", $menu, $privilege);
+                if ($priv === null) {
+                    $result = false;
+                }
                 break;
             case 4:
-                return Priv_Menu::getVerifPrivMenu("menu_4", $menu, $privilege) !== null;
+                $priv = Priv_Menu::getVerifPrivMenu("menu_4", $menu, $privilege);
+                if ($priv === null) {
+                    $result = false;
+                }
                 break;
             default:
-                return null;
+                return false;
                 break;
+        
         }
+
+        return $result;
     }
 }
 

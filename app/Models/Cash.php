@@ -230,14 +230,22 @@ class Cash extends Model
         $emp = Session::get('employee');
 
         if ($collector === null) {
-            return self::query()->where('employee', $emp->iduser)->where(static function ($query) {
-                $query->orWhere(['status' => 'O', 'cashes.status' => 'R']);
-            })->first();
+            return self::query()->select('cashes.*', 'cA.accnumb AS casAcc_Numb', 'mA.accnumb AS misAcc_Numb', 'eA.accnumb AS excAcc_Numb')
+                ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
+                ->join('accounts AS mA', 'cashes.misacc', '=', 'mA.idaccount')
+                ->join('accounts AS eA', 'cashes.excacc', '=', 'eA.idaccount')
+                ->where('employee', $emp->iduser)->where(static function ($query) {
+                    $query->orWhere(['status' => 'O', 'cashes.status' => 'R']);
+                })->first();
         }
 
-        return self::query()->where('employee', $collector)->where(static function ($query) {
-            $query->orWhere(['status' => 'O', 'cashes.status' => 'R']);
-        })->first();
+        return self::query()->select('cashes.*', 'cA.accnumb AS casAcc_Numb', 'mA.accnumb AS misAcc_Numb', 'eA.accnumb AS excAcc_Numb')
+            ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
+            ->join('accounts AS mA', 'cashes.misacc', '=', 'mA.idaccount')
+            ->join('accounts AS eA', 'cashes.excacc', '=', 'eA.idaccount')
+            ->where('employee', $collector)->where(static function ($query) {
+                $query->orWhere(['status' => 'O', 'cashes.status' => 'R']);
+            })->first();
     }
 
     /**
@@ -247,7 +255,11 @@ class Cash extends Model
     {
         $emp = Session::get('employee');
 
-        return self::query()->where('employee', $emp->idemp)
+        return self::query()->select('cashes.*', 'cA.accnumb AS casAcc_Numb', 'mA.accnumb AS misAcc_Numb', 'eA.accnumb AS excAcc_Numb')
+            ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
+            ->join('accounts AS mA', 'cashes.misacc', '=', 'mA.idaccount')
+            ->join('accounts AS eA', 'cashes.excacc', '=', 'eA.idaccount')
+            ->where('employee', $emp->idemp)
             ->where(['status' => 'C', 'closed_at' => getsDate(now())])->first();
     }
 
@@ -258,7 +270,11 @@ class Cash extends Model
     {
         $emp = Session::get('employee');
 
-        return self::query()->where('status', 'O')
+        return self::query()->select('cashes.*', 'cA.accnumb AS casAcc_Numb', 'mA.accnumb AS misAcc_Numb', 'eA.accnumb AS excAcc_Numb')
+            ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
+            ->join('accounts AS mA', 'cashes.misacc', '=', 'mA.idaccount')
+            ->join('accounts AS eA', 'cashes.excacc', '=', 'eA.idaccount')
+            ->where('status', 'O')
             ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'B') {
                     $query->where('cashes.branch', $emp->branch);

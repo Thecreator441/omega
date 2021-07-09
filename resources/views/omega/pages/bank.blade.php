@@ -309,6 +309,18 @@ if ($emp->lang == 'fr') {
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group has-info">
+                                    <label for="amount" class="col-md-3 control-label">@lang('label.amount')</label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control text-bold text-right" name="amount" id="amount">
+                                        <div class="help-block">@lang('placeholder.amount')</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -384,6 +396,10 @@ if ($emp->lang == 'fr') {
             $('#bank_code, #ouracc, #phone1, #phone2').verifNumber();
         });
 
+        $('#amount').on('input', function () {
+            $(this).val(money($(this).val()));
+        });
+
         $('#new_bank').click(function () {
             in_out_form();
 
@@ -438,6 +454,7 @@ if ($emp->lang == 'fr') {
                         },
                         success: function (theirAcc) {
                             $('#theiracc').val(theirAcc.idplan).select2();
+                            $('#amount').val(money(parseInt(theirAcc.available)));
                         }
                     });
 
@@ -524,6 +541,7 @@ if ($emp->lang == 'fr') {
                         },
                         success: function (theirAcc) {
                             $('#theiracc').val(theirAcc.idplan).select2();
+                            $('#amount').val(money(parseInt(theirAcc.available)));
                         }
                     });
 

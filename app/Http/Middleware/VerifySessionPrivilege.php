@@ -17,9 +17,8 @@ class VerifySessionPrivilege
      * @return mixed
      */
     public function handle($request, Closure $next)
-    {   
+    {
         if (Session::has('employee')) {
-            // dd(count(Request::all()));
             $emp = Session::get('employee');
             if (count(Request::all()) > 0) {
                 if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {

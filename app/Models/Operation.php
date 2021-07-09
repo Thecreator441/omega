@@ -14,25 +14,56 @@ class Operation extends Model
     protected $fillable = ['operations'];
 
     /**
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @param int|null $id
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getPaginate()
+    public static function getOperation(int $id = null)
     {
-        return self::query()->orderBy('opercode')->paginate(1);
+        return self::query()->where('idoper', $id)->first();
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getOperations()
+    public static function getOperationBy(array $where)
+    {
+        return self::query()->where($where)->first();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getOperations(array $where = null)
     {
         $emp = Session::get('employee');
+
+        if ($where !== null) {
+            if ($emp->level === 'P') {
+                return self::query()->where($where)->orderBy('opercode')->get();
+            }
+    
+            return self::query()->where($where)
+                ->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'N') {
+                        $query->where('network', $emp->network);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('zone', $emp->zone);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('institution', $emp->institution);
+                    }
+                    if ($emp->level === 'B') {
+                        $query->where('branch', $emp->branch);
+                    }
+                })->orderBy('opercode')->get();
+        }
         
         if ($emp->level === 'P') {
             return self::query()->orderBy('opercode')->get();
         }
 
-        return self::query()->where('network', null, 'NULL')
+        return self::query()
             ->orWhere(static function ($query) use ($emp) {
                 if ($emp->level === 'N') {
                     $query->where('network', $emp->network);
@@ -47,15 +78,6 @@ class Operation extends Model
                     $query->where('branch', $emp->branch);
                 }
             })->orderBy('opercode')->get();
-    }
-
-    /**
-     * @param int|null $id
-     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
-     */
-    public static function getOperation(int $id = null)
-    {
-        return self::query()->where('idoper', $id)->first();
     }
 
     /**

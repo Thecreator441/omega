@@ -2,49 +2,42 @@
 
 namespace App\Http\Controllers\Omega;
 
+use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\Bank;
 use App\Models\Check;
 use App\Models\CheckAccAmt;
-use App\Models\Member;
-use App\Http\Controllers\Controller;
-use App\Models\Operation;
+use App\Models\Priv_Menu;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
-use Symfony\Component\VarDumper\Dumper\DataDumperInterface;
 
 class OtherCheckInController extends Controller
 {
     public function index()
     {
         if (dateOpen()) {
-            $banks = Bank::all();
-            $members = Member::getActiveMembers();
+            $banks = Bank::getBanks();
             $accounts = Account::getAccounts();
+            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-            return view('omega.pages.other_check_in', [
-                'banks' => $banks,
-                'members' => $members,
-                'accounts' => $accounts
-            ]);
+            return view('omega.pages.other_check_in', compact('menu', 'banks', 'accounts'));
         }
         return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
 
     public function store()
     {
-//        dd(Request::all());
-        DB::beginTransaction();
-        $emp = Session::get('employee');
-
-        $accounts = Request::input('accounts');
-        $operations = Request::input('operations');
-        $amounts = Request::input('amounts');
-
+        // dd(Request::all());
         try {
-            $opera = Operation::getByCode(40);
+            DB::beginTransaction();
+
+            $emp = Session::get('employee');
+
+            $accounts = Request::input('accounts');
+            $operations = Request::input('operations');
+            $amounts = Request::input('amounts');
 
             $check = new Check();
             $check->checknumb = Request::input('checkno');
@@ -54,30 +47,36 @@ class OtherCheckInController extends Controller
             $check->sorted = 'N';
             $check->amount = trimOver(Request::input('totdist'), ' ');
             $check->carrier = Request::input('represent');
-            $check->operation = $opera->idoper;
+            $check->network = $emp->network;
+            $check->zone = $emp->zone;
             $check->institution = $emp->institution;
             $check->branch = $emp->branch;
 
             $check->save();
 
             foreach ($accounts as $key => $account) {
-                if ($amounts[$key] !== '0' || $amounts[$key] !== null) {
+                $amount = (int)trimOver($amounts[$key], ' ');
+                if ($amount !== 0) {
                     $checkaccamt = new CheckAccAmt();
                     $checkaccamt->checkno = $check->idcheck;
                     $checkaccamt->account = $account;
                     $checkaccamt->operation = $operations[$key];
-                    $checkaccamt->accamt = trimOver($amounts[$key], ' ');
+                    $checkaccamt->accamt = $amount;
+                    $checkaccamt->network = $emp->network;
+                    $checkaccamt->zone = $emp->zone;
+                    $checkaccamt->institution = $emp->institution;
+                    $checkaccamt->branch = $emp->branch;
 
                     $checkaccamt->save();
                 }
             }
 
             DB::commit();
-            return Redirect::route('omega')->with('success', trans('alertSuccess.chesave'));
+            return Redirect::back()->with('success', trans('alertSuccess.other_check_in'));
         } catch (\Exception $ex) {
             dd($ex);
             DB::rollBack();
-            return Redirect::back()->with('danger', trans('alertDanger.chesave'));
+            return Redirect::back()->with('danger', trans('alertDanger.other_check_in'));
         }
     }
 }

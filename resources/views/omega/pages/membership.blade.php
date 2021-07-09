@@ -17,174 +17,178 @@ if ($emp->lang == 'fr') {
             <h3 class="box-title text-bold"> {{ $title }} </h3>
         </div>
 
-        <div class="box-body">
+        <div class="box-body" id="tableInput">
             <form action="{{ url('membership/store') }}" method="post" role="form" id="memSaveForm" class="needs-validation">
                 {{ csrf_field() }}
-                <div class="col-md-12">
+                
+                <div class="row">
                     <div class="row">
-                        <div class="row">
-                            <div class="col-md-6  col-xs-12">
-                                <div class="form-group">
-                                    <label for="register" class="col-md-2 col-xs-2 control-label">@lang('label.register')</label>
-                                    <div class="col-md-10 col-xs-10">
-                                        <select class="form-control select2" name="register" id="register">
-                                            <option value=""></option>
-                                            @foreach($registers as $register)
-                                                <option value="{{$register->idregister}}">{{pad($register->regnumb, 6)}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="register" class="col-xl-1 col-lg-1 col-md-2 col-sm-2 control-label">@lang('label.register')<span class="text-red text-bold">*</span></label>
+                                <div class="col-xl-11 col-lg-11 col-md-10 col-sm-10">
+                                    <select class="form-control select2" name="register" id="register" required>
+                                        <option value=""></option>
+                                        @foreach($registers as $register)
+                                            <option value="{{$register->idregister}}">{{pad($register->regnumb, 6)}} : {{ $register->name }} {{ $register->surname }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-xs-12">
-                                <div class="form-group">
-                                    <label for="represent" class="col-md-2 col-xs-2 control-label">@lang('label.represent')</label>
-                                    <div class="col-md-10 col-xs-10">
-                                        <input type="text" class="form-control" name="represent" id="represent">
-                                    </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="represent" class="col-xl-1 col-lg-2 col-md-3 col-sm-3 control-label">@lang('label.represent')</label>
+                                <div class="col-xl-11 col-lg-10 col-md-9 col-sm-9">
+                                    <input type="text" class="form-control" name="represent" id="represent">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="col-md-3" id="tableInput">
-                    <table class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
-                        <thead>
-                        <tr>
-                            <th colspan="2" class="bg-purples">@lang('label.notes')</th>
-                            <th class="bilSum"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($moneys as $money)
-                            @if ($money->format == 'B')
-                                <tr>
-                                    <td id="billet">{{$money->value}}</td>
-                                    <td><input type="text" name="{{$money->moncode}}" id="{{$money->moncode}}"
-                                               oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
-                                    </td>
-                                    <td class="sum text-right" id="{{$money->moncode}}Sum"></td>
-                                </tr>
-                            @endif
-                        @endforeach
-                        <tr>
-                            <th colspan="2" class="bg-purples">@lang('label.coins')</th>
-                            <th></th>
-                        </tr>
-                        @foreach ($moneys as $money)
-                            @if ($money->format == 'C')
-                                <tr>
-                                    <td id="billet">{{$money->value}}</td>
-                                    <td><input type="text" name="{{$money->moncode}}" id="{{$money->moncode}}"
-                                               oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
-                                    </td>
-                                    <td class="sum text-right" id="{{$money->moncode}}Sum"></td>
-                                </tr>
-                            @endif
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <th class="bg-purples" colspan="2"
-                                style="text-align: center !important;">@lang('label.tobreak')</th>
-                            <th class="bg-blue">
-                                <input type="text" class="bg-blue pull-right text-bold" name="totbil" id="totbil"
-                                       disabled style="text-align: right !important;">
-                            </th>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <div class="col-md-9" id="tableInput">
-                    <table class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
-                        <thead>
-                        <tr class="bg-antiquewhite text-blue">
-                            <th>@lang('label.account')</th>
-                            <th>@lang('label.entitle')</th>
-                            {{-- <th>@lang('label.opera')</th> --}}
-                            <th>@lang('label.amount')</th>
-                        </tr>
-                        </thead>
-                        <tbody id="mem_table">
-                        @foreach ($mem_sets as $mem_set)
-                            @if ($mem_set->accabbr === 'Or')
-                                <tr>
-                                    <td><input type="hidden" name="mem_sets[]" value="{{$mem_set->idmemset}}">{{$mem_set->accnumb}}</td>
-                                    <td>
-                                        <input type="hidden" name="accounts[]" value="{{$mem_set->account}}">
-                                        <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
-                                        @if($emp->lang == 'fr') {{$mem_set->acclabelfr}} @else {{$mem_set->acclabeleng}} @endif
-                                    </td>
-                                    {{-- <td>
-                                        <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
-                                        @if($emp->lang == 'fr') {{$mem_set->credtfr}} @else {{$mem_set->credteng}} @endif
-                                    </td> --}}
-                                    <td>
-                                        <input type="text" class="amount" name="amounts[]" value="{{money((int)$mem_set->amount)}}" @if ((int)$mem_set->amount > 0) readonly @endif>
-                                    </td>
-                                </tr>
-                            @endif
-                        @endforeach
-                        </tbody>
-                        <thead class="bg-antiquewhite text-blue">
-                        <tr>
-                            <th colspan="3" class="text-center">@lang('label.gl_account')</th>
-                        </tr>
-                        </thead>
-                        <tbody id="gl_table">
-                        @foreach ($mem_sets as $mem_set)
-                            @if ($mem_set->accabbr !== 'Or')
-                                <tr>
-                                    <td><input type="hidden" name="mem_sets[]" value="{{$mem_set->idmemset}}">{{$mem_set->accnumb}}</td>
-                                    <td>
-                                        <input type="hidden" name="accounts[]" value="{{$mem_set->account}}">
-                                        <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
-                                        @if($emp->lang == 'fr') {{$mem_set->acclabelfr}} @else {{$mem_set->acclabeleng}} @endif
-                                    </td>
-                                    {{-- <td>
-                                        <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
-                                        @if($emp->lang == 'fr') {{$mem_set->credtfr}} @else {{$mem_set->credteng}} @endif
-                                    </td> --}}
-                                    <td>
-                                        <input type="text" class="amount" name="amounts[]" value="{{money((int)$mem_set->amount)}}" @if ((int)$mem_set->amount > 0) readonly @endif>
-                                    </td>
-                                </tr>
-                            @endif
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                        <tr class="bg-purples text-right text-bold">
-                            <td colspan="3" id="totopera"></td>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </div>
-
-                <div class="col-md-11" id="tableInput">
-                    <table class="table table-responsive">
-                        <thead>
-                        <tr class="text-bold text-blue bg-antiquewhite text-left">
-                            @foreach($accounts as $account)
-                                @if ($cash->cashacc == $account->idaccount)
-                                    <td style="width: 25%">
-                                        @if($emp->lang == 'fr') {{$account->labelfr }} @else {{$account->labeleng }} @endif
-                                    </td>
-                                    <td>{{$account->accnumb }}</td>
+                
+                <div class="row">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover table-condensed table-bordered no-padding">
+                            <thead>
+                            <tr>
+                                <th colspan="2" class="bg-purples">@lang('label.notes')</th>
+                                <th class="bilSum"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach ($moneys as $money)
+                                @if ($money->format == 'B')
+                                    <tr>
+                                        <td id="billet">{{$money->value}}</td>
+                                        <td><input type="text" name="{{$money->moncode}}" id="{{$money->moncode}}"
+                                                    oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
+                                        </td>
+                                        <td class="sum text-right" id="{{$money->moncode}}Sum"></td>
+                                    </tr>
                                 @endif
                             @endforeach
-                            <td>@lang('label.totrans')</td>
-                            <td style="width: 15%"><input type="text" style="text-align: left" name="totrans"
-                                                          id="totrans" readonly></td>
-                            <td>@lang('label.diff')</td>
-                            <td id="diff" class="text-right" style="width: 15%"></td>
-                        </tr>
-                        </thead>
-                    </table>
+                            <tr>
+                                <th colspan="2" class="bg-purples">@lang('label.coins')</th>
+                                <th></th>
+                            </tr>
+                            @foreach ($moneys as $money)
+                                @if ($money->format == 'C')
+                                    <tr>
+                                        <td id="billet">{{$money->value}}</td>
+                                        <td><input type="text" name="{{$money->moncode}}" id="{{$money->moncode}}"
+                                                    oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
+                                        </td>
+                                        <td class="sum text-right" id="{{$money->moncode}}Sum"></td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th class="bg-purples" colspan="2"
+                                    style="text-align: center !important;">@lang('label.tobreak')</th>
+                                <th class="bg-blue">
+                                    <input type="text" class="bg-blue pull-right text-bold" name="totbil" id="totbil"
+                                            disabled style="text-align: right !important;">
+                                </th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                        </div>
+                    </div>
+                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8 col-xs-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover table-condensed table-bordered no-padding">
+                            <thead>
+                            <tr class="bg-antiquewhite text-blue">
+                                <th>@lang('label.account')</th>
+                                <th>@lang('label.entitle')</th>
+                                {{-- <th>@lang('label.opera')</th> --}}
+                                <th>@lang('label.amount')</th>
+                            </tr>
+                            </thead>
+                            <tbody id="mem_table">
+                            @foreach ($mem_sets as $mem_set)
+                                @if ($mem_set->accabbr === 'Or')
+                                    <tr>
+                                        <td><input type="hidden" name="mem_sets[]" value="{{$mem_set->idmemset}}">{{$mem_set->accnumb}}</td>
+                                        <td>
+                                            <input type="hidden" name="accounts[]" value="{{$mem_set->account}}">
+                                            <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
+                                            @if($emp->lang == 'fr') {{$mem_set->acclabelfr}} @else {{$mem_set->acclabeleng}} @endif
+                                        </td>
+                                        {{-- <td>
+                                            <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
+                                            @if($emp->lang == 'fr') {{$mem_set->credtfr}} @else {{$mem_set->credteng}} @endif
+                                        </td> --}}
+                                        <td>
+                                            <input type="text" class="amount" name="amounts[]" value="{{money((int)$mem_set->amount)}}" @if ((int)$mem_set->amount > 0) readonly @endif>
+                                        </td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                            </tbody>
+                            <thead class="bg-antiquewhite text-blue">
+                            <tr>
+                                <th colspan="3" class="text-center">@lang('label.gl_account')</th>
+                            </tr>
+                            </thead>
+                            <tbody id="gl_table">
+                            @foreach ($mem_sets as $mem_set)
+                                @if ($mem_set->accabbr !== 'Or')
+                                    <tr>
+                                        <td><input type="hidden" name="mem_sets[]" value="{{$mem_set->idmemset}}">{{$mem_set->accnumb}}</td>
+                                        <td>
+                                            <input type="hidden" name="accounts[]" value="{{$mem_set->account}}">
+                                            <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
+                                            @if($emp->lang == 'fr') {{$mem_set->acclabelfr}} @else {{$mem_set->acclabeleng}} @endif
+                                        </td>
+                                        {{-- <td>
+                                            <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
+                                            @if($emp->lang == 'fr') {{$mem_set->credtfr}} @else {{$mem_set->credteng}} @endif
+                                        </td> --}}
+                                        <td>
+                                            <input type="text" class="amount" name="amounts[]" value="{{money((int)$mem_set->amount)}}" @if ((int)$mem_set->amount > 0) readonly @endif>
+                                        </td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                            </tbody>
+                            <tfoot>
+                            <tr class="bg-purples text-right text-bold">
+                                <td colspan="3" id="totopera"></td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-1">
-                    <button type="button" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save">
-                    </button>
+
+                <div class="row">
+                    <div class="col-xl-11 col-lg-11 col-md-11 col-sm-12 col-xs-12 ">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr class="text-bold text-blue bg-antiquewhite text-left">
+                                    <td style="width: 25%">
+                                        @if($emp->lang == 'fr') {{$cash->labelfr }} @else {{$cash->labeleng }} @endif
+                                    </td>
+                                    <td>{{$cash->casAcc_Numb }}</td>
+                                    <td>@lang('label.totrans')</td>
+                                    <td style="width: 15%">
+                                        <input type="text" style="text-align: left" name="totrans" id="totrans" readonly></td>
+                                    <td>@lang('label.diff')</td>
+                                    <td id="diff" class="text-right" style="width: 15%"></td>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                        <button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -194,8 +198,8 @@ if ($emp->lang == 'fr') {
 @section('script')
     <script>
         $(document).ready(function () {
-            $('#mem_table').append(addRow(5, $('#mem_table tr').length));
-            $('#gl_table').append(addRow(7, $('#gl_table tr').length));
+            //$('#mem_table').append(addRow(5, $('#mem_table tr').length));
+            //$('#gl_table').append(addRow(7, $('#gl_table tr').length));
 
             function addRow(monLength, infLength) {
                 let dim = monLength - infLength;
@@ -277,7 +281,7 @@ if ($emp->lang == 'fr') {
             });
         });
 
-        $('#save').click(function () {
+        function submitForm() {
             let diff = parseInt(trimOver($('#diff').text(), null));
             let trans = parseInt(trimOver($('#totrans').val(), null));
             let bill = parseInt(trimOver($('#totbil').val(), null));
@@ -287,6 +291,6 @@ if ($emp->lang == 'fr') {
             } else {
                 myOSwal("{{ $title }}", "@lang('confirm.memsaveerror_text')", 'error');
             }
-        })
+        }
     </script>
 @stop

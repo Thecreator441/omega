@@ -31,10 +31,10 @@ class LoginController extends Controller
 
         if (Session::has('backURI')) {
             $backURI = explode('/', Session::get('backURI'))[1];
-            
+
             return view('omega.login', compact('backURI'));
         }
-        
+
         return view('omega.login');
     }
 
@@ -73,7 +73,7 @@ class LoginController extends Controller
                     if ($user->login_status === 'F') {
                         $priv = Privilege::getPrivilege($user->privilege);
                         $menus_1 = Priv_Menu::getPrivMenusAside(['privilege' => $priv->idpriv], 'menu_1');
-                                
+
                         foreach ($priv->getAttributes() as $index => $value) {
                             if ($user->created_at !== $user->$index || $user->upated_at !== $user->$index) {
                                 $user->$index = $value;
@@ -122,7 +122,7 @@ class LoginController extends Controller
                         if (Request::input('backURL') !== null) {
                             $backURL = explode('?', Request::input('backURL'));
                             $params = explode('&', $backURL[1]);
-                            
+
                             return Redirect::route($backURL[0], [$params[0], $params[1]]);
                         }
                         return Redirect::route('omega');

@@ -13,14 +13,42 @@ class Writing extends Model
 
     protected $fillable = ['writings'];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public static function getWritings()
+    public static function getWriting(int $idwrit)
+    {
+        return self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'U.employee AS user_emp', 'U.collector AS col_emp', 'C.cashcode')
+            ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
+            ->join('users AS U', 'writings.employee', '=', 'U.iduser')
+            ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
+            ->where('idwrit', $idwrit)->first();
+    }
+
+    public static function getWritings(array $where = null)
     {
         $emp = Session::get('employee');
 
-        return self::query()->distinct('idwrit')
+        if ($where !== null) {
+            return self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'C.cashcode')
+                ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
+                ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
+                ->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'B') {
+                        $query->where('writings.branch', $emp->branch);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('writings.institution', $emp->institution);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('writings.zone', $emp->zone);
+                    }
+                    if ($emp->level === 'N') {
+                        $query->where('writings.network', $emp->network);
+                    }
+                })->where($where)->orderBy('writnumb')->get();
+        }
+        
+        return self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'C.cashcode')
+        ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
+        ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
             ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'B') {
                     $query->where('writings.branch', $emp->branch);
@@ -34,7 +62,30 @@ class Writing extends Model
                 if ($emp->level === 'N') {
                     $query->where('writings.network', $emp->network);
                 }
-            })->orderBy('idwrit')->get();
+            })->orderBy('writnumb')->get();
+    }
+
+    public static function getWritingsBy(array $where)
+    {
+        $emp = Session::get('employee');
+
+        return self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'C.cashcode')
+        ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
+        ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('writings.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('writings.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('writings.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('writings.network', $emp->network);
+                }
+            })->where($where)->orderBy('writnumb')->get();
     }
 
     /**
@@ -71,10 +122,16 @@ class Writing extends Model
 
         return self::query()->where(static function ($query) use ($emp) {
             if ($emp->level === 'B') {
-                $query->where('branch', $emp->branch);
+                $query->where('writings.branch', $emp->branch);
             }
             if ($emp->level === 'I') {
-                $query->where('institution', $emp->institution);
+                $query->where('writings.institution', $emp->institution);
+            }
+            if ($emp->level === 'Z') {
+                $query->where('writings.zone', $emp->zone);
+            }
+            if ($emp->level === 'N') {
+                $query->where('writings.network', $emp->network);
             }
         })->distinct('idwrit')->orderByDesc('writnumb')->first();
     }

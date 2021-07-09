@@ -64,8 +64,8 @@ class PrivilegeController extends Controller
 
             $privilege->labelfr = ucwords(strtolower(Request::input('labelfr')));
             $privilege->labeleng = ucwords(strtolower(Request::input('labeleng')));
-            $privilege->level = Request::input('level');
-            
+            $privilege->level = Request::input('priv_level');
+
             if ($idprivilege === null) {
                 $privilege->save();
 
@@ -82,40 +82,40 @@ class PrivilegeController extends Controller
 
                         if ($menu_1 === $menu2[0]) {
                             $priv_menu = new Priv_Menu();
-    
+
                             $priv_menu->privilege = $privilege->idpriv;
                             $priv_menu->menu_1 = $menu_1;
                             $priv_menu->menu_2 = $menu2[1];
-        
+
                             $priv_menu->save();
                         }
 
                         foreach ($menus_3 as $menu_3) {
                             $menu3 = explode("_", $menu_3);
-                                
+
                             if ($menu_1 === $menu3[0] AND $menu2[1] === $menu3[1]) {
                                 $priv_menu = new Priv_Menu();
-        
+
                                 $priv_menu->privilege = $privilege->idpriv;
                                 $priv_menu->menu_1 = $menu_1;
                                 $priv_menu->menu_2 = $menu2[1];
                                 $priv_menu->menu_3 = $menu3[2];
-            
+
                                 $priv_menu->save();
                             }
-    
+
                             foreach ($menus_4 as $menu_4) {
                                 $menu4 = explode("_", $menu_4);
-                                 
+
                                 if ($menu_1 === $menu4[0] && $menu2[1] === $menu4[1] && $menu3[2] === $menu4[2]) {
                                     $priv_menu = new Priv_Menu();
-                                    
+
                                     $priv_menu->privilege = $privilege->idpriv;
                                     $priv_menu->menu_1 = $menu_1;
                                     $priv_menu->menu_2 = $menu2[1];
                                     $priv_menu->menu_3 = $menu3[2];
                                     $priv_menu->menu_4 = $menu4[3];
-                
+
                                     $priv_menu->save();
                                 }
                             }
@@ -126,9 +126,9 @@ class PrivilegeController extends Controller
                 $privilege->update((array)$privilege);
 
                 // $line = count($menus_1) + count($menus_2) + count($menus_3) + count($menus_4);
-                
+
                 $priv_menus = Priv_Menu::getPrivMenus(['privilege' => $privilege->idpriv]);
-                
+
                 /*
                     $menus1 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_1');
                     if ($priv_menus->count() < $line) {
@@ -152,22 +152,22 @@ class PrivilegeController extends Controller
                                 foreach ($menus_2 as $index => $menu_2) {
                                     if (array_key_exists($index, $menus2)) {
                                         $menu2_ = explode("_", $menus_2[$index]);
-        
+
                                         if ($menus_1[$key] === $menu2_[0]) {
                                             $menu2[$index]->privilege = $privilege->idpriv;
                                             $menu2[$index]->menu_1 = $menus_1[$key];
                                             $menu2[$index]->menu_2 = $menu2_[1];
-                        
+
                                             $menu2[$index]->update((array)$menu2[$index]);
                                         }
                                     } else {
                                         if ($menus_1[$key] === $menu2_[0]) {
                                             $priv_menu = new Priv_Menu();
-                    
+
                                             $priv_menu->privilege = $privilege->idpriv;
                                             $priv_menu->menu_1 = $menu_1;
                                             $priv_menu->menu_2 = $menu2_[1];
-                        
+
                                             $priv_menu->save();
                                         }
                                     }
@@ -176,34 +176,34 @@ class PrivilegeController extends Controller
                                     if ($menus3->count() < count($menus_2)) {
                                         foreach ($menus_3 as $key_index => $menu_3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if (array_key_exists($key_index, $menus3)) {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3[$key_index]->privilege = $privilege->idpriv;
                                                     $menu3[$key_index]->menu_1 = $menus_1[$key];
                                                     $menu3[$key_index]->menu_2 = $menu2_[1];
                                                     $menu3[$key_index]->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3[$key_index]->update((array)$menu3[$key_index]);
                                                 }
                                             } else {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $priv_menu = new Priv_Menu();
-                        
+
                                                     $priv_menu->privilege = $privilege->idpriv;
                                                     $priv_menu->menu_1 = $menu_1;
                                                     $priv_menu->menu_2 = $menu2_[1];
                                                     $priv_menu->menu_3 = $menu3_[2];
-                                
+
                                                     $priv_menu->save();
                                                 }
                                             }
-                                            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -211,19 +211,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -233,14 +233,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -250,7 +250,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -271,23 +271,23 @@ class PrivilegeController extends Controller
                                     if ($menus3->count() === count($menus_3)) {
                                         foreach ($menus3 as $key_index => $menu3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                 $priv_menu = new Priv_Menu();
-                        
+
                                                 $menu3->privilege = $privilege->idpriv;
                                                 $menu3->menu_1 = $menus_1[$key];
                                                 $menu3->menu_2 = $menu2_[1];
                                                 $menu3->menu_3 = $menu3_[2];
-                            
+
                                                 $menu3->update((array)$menu3);
                                             }
-            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -295,19 +295,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -317,14 +317,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -334,7 +334,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -356,13 +356,13 @@ class PrivilegeController extends Controller
                                         foreach ($menus3 as $key_index => $menu3) {
                                             if (array_key_exists($key_index, $menus3)) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3->privilege = $privilege->idpriv;
                                                     $menu3->menu_1 = $menus_1[$key];
                                                     $menu3->menu_2 = $menu2_[1];
                                                     $menu3->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3->update((array)$menu3);
                                                 }
 
@@ -370,7 +370,7 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -378,19 +378,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -400,14 +400,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -417,7 +417,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -442,48 +442,48 @@ class PrivilegeController extends Controller
 
                             if ($menus2->count() === count($menus_2)) {
                                 $menu2_ = explode("_", $menus_2[$index]);
-        
+
                                 foreach ($menus2 as $index => $menu2) {
                                     if ($menus_1[$key] === $menu2_[0]) {
                                         $menu2->privilege = $privilege->idpriv;
                                         $menu2->menu_1 = $menus_1[$key];
                                         $menu2->menu_2 = $menu2_[1];
-                    
+
                                         $menu2->update((array)$menu2);
                                     }
-        
+
                                     $menus3 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_3');
                                     if ($menus3->count() < count($menus_2)) {
                                         foreach ($menus_3 as $key_index => $menu_3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if (array_key_exists($key_index, $menus3)) {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3[$key_index]->privilege = $privilege->idpriv;
                                                     $menu3[$key_index]->menu_1 = $menus_1[$key];
                                                     $menu3[$key_index]->menu_2 = $menu2_[1];
                                                     $menu3[$key_index]->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3[$key_index]->update((array)$menu3[$key_index]);
                                                 }
                                             } else {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $priv_menu = new Priv_Menu();
-                        
+
                                                     $priv_menu->privilege = $privilege->idpriv;
                                                     $priv_menu->menu_1 = $menu_1;
                                                     $priv_menu->menu_2 = $menu2_[1];
                                                     $priv_menu->menu_3 = $menu3_[2];
-                                
+
                                                     $priv_menu->save();
                                                 }
                                             }
-                                            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -491,19 +491,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -513,14 +513,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -530,7 +530,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -551,23 +551,23 @@ class PrivilegeController extends Controller
                                     if ($menus3->count() === count($menus_3)) {
                                         foreach ($menus3 as $key_index => $menu3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                 $priv_menu = new Priv_Menu();
-                        
+
                                                 $menu3->privilege = $privilege->idpriv;
                                                 $menu3->menu_1 = $menus_1[$key];
                                                 $menu3->menu_2 = $menu2_[1];
                                                 $menu3->menu_3 = $menu3_[2];
-                            
+
                                                 $menu3->update((array)$menu3);
                                             }
-            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -575,19 +575,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -597,14 +597,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -614,7 +614,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -636,13 +636,13 @@ class PrivilegeController extends Controller
                                         foreach ($menus3 as $key_index => $menu3) {
                                             if (array_key_exists($key_index, $menus3)) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3->privilege = $privilege->idpriv;
                                                     $menu3->menu_1 = $menus_1[$key];
                                                     $menu3->menu_2 = $menu2_[1];
                                                     $menu3->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3->update((array)$menu3);
                                                 }
 
@@ -650,7 +650,7 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -658,19 +658,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -680,14 +680,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -697,7 +697,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -729,7 +729,7 @@ class PrivilegeController extends Controller
                                             $menu2->privilege = $privilege->idpriv;
                                             $menu2->menu_1 = $menus_1[$key];
                                             $menu2->menu_2 = $menu2_[1];
-                        
+
                                             $menu2->update((array)$menu2);
                                         }
 
@@ -737,34 +737,34 @@ class PrivilegeController extends Controller
                                         if ($menus3->count() < count($menus_2)) {
                                             foreach ($menus_3 as $key_index => $menu_3) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                        
+
                                                 if (array_key_exists($key_index, $menus3)) {
                                                     if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                         $menu3[$key_index]->privilege = $privilege->idpriv;
                                                         $menu3[$key_index]->menu_1 = $menus_1[$key];
                                                         $menu3[$key_index]->menu_2 = $menu2_[1];
                                                         $menu3[$key_index]->menu_3 = $menu3_[2];
-                                    
+
                                                         $menu3[$key_index]->update((array)$menu3[$key_index]);
                                                     }
                                                 } else {
                                                     if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                         $priv_menu = new Priv_Menu();
-                            
+
                                                         $priv_menu->privilege = $privilege->idpriv;
                                                         $priv_menu->menu_1 = $menu_1;
                                                         $priv_menu->menu_2 = $menu2_[1];
                                                         $priv_menu->menu_3 = $menu3_[2];
-                                    
+
                                                         $priv_menu->save();
                                                     }
                                                 }
-                                                
+
                                                 $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -772,19 +772,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -794,14 +794,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -811,7 +811,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -832,23 +832,23 @@ class PrivilegeController extends Controller
                                         if ($menus3->count() === count($menus_3)) {
                                             foreach ($menus3 as $key_index => $menu3) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                        
+
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $priv_menu = new Priv_Menu();
-                            
+
                                                     $menu3->privilege = $privilege->idpriv;
                                                     $menu3->menu_1 = $menus_1[$key];
                                                     $menu3->menu_2 = $menu2_[1];
                                                     $menu3->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3->update((array)$menu3);
                                                 }
-                
+
                                                 $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -856,19 +856,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -878,14 +878,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -895,7 +895,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -917,13 +917,13 @@ class PrivilegeController extends Controller
                                             foreach ($menus3 as $key_index => $menu3) {
                                                 if (array_key_exists($key_index, $menus3)) {
                                                     $menu3_ = explode("_", $menus_3[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                         $menu3->privilege = $privilege->idpriv;
                                                         $menu3->menu_1 = $menus_1[$key];
                                                         $menu3->menu_2 = $menu2_[1];
                                                         $menu3->menu_3 = $menu3_[2];
-                                    
+
                                                         $menu3->update((array)$menu3);
                                                     }
 
@@ -931,7 +931,7 @@ class PrivilegeController extends Controller
                                                     if ($menus4->count() < count($menus4)) {
                                                         foreach ($menus4 as $keyIndex => $menu4) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                                            
+
                                                             if (array_key_exists($keyIndex, $menus4)) {
                                                                 if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                     $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -939,19 +939,19 @@ class PrivilegeController extends Controller
                                                                     $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                     $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                     $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                        
+
                                                                     $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                                 }
                                                             } else {
                                                                 if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                     $priv_menu = new Priv_Menu();
-                                    
+
                                                                     $priv_menu->privilege = $privilege->idpriv;
                                                                     $priv_menu->menu_1 = $menu_1;
                                                                     $priv_menu->menu_2 = $menu2_[1];
                                                                     $priv_menu->menu_3 = $menu3_[2];
                                                                     $priv_menu->menu_4 = $menu4_[3];
-                                                
+
                                                                     $priv_menu->save();
                                                                 }
                                                             }
@@ -961,14 +961,14 @@ class PrivilegeController extends Controller
                                                     if ($menus4->count() === count($menus_4)) {
                                                         foreach ($menus4 as $keyIndex => $menu4) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                                
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
                                                                 $menu4->menu_2 = $menu2_[1];
                                                                 $menu4->menu_3 = $menu3_[2];
                                                                 $menu4->menu_4 = $menu4_[3];
-                        
+
                                                                 $menu4->update((array)$menu4);
                                                             }
                                                         }
@@ -978,7 +978,7 @@ class PrivilegeController extends Controller
                                                         foreach ($menus4 as $keyIndex => $menu4) {
                                                             if (array_key_exists($keyIndex, $menus4)) {
                                                                 $menu4_= explode("_", $menus_4[$key_index]);
-                                                
+
                                                                 if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                     $menu4->privilege = $privilege->idpriv;
                                                                     $menu4->menu_1 = $menu_1;
@@ -1018,22 +1018,22 @@ class PrivilegeController extends Controller
                                 foreach ($menus_2 as $index => $menu_2) {
                                     if (array_key_exists($index, $menus2)) {
                                         $menu2_ = explode("_", $menus_2[$index]);
-        
+
                                         if ($menus_1[$key] === $menu2_[0]) {
                                             $menu2[$index]->privilege = $privilege->idpriv;
                                             $menu2[$index]->menu_1 = $menus_1[$key];
                                             $menu2[$index]->menu_2 = $menu2_[1];
-                        
+
                                             $menu2[$index]->update((array)$menu2[$index]);
                                         }
                                     } else {
                                         if ($menus_1[$key] === $menu2_[0]) {
                                             $priv_menu = new Priv_Menu();
-                    
+
                                             $priv_menu->privilege = $privilege->idpriv;
                                             $priv_menu->menu_1 = $menu_1;
                                             $priv_menu->menu_2 = $menu2_[1];
-                        
+
                                             $priv_menu->save();
                                         }
                                     }
@@ -1042,34 +1042,34 @@ class PrivilegeController extends Controller
                                     if ($menus3->count() < count($menus_2)) {
                                         foreach ($menus_3 as $key_index => $menu_3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if (array_key_exists($key_index, $menus3)) {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3[$key_index]->privilege = $privilege->idpriv;
                                                     $menu3[$key_index]->menu_1 = $menus_1[$key];
                                                     $menu3[$key_index]->menu_2 = $menu2_[1];
                                                     $menu3[$key_index]->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3[$key_index]->update((array)$menu3[$key_index]);
                                                 }
                                             } else {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $priv_menu = new Priv_Menu();
-                        
+
                                                     $priv_menu->privilege = $privilege->idpriv;
                                                     $priv_menu->menu_1 = $menu_1;
                                                     $priv_menu->menu_2 = $menu2_[1];
                                                     $priv_menu->menu_3 = $menu3_[2];
-                                
+
                                                     $priv_menu->save();
                                                 }
                                             }
-                                            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -1077,19 +1077,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -1099,14 +1099,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -1116,7 +1116,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -1137,23 +1137,23 @@ class PrivilegeController extends Controller
                                     if ($menus3->count() === count($menus_3)) {
                                         foreach ($menus3 as $key_index => $menu3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                 $priv_menu = new Priv_Menu();
-                        
+
                                                 $menu3->privilege = $privilege->idpriv;
                                                 $menu3->menu_1 = $menus_1[$key];
                                                 $menu3->menu_2 = $menu2_[1];
                                                 $menu3->menu_3 = $menu3_[2];
-                            
+
                                                 $menu3->update((array)$menu3);
                                             }
-            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -1161,19 +1161,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -1183,14 +1183,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -1200,7 +1200,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -1222,13 +1222,13 @@ class PrivilegeController extends Controller
                                         foreach ($menus3 as $key_index => $menu3) {
                                             if (array_key_exists($key_index, $menus3)) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3->privilege = $privilege->idpriv;
                                                     $menu3->menu_1 = $menus_1[$key];
                                                     $menu3->menu_2 = $menu2_[1];
                                                     $menu3->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3->update((array)$menu3);
                                                 }
 
@@ -1236,7 +1236,7 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -1244,19 +1244,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -1266,14 +1266,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -1283,7 +1283,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -1308,48 +1308,48 @@ class PrivilegeController extends Controller
 
                             if ($menus2->count() === count($menus_2)) {
                                 $menu2_ = explode("_", $menus_2[$index]);
-        
+
                                 foreach ($menus2 as $index => $menu2) {
                                     if ($menus_1[$key] === $menu2_[0]) {
                                         $menu2->privilege = $privilege->idpriv;
                                         $menu2->menu_1 = $menus_1[$key];
                                         $menu2->menu_2 = $menu2_[1];
-                    
+
                                         $menu2->update((array)$menu2);
                                     }
-        
+
                                     $menus3 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_3');
                                     if ($menus3->count() < count($menus_2)) {
                                         foreach ($menus_3 as $key_index => $menu_3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if (array_key_exists($key_index, $menus3)) {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3[$key_index]->privilege = $privilege->idpriv;
                                                     $menu3[$key_index]->menu_1 = $menus_1[$key];
                                                     $menu3[$key_index]->menu_2 = $menu2_[1];
                                                     $menu3[$key_index]->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3[$key_index]->update((array)$menu3[$key_index]);
                                                 }
                                             } else {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $priv_menu = new Priv_Menu();
-                        
+
                                                     $priv_menu->privilege = $privilege->idpriv;
                                                     $priv_menu->menu_1 = $menu_1;
                                                     $priv_menu->menu_2 = $menu2_[1];
                                                     $priv_menu->menu_3 = $menu3_[2];
-                                
+
                                                     $priv_menu->save();
                                                 }
                                             }
-                                            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -1357,19 +1357,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -1379,14 +1379,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -1396,7 +1396,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -1417,23 +1417,23 @@ class PrivilegeController extends Controller
                                     if ($menus3->count() === count($menus_3)) {
                                         foreach ($menus3 as $key_index => $menu3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                 $priv_menu = new Priv_Menu();
-                        
+
                                                 $menu3->privilege = $privilege->idpriv;
                                                 $menu3->menu_1 = $menus_1[$key];
                                                 $menu3->menu_2 = $menu2_[1];
                                                 $menu3->menu_3 = $menu3_[2];
-                            
+
                                                 $menu3->update((array)$menu3);
                                             }
-            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -1441,19 +1441,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -1463,14 +1463,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -1480,7 +1480,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -1502,13 +1502,13 @@ class PrivilegeController extends Controller
                                         foreach ($menus3 as $key_index => $menu3) {
                                             if (array_key_exists($key_index, $menus3)) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3->privilege = $privilege->idpriv;
                                                     $menu3->menu_1 = $menus_1[$key];
                                                     $menu3->menu_2 = $menu2_[1];
                                                     $menu3->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3->update((array)$menu3);
                                                 }
 
@@ -1516,7 +1516,7 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -1524,19 +1524,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -1546,14 +1546,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -1563,7 +1563,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -1595,7 +1595,7 @@ class PrivilegeController extends Controller
                                             $menu2->privilege = $privilege->idpriv;
                                             $menu2->menu_1 = $menus_1[$key];
                                             $menu2->menu_2 = $menu2_[1];
-                        
+
                                             $menu2->update((array)$menu2);
                                         }
 
@@ -1603,34 +1603,34 @@ class PrivilegeController extends Controller
                                         if ($menus3->count() < count($menus_2)) {
                                             foreach ($menus_3 as $key_index => $menu_3) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                        
+
                                                 if (array_key_exists($key_index, $menus3)) {
                                                     if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                         $menu3[$key_index]->privilege = $privilege->idpriv;
                                                         $menu3[$key_index]->menu_1 = $menus_1[$key];
                                                         $menu3[$key_index]->menu_2 = $menu2_[1];
                                                         $menu3[$key_index]->menu_3 = $menu3_[2];
-                                    
+
                                                         $menu3[$key_index]->update((array)$menu3[$key_index]);
                                                     }
                                                 } else {
                                                     if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                         $priv_menu = new Priv_Menu();
-                            
+
                                                         $priv_menu->privilege = $privilege->idpriv;
                                                         $priv_menu->menu_1 = $menu_1;
                                                         $priv_menu->menu_2 = $menu2_[1];
                                                         $priv_menu->menu_3 = $menu3_[2];
-                                    
+
                                                         $priv_menu->save();
                                                     }
                                                 }
-                                                
+
                                                 $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -1638,19 +1638,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -1660,14 +1660,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -1677,7 +1677,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -1698,23 +1698,23 @@ class PrivilegeController extends Controller
                                         if ($menus3->count() === count($menus_3)) {
                                             foreach ($menus3 as $key_index => $menu3) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                        
+
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $priv_menu = new Priv_Menu();
-                            
+
                                                     $menu3->privilege = $privilege->idpriv;
                                                     $menu3->menu_1 = $menus_1[$key];
                                                     $menu3->menu_2 = $menu2_[1];
                                                     $menu3->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3->update((array)$menu3);
                                                 }
-                
+
                                                 $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -1722,19 +1722,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -1744,14 +1744,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -1761,7 +1761,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -1783,13 +1783,13 @@ class PrivilegeController extends Controller
                                             foreach ($menus3 as $key_index => $menu3) {
                                                 if (array_key_exists($key_index, $menus3)) {
                                                     $menu3_ = explode("_", $menus_3[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                         $menu3->privilege = $privilege->idpriv;
                                                         $menu3->menu_1 = $menus_1[$key];
                                                         $menu3->menu_2 = $menu2_[1];
                                                         $menu3->menu_3 = $menu3_[2];
-                                    
+
                                                         $menu3->update((array)$menu3);
                                                     }
 
@@ -1797,7 +1797,7 @@ class PrivilegeController extends Controller
                                                     if ($menus4->count() < count($menus4)) {
                                                         foreach ($menus4 as $keyIndex => $menu4) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                                            
+
                                                             if (array_key_exists($keyIndex, $menus4)) {
                                                                 if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                     $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -1805,19 +1805,19 @@ class PrivilegeController extends Controller
                                                                     $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                     $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                     $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                        
+
                                                                     $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                                 }
                                                             } else {
                                                                 if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                     $priv_menu = new Priv_Menu();
-                                    
+
                                                                     $priv_menu->privilege = $privilege->idpriv;
                                                                     $priv_menu->menu_1 = $menu_1;
                                                                     $priv_menu->menu_2 = $menu2_[1];
                                                                     $priv_menu->menu_3 = $menu3_[2];
                                                                     $priv_menu->menu_4 = $menu4_[3];
-                                                
+
                                                                     $priv_menu->save();
                                                                 }
                                                             }
@@ -1827,14 +1827,14 @@ class PrivilegeController extends Controller
                                                     if ($menus4->count() === count($menus_4)) {
                                                         foreach ($menus4 as $keyIndex => $menu4) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                                
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
                                                                 $menu4->menu_2 = $menu2_[1];
                                                                 $menu4->menu_3 = $menu3_[2];
                                                                 $menu4->menu_4 = $menu4_[3];
-                        
+
                                                                 $menu4->update((array)$menu4);
                                                             }
                                                         }
@@ -1844,7 +1844,7 @@ class PrivilegeController extends Controller
                                                         foreach ($menus4 as $keyIndex => $menu4) {
                                                             if (array_key_exists($keyIndex, $menus4)) {
                                                                 $menu4_= explode("_", $menus_4[$key_index]);
-                                                
+
                                                                 if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                     $menu4->privilege = $privilege->idpriv;
                                                                     $menu4->menu_1 = $menu_1;
@@ -1885,22 +1885,22 @@ class PrivilegeController extends Controller
                                 foreach ($menus_2 as $index => $menu_2) {
                                     if (array_key_exists($index, $menus2)) {
                                         $menu2_ = explode("_", $menus_2[$index]);
-        
+
                                         if ($menus_1[$key] === $menu2_[0]) {
                                             $menu2[$index]->privilege = $privilege->idpriv;
                                             $menu2[$index]->menu_1 = $menus_1[$key];
                                             $menu2[$index]->menu_2 = $menu2_[1];
-                        
+
                                             $menu2[$index]->update((array)$menu2[$index]);
                                         }
                                     } else {
                                         if ($menus_1[$key] === $menu2_[0]) {
                                             $priv_menu = new Priv_Menu();
-                    
+
                                             $priv_menu->privilege = $privilege->idpriv;
                                             $priv_menu->menu_1 = $menu_1;
                                             $priv_menu->menu_2 = $menu2_[1];
-                        
+
                                             $priv_menu->save();
                                         }
                                     }
@@ -1909,34 +1909,34 @@ class PrivilegeController extends Controller
                                     if ($menus3->count() < count($menus_2)) {
                                         foreach ($menus_3 as $key_index => $menu_3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if (array_key_exists($key_index, $menus3)) {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3[$key_index]->privilege = $privilege->idpriv;
                                                     $menu3[$key_index]->menu_1 = $menus_1[$key];
                                                     $menu3[$key_index]->menu_2 = $menu2_[1];
                                                     $menu3[$key_index]->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3[$key_index]->update((array)$menu3[$key_index]);
                                                 }
                                             } else {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $priv_menu = new Priv_Menu();
-                        
+
                                                     $priv_menu->privilege = $privilege->idpriv;
                                                     $priv_menu->menu_1 = $menu_1;
                                                     $priv_menu->menu_2 = $menu2_[1];
                                                     $priv_menu->menu_3 = $menu3_[2];
-                                
+
                                                     $priv_menu->save();
                                                 }
                                             }
-                                            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -1944,19 +1944,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -1966,14 +1966,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -1983,7 +1983,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -2004,23 +2004,23 @@ class PrivilegeController extends Controller
                                     if ($menus3->count() === count($menus_3)) {
                                         foreach ($menus3 as $key_index => $menu3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                 $priv_menu = new Priv_Menu();
-                        
+
                                                 $menu3->privilege = $privilege->idpriv;
                                                 $menu3->menu_1 = $menus_1[$key];
                                                 $menu3->menu_2 = $menu2_[1];
                                                 $menu3->menu_3 = $menu3_[2];
-                            
+
                                                 $menu3->update((array)$menu3);
                                             }
-            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -2028,19 +2028,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -2050,14 +2050,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -2067,7 +2067,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -2089,13 +2089,13 @@ class PrivilegeController extends Controller
                                         foreach ($menus3 as $key_index => $menu3) {
                                             if (array_key_exists($key_index, $menus3)) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3->privilege = $privilege->idpriv;
                                                     $menu3->menu_1 = $menus_1[$key];
                                                     $menu3->menu_2 = $menu2_[1];
                                                     $menu3->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3->update((array)$menu3);
                                                 }
 
@@ -2103,7 +2103,7 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -2111,19 +2111,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -2133,14 +2133,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -2150,7 +2150,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -2175,48 +2175,48 @@ class PrivilegeController extends Controller
 
                             if ($menus2->count() === count($menus_2)) {
                                 $menu2_ = explode("_", $menus_2[$index]);
-        
+
                                 foreach ($menus2 as $index => $menu2) {
                                     if ($menus_1[$key] === $menu2_[0]) {
                                         $menu2->privilege = $privilege->idpriv;
                                         $menu2->menu_1 = $menus_1[$key];
                                         $menu2->menu_2 = $menu2_[1];
-                    
+
                                         $menu2->update((array)$menu2);
                                     }
-        
+
                                     $menus3 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_3');
                                     if ($menus3->count() < count($menus_2)) {
                                         foreach ($menus_3 as $key_index => $menu_3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if (array_key_exists($key_index, $menus3)) {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3[$key_index]->privilege = $privilege->idpriv;
                                                     $menu3[$key_index]->menu_1 = $menus_1[$key];
                                                     $menu3[$key_index]->menu_2 = $menu2_[1];
                                                     $menu3[$key_index]->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3[$key_index]->update((array)$menu3[$key_index]);
                                                 }
                                             } else {
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $priv_menu = new Priv_Menu();
-                        
+
                                                     $priv_menu->privilege = $privilege->idpriv;
                                                     $priv_menu->menu_1 = $menu_1;
                                                     $priv_menu->menu_2 = $menu2_[1];
                                                     $priv_menu->menu_3 = $menu3_[2];
-                                
+
                                                     $priv_menu->save();
                                                 }
                                             }
-                                            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -2224,19 +2224,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -2246,14 +2246,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -2263,7 +2263,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -2284,23 +2284,23 @@ class PrivilegeController extends Controller
                                     if ($menus3->count() === count($menus_3)) {
                                         foreach ($menus3 as $key_index => $menu3) {
                                             $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                             if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                 $priv_menu = new Priv_Menu();
-                        
+
                                                 $menu3->privilege = $privilege->idpriv;
                                                 $menu3->menu_1 = $menus_1[$key];
                                                 $menu3->menu_2 = $menu2_[1];
                                                 $menu3->menu_3 = $menu3_[2];
-                            
+
                                                 $menu3->update((array)$menu3);
                                             }
-            
+
                                             $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                             if ($menus4->count() < count($menus4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                                    
+
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -2308,19 +2308,19 @@ class PrivilegeController extends Controller
                                                             $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                             $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                             $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                
+
                                                             $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                         }
                                                     } else {
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $priv_menu = new Priv_Menu();
-                            
+
                                                             $priv_menu->privilege = $privilege->idpriv;
                                                             $priv_menu->menu_1 = $menu_1;
                                                             $priv_menu->menu_2 = $menu2_[1];
                                                             $priv_menu->menu_3 = $menu3_[2];
                                                             $priv_menu->menu_4 = $menu4_[3];
-                                        
+
                                                             $priv_menu->save();
                                                         }
                                                     }
@@ -2330,14 +2330,14 @@ class PrivilegeController extends Controller
                                             if ($menus4->count() === count($menus_4)) {
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                         $menu4->privilege = $privilege->idpriv;
                                                         $menu4->menu_1 = $menu_1;
                                                         $menu4->menu_2 = $menu2_[1];
                                                         $menu4->menu_3 = $menu3_[2];
                                                         $menu4->menu_4 = $menu4_[3];
-                
+
                                                         $menu4->update((array)$menu4);
                                                     }
                                                 }
@@ -2347,7 +2347,7 @@ class PrivilegeController extends Controller
                                                 foreach ($menus4 as $keyIndex => $menu4) {
                                                     if (array_key_exists($keyIndex, $menus4)) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                        
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
@@ -2369,13 +2369,13 @@ class PrivilegeController extends Controller
                                         foreach ($menus3 as $key_index => $menu3) {
                                             if (array_key_exists($key_index, $menus3)) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                    
+
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $menu3->privilege = $privilege->idpriv;
                                                     $menu3->menu_1 = $menus_1[$key];
                                                     $menu3->menu_2 = $menu2_[1];
                                                     $menu3->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3->update((array)$menu3);
                                                 }
 
@@ -2383,7 +2383,7 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -2391,19 +2391,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -2413,14 +2413,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -2430,7 +2430,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -2462,7 +2462,7 @@ class PrivilegeController extends Controller
                                             $menu2->privilege = $privilege->idpriv;
                                             $menu2->menu_1 = $menus_1[$key];
                                             $menu2->menu_2 = $menu2_[1];
-                        
+
                                             $menu2->update((array)$menu2);
                                         }
 
@@ -2470,34 +2470,34 @@ class PrivilegeController extends Controller
                                         if ($menus3->count() < count($menus_2)) {
                                             foreach ($menus_3 as $key_index => $menu_3) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                        
+
                                                 if (array_key_exists($key_index, $menus3)) {
                                                     if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                         $menu3[$key_index]->privilege = $privilege->idpriv;
                                                         $menu3[$key_index]->menu_1 = $menus_1[$key];
                                                         $menu3[$key_index]->menu_2 = $menu2_[1];
                                                         $menu3[$key_index]->menu_3 = $menu3_[2];
-                                    
+
                                                         $menu3[$key_index]->update((array)$menu3[$key_index]);
                                                     }
                                                 } else {
                                                     if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                         $priv_menu = new Priv_Menu();
-                            
+
                                                         $priv_menu->privilege = $privilege->idpriv;
                                                         $priv_menu->menu_1 = $menu_1;
                                                         $priv_menu->menu_2 = $menu2_[1];
                                                         $priv_menu->menu_3 = $menu3_[2];
-                                    
+
                                                         $priv_menu->save();
                                                     }
                                                 }
-                                                
+
                                                 $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -2505,19 +2505,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -2527,14 +2527,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -2544,7 +2544,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -2565,23 +2565,23 @@ class PrivilegeController extends Controller
                                         if ($menus3->count() === count($menus_3)) {
                                             foreach ($menus3 as $key_index => $menu3) {
                                                 $menu3_ = explode("_", $menus_3[$key_index]);
-                                        
+
                                                 if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                     $priv_menu = new Priv_Menu();
-                            
+
                                                     $menu3->privilege = $privilege->idpriv;
                                                     $menu3->menu_1 = $menus_1[$key];
                                                     $menu3->menu_2 = $menu2_[1];
                                                     $menu3->menu_3 = $menu3_[2];
-                                
+
                                                     $menu3->update((array)$menu3);
                                                 }
-                
+
                                                 $menus4 = Priv_Menu::getPrivMenusAside(['privilege' => $privilege->idpriv], 'menu_4');
                                                 if ($menus4->count() < count($menus4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                                        
+
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -2589,19 +2589,19 @@ class PrivilegeController extends Controller
                                                                 $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                 $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                 $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                    
+
                                                                 $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                             }
                                                         } else {
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $priv_menu = new Priv_Menu();
-                                
+
                                                                 $priv_menu->privilege = $privilege->idpriv;
                                                                 $priv_menu->menu_1 = $menu_1;
                                                                 $priv_menu->menu_2 = $menu2_[1];
                                                                 $priv_menu->menu_3 = $menu3_[2];
                                                                 $priv_menu->menu_4 = $menu4_[3];
-                                            
+
                                                                 $priv_menu->save();
                                                             }
                                                         }
@@ -2611,14 +2611,14 @@ class PrivilegeController extends Controller
                                                 if ($menus4->count() === count($menus_4)) {
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                         if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                             $menu4->privilege = $privilege->idpriv;
                                                             $menu4->menu_1 = $menu_1;
                                                             $menu4->menu_2 = $menu2_[1];
                                                             $menu4->menu_3 = $menu3_[2];
                                                             $menu4->menu_4 = $menu4_[3];
-                    
+
                                                             $menu4->update((array)$menu4);
                                                         }
                                                     }
@@ -2628,7 +2628,7 @@ class PrivilegeController extends Controller
                                                     foreach ($menus4 as $keyIndex => $menu4) {
                                                         if (array_key_exists($keyIndex, $menus4)) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                            
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
@@ -2650,13 +2650,13 @@ class PrivilegeController extends Controller
                                             foreach ($menus3 as $key_index => $menu3) {
                                                 if (array_key_exists($key_index, $menus3)) {
                                                     $menu3_ = explode("_", $menus_3[$key_index]);
-                                        
+
                                                     if ($menus_1[$key] === $menu3_[0] AND $menu2_[1] === $menu3_[1]) {
                                                         $menu3->privilege = $privilege->idpriv;
                                                         $menu3->menu_1 = $menus_1[$key];
                                                         $menu3->menu_2 = $menu2_[1];
                                                         $menu3->menu_3 = $menu3_[2];
-                                    
+
                                                         $menu3->update((array)$menu3);
                                                     }
 
@@ -2664,7 +2664,7 @@ class PrivilegeController extends Controller
                                                     if ($menus4->count() < count($menus4)) {
                                                         foreach ($menus4 as $keyIndex => $menu4) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                                            
+
                                                             if (array_key_exists($keyIndex, $menus4)) {
                                                                 if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                     $menu4[$keyIndex]->privilege = $privilege->idpriv;
@@ -2672,19 +2672,19 @@ class PrivilegeController extends Controller
                                                                     $menu4[$keyIndex]->menu_2 = $menu2_[1];
                                                                     $menu4[$keyIndex]->menu_3 = $menu3_[2];
                                                                     $menu4[$keyIndex]->menu_4 = $menu4_[3];
-                        
+
                                                                     $menu4[$keyIndex]->update((array)$menu4[$keyIndex]);
                                                                 }
                                                             } else {
                                                                 if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                     $priv_menu = new Priv_Menu();
-                                    
+
                                                                     $priv_menu->privilege = $privilege->idpriv;
                                                                     $priv_menu->menu_1 = $menu_1;
                                                                     $priv_menu->menu_2 = $menu2_[1];
                                                                     $priv_menu->menu_3 = $menu3_[2];
                                                                     $priv_menu->menu_4 = $menu4_[3];
-                                                
+
                                                                     $priv_menu->save();
                                                                 }
                                                             }
@@ -2694,14 +2694,14 @@ class PrivilegeController extends Controller
                                                     if ($menus4->count() === count($menus_4)) {
                                                         foreach ($menus4 as $keyIndex => $menu4) {
                                                             $menu4_= explode("_", $menus_4[$key_index]);
-                                                
+
                                                             if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                 $menu4->privilege = $privilege->idpriv;
                                                                 $menu4->menu_1 = $menu_1;
                                                                 $menu4->menu_2 = $menu2_[1];
                                                                 $menu4->menu_3 = $menu3_[2];
                                                                 $menu4->menu_4 = $menu4_[3];
-                        
+
                                                                 $menu4->update((array)$menu4);
                                                             }
                                                         }
@@ -2711,7 +2711,7 @@ class PrivilegeController extends Controller
                                                         foreach ($menus4 as $keyIndex => $menu4) {
                                                             if (array_key_exists($keyIndex, $menus4)) {
                                                                 $menu4_= explode("_", $menus_4[$key_index]);
-                                                
+
                                                                 if ($menus_1[$key] === $menu4_[0] && $menu2_[1] === $menu4_[1] && $menu3_[2] === $menu4_[2]) {
                                                                     $menu4->privilege = $privilege->idpriv;
                                                                     $menu4->menu_1 = $menu_1;
@@ -2760,40 +2760,40 @@ class PrivilegeController extends Controller
 
                         if ($menu_1 === $menu2[0]) {
                             $priv_menu = new Priv_Menu();
-    
+
                             $priv_menu->privilege = $privilege->idpriv;
                             $priv_menu->menu_1 = $menu_1;
                             $priv_menu->menu_2 = $menu2[1];
-        
+
                             $priv_menu->save();
                         }
 
                         foreach ($menus_3 as $menu_3) {
                             $menu3 = explode("_", $menu_3);
-                                
+
                             if ($menu_1 === $menu3[0] AND $menu2[1] === $menu3[1]) {
                                 $priv_menu = new Priv_Menu();
-        
+
                                 $priv_menu->privilege = $privilege->idpriv;
                                 $priv_menu->menu_1 = $menu_1;
                                 $priv_menu->menu_2 = $menu2[1];
                                 $priv_menu->menu_3 = $menu3[2];
-            
+
                                 $priv_menu->save();
                             }
-    
+
                             foreach ($menus_4 as $menu_4) {
                                 $menu4 = explode("_", $menu_4);
-                                 
+
                                 if ($menu_1 === $menu4[0] && $menu2[1] === $menu4[1] && $menu3[2] === $menu4[2]) {
                                     $priv_menu = new Priv_Menu();
-                                    
+
                                     $priv_menu->privilege = $privilege->idpriv;
                                     $priv_menu->menu_1 = $menu_1;
                                     $priv_menu->menu_2 = $menu2[1];
                                     $priv_menu->menu_3 = $menu3[2];
                                     $priv_menu->menu_4 = $menu4[3];
-                
+
                                     $priv_menu->save();
                                 }
                             }
@@ -2828,7 +2828,7 @@ class PrivilegeController extends Controller
                     $priv_menu->delete();
                 }
             }
-            
+
             Privilege::getPrivilege(Request::input('privilege'))->delete();
 
             DB::commit();

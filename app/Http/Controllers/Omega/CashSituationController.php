@@ -21,7 +21,8 @@ class CashSituationController extends Controller
         if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
             if (dateOpen()) {
                 if (cashOpen()) {
-                    $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
+                    $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
+                    // dd($cash);
                     $cashes = Cash::getCashesPaginate(['cashes.employee' => $emp->iduser]);
                     if ($cash->view_other_tills === 'Y') {
                         $cashes = Cash::getCashesPaginate();

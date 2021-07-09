@@ -332,15 +332,12 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
     //    Temporal Journal, Journal and Transactions
     Route::prefix('temp_journal')->group(static function () {
         Route::get('/', 'Omega\TempJournalController@index')->name('temp_journal');
-        Route::post('store', 'Omega\TempJournalController@store')->name('temp_journal/store');
     });
     Route::prefix('journal')->group(static function () {
         Route::get('/', 'Omega\JournalController@index')->name('journal');
-        Route::post('store', 'Omega\JournalController@store')->name('journal/store');
     });
     Route::prefix('transaction')->group(static function () {
         Route::get('/', 'Omega\TransactionController@index')->name('transaction');
-        Route::post('store', 'Omega\TransactionController@store')->name('transaction/store');
     });
 
     //    Commission Sharing
@@ -1127,26 +1124,6 @@ Route::get('getMoneys', static function () {
     return Money::getMoneys(['idmoney' => Request::input('money')]);
 });
 
-//      Get Cash Description
-Route::get('getCash', static function () {
-    return Cash::getCash(Request::input('cash'));
-});
-
-//      Get Operation Description
-Route::get('getOperation', static function () {
-    return Operation::getOperation(Request::input('operation'));
-});
-
-//      Get Member Account
-Route::get('getMemAcc', static function () {
-    return MemBalance::getMemAcc(Request::input('member'), Request::input('account'));
-});
-
-//      Get Account Balance
-Route::get('getCollAccBalance', static function () {
-    return Collect_Bal::getMemBal(Request::input('member'));
-});
-
 //      Get Profile
 Route::get('getProfile', static function () {
     $owner = Request::input('owner');
@@ -1598,21 +1575,20 @@ Route::get('getOperation', static function () {
 
 //      Get Member Account
 Route::get('getMemAcc', static function () {
-    return MemBalance::getMemAcc(Request::input('member'), Request::input('account'));
+    return MemBalance::getMemAccBal(Request::input('member'), Request::input('account'));
 });
 
 //      Get Account Balance
 Route::get('getAccBalance', static function () {
-    if (\request()->ajax()) {
-        return Collect_Bal::getMemBal(Request::input('member'));
+    $members = MemBalance::getMemBals(Request::input('member'));
+    if (Request::input('acctype') !== null) {
+        $members = MemBalance::getMemBals(Request::input('member'), Request::input('acctype'));
     }
 
-    $emp = Session::get('employee');
-
-    if ($emp->collector !== null) {
-        return Collect_Bal::getMemBal(Request::input('member'));
+    if (Request::ajax()) {
+        return ['data' => $members->toArray()];
     }
-    return MemBalance::getMemAccBal(Request::input('member'));
+    return $members;
 });
 
 //      Get Member Sum Debit

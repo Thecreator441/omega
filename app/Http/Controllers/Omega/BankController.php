@@ -91,10 +91,11 @@ class BankController extends Controller
 
                 $theirAcc->idplan = $theirAcc_Plan->idaccplan;
                 $theirAcc->accnumb = $theirAcc_Numb;
-                $theirAcc->labelfr = $theirAcc_Plan->labelfr;
-                $theirAcc->labeleng = $theirAcc_Plan->labeleng;
+                $theirAcc->labelfr = Request::input('labelfr');
+                $theirAcc->labeleng = Request::input('labeleng');
                 $theirAcc->class = $theirAcc_Plan->class;
                 $theirAcc->acctype = $theirAcc_Plan->acc_type;
+                $theirAcc->available = trimOver(Request::input('amount'), ' ');
                 $theirAcc->network = $emp->network;
                 $theirAcc->zone = $emp->zone;
                 $theirAcc->institution = $emp->institution;
