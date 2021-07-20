@@ -80,7 +80,6 @@ class CashFromController extends Controller
             $cash->mon12 += trimOver(Request::input('P7'), ' ');
             $cash->update((array)$cash);
 
-
             $writing = new Writing();
             $writing->writnumb = $writnumb;
             $writing->account = $cash->cashacc;

@@ -26,8 +26,8 @@ if ($emp->lang == 'fr') {
                             <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
-                                        <label for="represent" class="col-xl-1 col-lg-1 col-sm-2 control-label">@lang('label.represent')</label>
-                                        <div class="col-xl-11 col-lg-11 col-md-10">
+                                        <label for="represent" class="col-xl-1 col-lg-2 col-sm-2 control-label">@lang('label.represent')</label>
+                                        <div class="col-xl-11 col-lg-10 col-md-10">
                                             <input type="text" class="form-control" name="represent" id="represent">
                                         </div>
                                     </div>
@@ -39,8 +39,8 @@ if ($emp->lang == 'fr') {
                             <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
-                                        <label for="account" class="col-xl-1 col-lg-1 col-md-2 control-label">@lang('label.account')</label>
-                                        <div class="col-xl-11 col-lg-11 col-md-10">
+                                        <label for="account" class="col-xl-1 col-lg-2 col-md-2 control-label">@lang('label.account')</label>
+                                        <div class="col-xl-11 col-lg-10 col-md-10">
                                             <select class="form-control select2" id="account">
                                                 <option></option>
                                                 @foreach($accounts as $account)
@@ -59,8 +59,8 @@ if ($emp->lang == 'fr') {
                             <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
-                                        <label for="desc" class="col-xl-1 col-lg-1 col-sm-2 control-label">@lang('label.desc')</label>
-                                        <div class="col-xl-11 col-lg-11 col-md-10">
+                                        <label for="desc" class="col-xl-1 col-lg-2 col-sm-2 control-label">@lang('label.desc')</label>
+                                        <div class="col-xl-11 col-lg-10 col-md-10">
                                             <input type="text" class="form-control" id="desc">
                                         </div>
                                     </div>

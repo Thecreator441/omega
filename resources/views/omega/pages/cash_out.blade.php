@@ -1,131 +1,68 @@
-<?php
-$emp = Session::get('employee');
+<?php $emp = Session::get('employee');
 
-if ($emp->lang == 'fr')
+$title = $menu->labeleng;
+if ($emp->lang == 'fr') {
+    $title = $menu->labelfr;
     App::setLocale('fr');
+}
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', trans('sidebar.cout'))
+@section('title', $title)
 
 @section('content')
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title text-bold"> @lang('sidebar.cout') </h3>
+            <h3 class="box-title text-bold"> {{ $title }} </h3>
         </div>
         <div class="box-body">
-            <form action="{{ url('cash_out/store') }}" method="post" id="coutForm" role="form"
-                  enctype="multipart/form-data">
+            <form action="{{ url('cash_out/store') }}" method="post" id="coutForm" role="form" class="needs-validation" enctype="multipart/form-data">
                 {{ csrf_field() }}
-                <div class="col-md-3 col-xs-12">
-                    <h2 class="bg-antiquewhite text-blue text-bold text-center">@lang('label.break')</h2>
-                    <table id="tableInput"
-                           class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
-                        <thead class="text-bold">
-                        <tr>
-                            <th colspan="3" class="bg-purples">@lang('label.notes')</th>
-                            <th class="bilSum"></th>
-                        </tr>
-                        </thead>
-                        <tbody class="text-bold">
-                        @foreach ($moneys as $money)
-                            @if ($money->format == 'B')
-                                @if ($money->format == 'B')
-                                    <tr>
-                                        <td id="mon{{$money->idmoney}} billet" class="input text-right">{{money($cash->{'mon'.$money->idmoney}) }}</td>
-                                        <td id="billet">{{money($money->value)}}</td>
-                                        <td id="billeting"><input type="text" name="{{$money->moncode}}" id="{{$money->moncode}}"
-                                                                  oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
-                                        </td>
-                                        <td class="sum text-right" id="{{$money->moncode}}Sum"></td>
-                                    </tr>
-                                @endif
-                            @endif
-                        @endforeach
-                        </tbody>
-                        <thead class="text-bold">
-                        <tr>
-                            <th colspan="3" class="bg-purples">@lang('label.coins')</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody class="text-bold">
-                        @foreach ($moneys as $money)
-                            @if ($money->format == 'C')
-                                <tr>
-                                    <td id="mon{{$money->idmoney}} billet" class="input text-right">{{money($cash->{'mon'.$money->idmoney}) }}</td>
-                                    <td id="billet">{{$money->value}}</td>
-                                    <td id="billeting"><input type="text" name="{{$money->moncode}}" id="{{$money->moncode}}"
-                                                              oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
-                                    </td>
-                                    <td class="sum text-right" id="{{$money->moncode}}Sum"></td>
-                                </tr>
-                            @endif
-                        @endforeach
-                        </tbody>
-                        <tfoot class="text-bold">
-                        <tr>
-                            <th class="bg-purples" colspan="3"
-                                style="text-align: center !important;">@lang('label.tobreak')</th>
-                            <th class="bg-blue">
-                                <input type="text" class="bg-blue pull-right text-bold" name="totbil" id="totbil"
-                                       disabled style="text-align: right !important;">
-                            </th>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <div class="col-md-9 col-xs-12">
-                    <div class="col-md-9">
+
+                <div class="row">
+                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 col-xs-12">
                         <div class="row">
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-12">
                                     <div class="form-group">
-                                        <label for="member"
-                                               class="col-md-2 control-label">@lang('label.member')</label>
-                                        <div class="col-md-3">
-                                            <select class="form-control select2" name="member" id="member">
-                                                <option></option>
+                                        <label for="member" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.member')<span class="text-red text-bold">*</span></label>
+                                        <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10">
+                                            <select class="form-control select2" name="member" id="member" required>
+                                                <option value=""></option>
                                                 @foreach($members as $member)
-                                                    <option
-                                                        value="{{$member->idmember}}">{{pad($member->memnumb, 6)}}</option>
+                                                    <option value="{{$member->idmember}}">{{pad($member->memnumb, 6)}} : {{ $member->name }} {{ $member->surname }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-md-7">
-                                            <input type="text" name="mem_name" id="mem_name" class="form-control"
-                                                   disabled>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                    <div class="form-group">
+                                        <label for="nic" class="col-xl-2 col-lg-3 col-md-4 col-sm-3 col-xs-4 control-label">@lang('label.idnumb')</label>
+                                        <div class="col-xl-10 col-lg-9 col-md-8 col-sm-9 col-xs-8">
+                                            <input type="text" class="form-control" name="nic" id="nic" disabled="disabled">
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
-                                        <label for="nic"
-                                               class="col-md-2 control-label">@lang('label.idcard')</label>
-                                        <div class="col-md-10">
-                                            <input type="text" class="form-control" name="nic" id="nic"
-                                                   disabled="disabled">
+                                        <label for="benef" class="col-xl-1 col-lg-2 col-md-2 col-sm-3 col-xs-4 control-label">@lang('label.benef')</label>
+                                        <div class="col-xl-11 col-lg-10 col-md-10 col-sm-9 col-xs-8">
+                                            <input type="text" class="form-control" name="represent" id="represent">
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
-                                        <label for="benef"
-                                               class="col-md-2 control-label">@lang('label.benef')</label>
-                                        <div class="col-md-10">
-                                            <input type="text" class="form-control" name="benef" id="benef">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="loan_info"
-                                               class="col-md-2 control-label">@lang('label.loaninf')</label>
-                                        <div class="col-md-10">
+                                        <label for="loan_info" class="col-xl-1 col-lg-2 col-md-2 col-sm-3 col-xs-4 control-label">@lang('label.loaninf')</label>
+                                        <div class="col-xl-11 col-lg-10 col-md-10 col-sm-9 col-xs-8">
                                             <input type="text" class="form-control" name="loan_info" id="loan_info">
                                         </div>
                                     </div>
@@ -133,79 +70,123 @@ if ($emp->lang == 'fr')
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="row">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        <div class="row text-center">
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-6 col-xs-12">
                                     <div class="form-group">
-                                        <img id="pic" alt="@lang('label.mempic')" class="img-bordered-sm"
-                                             style="height: 150px; width: 100%;"/>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <img id="sign" alt="@lang('label.memsign')" class="img-bordered-sm"
-                                             style="height: 70px; width: 100%;"/>
+                                        <img id="pic" alt="@lang('label.mempic')" class="img-bordered-sm" style="height: 150px; width: 100%;"/>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-12" id="tableInput">
-                        <div class="row">
                             <div class="row">
-                                <table id="simul-data-table"
-                                       class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
-                                    <thead>
-                                    <tr class="text-bold">
-                                        <th class="cout">@lang('label.account')</th>
-                                        <th style="width: 25%">@lang('label.entitle')</th>
-                                        <th>@lang('label.opera')</th>
-                                        <th class="cout">@lang('label.available')</th>
-                                        <th class="cout">@lang('label.amount')</th>
-                                        <th class="cout">@lang('label.fees')</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="mem_table">
-                                    </tbody>
-                                </table>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-6 col-xs-12">
+                                    <div class="form-group">
+                                        <img id="sign" alt="@lang('label.memsign')" class="img-bordered-sm" style="height: 70px; width: 100%;"/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="col-md-11">
-                        <div class="row">
-                            <div class="row">
-                                <table class="table table-responsive" id="tableInput">
-                                    <thead>
-                                    <tr class="text-bold text-blue bg-antiquewhite text-left">
-                                        @foreach($accounts as $account)
-                                            @if ($cash->cashacc == $account->idaccount)
-                                                <td style="width: 25%">
-                                                    @if($emp->lang == 'fr') {{$account->labelfr }} @else {{$account->labeleng }} @endif
-                                                </td>
-                                                <td>{{$account->accnumb }}</td>
-                                            @endif
-                                        @endforeach
-                                        <td>@lang('label.totrans')</td>
-                                        <td style="width: 15%">
-                                            <input type="text" style="text-align: left" name="totrans" id="totrans"
-                                                   readonly></td>
-                                        <td>@lang('label.diff')</td>
-                                        <td id="diff" class="text-right" style="width: 15%"></td>
-                                    </tr>
-                                    </thead>
-                                </table>
-                            </div>
+                <div class="row" id="tableInput">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-5 col-xs-12">
+                        <div class="table-responsive">
+                            <table id="billet-data-table" class="table table-striped table-hover table-condensed table-bordered no-padding">
+                                <thead class="text-bold">
+                                <tr>
+                                    <th colspan="3" class="bg-purples">@lang('label.notes')</th>
+                                    <th class="bilSum"></th>
+                                </tr>
+                                </thead>
+                                <tbody class="text-bold">
+                                @foreach ($moneys as $money)
+                                    @if ($money->format == 'B')
+                                        <tr>
+                                            <td id="mon{{$money->idmoney}} billet" class="input text-right">{{money($cash->{'mon'.$money->idmoney}) }}</td>
+                                            <td id="billet">{{$money->value}}</td>
+                                            <td id="billeting"><input type="text" name="{{$money->moncode}}" id="{{$money->moncode}}"
+                                                                    oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
+                                            </td>
+                                            <td class="sum text-right" id="{{$money->moncode}}Sum"></td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                                <tr>
+                                    <th colspan="3" class="bg-purples">@lang('label.coins')</th>
+                                    <th></th>
+                                </tr>
+                                @foreach ($moneys as $money)
+                                    @if ($money->format == 'C')
+                                        <tr>
+                                            <td id="mon{{$money->idmoney}} billet" class="input text-right">{{money($cash->{'mon'.$money->idmoney}) }}</td>
+                                            <td id="billet">{{$money->value}}</td>
+                                            <td id="billeting"><input type="text" name="{{$money->moncode}}" id="{{$money->moncode}}"
+                                                                      oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
+                                            </td>
+                                            <td class="sum text-right" id="{{$money->moncode}}Sum"></td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                                </tbody>
+                                <tfoot class="text-bold">
+                                <tr>
+                                    <th class="bg-purples" colspan="3"
+                                        style="text-align: center !important;">@lang('label.tobreak')</th>
+                                    <th class="bg-blue">
+                                        <input type="text" class="bg-blue pull-right text-bold" name="totbil" id="totbil"
+                                               disabled style="text-align: right !important;">
+                                    </th>
+                                </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-7 col-xs-12">
                         <div class="row">
-                            <div class="row">
-                                <button type="button" id="save"
-                                        class="btn btn-sm bg-blue pull-right btn-raised fa fa-save">
-                                </button>
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="table-responsive">
+                                    <table id="billet-data-table2" class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
+                                        <thead>
+                                        <tr class="text-bold">
+                                            <th>@lang('label.account')</th>
+                                            <th>@lang('label.entitle')</th>
+                                            <th>@lang('label.blocked')</th>
+                                            <th>@lang('label.available')</th>
+                                            <th>@lang('label.amount')</th>
+                                            <th>@lang('label.fees')</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="mem_table">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-xl-11 col-lg-11 col-md-11 col-sm-12 col-xs-12 ">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr class="text-bold text-blue bg-antiquewhite text-left">
+                                            <td style="width: 25%">
+                                                @if($emp->lang == 'fr') {{$cash->labelfr }} @else {{$cash->labeleng }} @endif
+                                            </td>
+                                            <td>{{$cash->casAcc_Numb }}</td>
+                                            <td>@lang('label.totrans')</td>
+                                            <td style="width: 15%">
+                                                <input type="text" style="text-align: left" name="totrans" id="totrans" readonly></td>
+                                            <td>@lang('label.diff')</td>
+                                            <td id="diff" class="text-right" style="width: 15%"></td>
+                                        </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                <button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
                             </div>
                         </div>
                     </div>
@@ -218,96 +199,108 @@ if ($emp->lang == 'fr')
 @section('script')
     <script>
         $('#member').change(function () {
-            $.ajax({
-                url: "{{ url('getMember') }}",
-                method: 'get',
-                data: {member: $(this).val()},
-                success: function (member) {
-                    if (member.surname === null) {
-                        $('#mem_name').val(member.name);
-                        $('#benef').val(member.name);
-                    } else {
-                        $('#mem_name').val(member.name + ' ' + member.surname);
-                        $('#benef').val(member.name + ' ' + member.surname);
-                    }
-
-                    $('#nic').val(member.nic);
-
-                    $.ajax({
-                        url: "{{url('getProfile')}}",
-                        method: 'get',
-                        data: {
-                            owner: 'members',
-                            file: member.pic
-                        },
-                        success: function (filePath) {
-                            $('#pic').attr('src', filePath);
+            if (!isNaN($(this).val())) {
+                $.ajax({
+                    url: "{{ url('getMember') }}",
+                    method: 'get',
+                    data: {member: $(this).val()},
+                    success: function (member) {
+                        if (member.surname === null) {
+                            $('#represent').val(member.name);
+                        } else {
+                            $('#represent').val(member.name + ' ' + member.surname);
                         }
-                    });
 
-                    $.ajax({
-                        url: "{{url('getSignature')}}",
-                        method: 'get',
-                        data: {
-                            owner: 'members',
-                            file: member.signature
-                        },
-                        success: function (filePath) {
-                            $('#sign').attr('src', filePath);
-                        }
-                    });
+                        $('#nic').val(member.nic);
 
-                    @if($emp->collector === null)
-                    async function memAccs() {
-                        const coms = await getData('getMemComakers?member=' + member.idmember);
-                        const demComs = await getData('getMemDemComakers?member=' + member.idmember);
-                        const accBals = await getData('getAccBalance?member=' + member.idmember);
-
-                        let block = 0;
-                        let acc = 0;
-                        let memAccLine = '';
-
-                        $.each(coms, function (i, com) {
-                            block += (parseInt(com.guaramt) - parseInt(com.paidguar));
-                            acc = com.account;
-                        });
-
-                        $.each(demComs, function (i, demCom) {
-                            block += (parseInt(demCom.guaramt) - parseInt(demCom.paidguar));
-                            acc = demCom.account;
-                        });
-
-                        $.each(accBals, function (i, accBal) {
-                            let ava = parseInt(accBal.available);
-                            let evebal = parseInt(accBal.evebal);
-                            if (ava === 0) {
-                                ava = evebal;
-                            }
-
-                            if (accBal.accabbr === 'O' || accBal.accabbr === 'E') {
-                                memAccLine += '<tr>' +
-                                    '<td class="cout"><input type="hidden" name="accounts[]" value="' + accBal.account + '">' + accBal.accnumb + '</td>' +
-                                    '<td style="width: 25%">@if ($emp->lang == 'fr')' + accBal.labelfr + ' @else ' + accBal.labeleng + '@endif</td>' +
-                                    '<td><input type="hidden" name="operations[]" value="' + accBal.operation + '">' +
-                                    '@if ($emp->lang == 'fr')' + accBal.debtfr + ' @else ' + accBal.debteng + '@endif</td>';
-                                if (accBal.account === acc) {
-                                    memAccLine += '<td class="text-right cout text-bold">' + money(ava - block) + '</td>';
-                                } else {
-                                    memAccLine += '<td class="text-right cout text-bold">' + money(ava) + '</td>';
+                        if (member.pic !== null) {
+                            $.ajax({
+                                url: "{{url('getProfile')}}",
+                                method: 'get',
+                                data: {
+                                    owner: 'members',
+                                    file: member.pic
+                                },
+                                success: function (filePath) {
+                                    $('#pic').attr('src', filePath);
                                 }
-                                memAccLine += '<td class="cout"><input type="text" class="amount" name="amounts[]"></td>' +
-                                    '<td class="cout"><input type="text" class="fee" name="fees[]"></td>' +
-                                    '</tr>';
-                            }
+                            });
+                        }
+
+                        if (member.signature) {
+                            $.ajax({
+                                url: "{{url('getSignature')}}",
+                                method: 'get',
+                                data: {
+                                    owner: 'members',
+                                    file: member.signature
+                                },
+                                success: function (filePath) {
+                                    $('#sign').attr('src', filePath);
+                                }
+                            });   
+                        }
+
+                        $('#billet-data-table2').DataTable({
+                            destroy: true,
+                            paging: false,
+                            info: false,
+                            responsive: true,
+                            ordering: false,
+                            searching: false,
+                            FixedHeader: true,
+                            processing: true,
+                            serverSide: false,
+                            language: {
+                                url: "{{ asset("plugins/datatables/lang/$emp->lang.json") }}",
+                            },
+                            serverMethod: 'GET',
+                            ajax: {
+                                url: "{{ url('getMemCashOutBals') }}",
+                                data: {
+                                    member: member.idmember
+                                },
+                                datatype: 'json'
+                            },
+                            columns: [
+                                {data: null, class: 'text-center',
+                                    render: function (data, type, row) {
+                                        return '<td><input type="hidden" name="accounts[]" value="' + data.account + '">' + data.accnumb + '</td>';
+                                    }
+                                },
+                                {data: null, 
+                                    render: function (data, type, row) {
+                                        return '<td><input type="hidden" name="operations[]" value="' + data.operation + '">' +
+                                            '@if ($emp->lang == "fr")' + data.acclabelfr + ' @else ' + data.acclabeleng + '@endif</td>';
+                                    }
+                                },
+                                {data: null, class: 'text-right text-bold',
+                                    render: function (data, type, row) {
+                                        return money(parseInt(data.block_amt));
+                                    }
+                                },
+                                {data: null, class: 'text-right text-bold',
+                                    render: function (data, type, row) {
+                                        return money(parseInt(data.available) + parseInt(data.block_amt));
+                                    }
+                                },
+                                {data: null, 
+                                    render: function (data, type, row) {
+                                        return '<td><input type="text" name="amounts[]" class="amount"></td>';
+                                    }
+                                },
+                                {data: null, 
+                                    render: function (data, type, row) {
+                                        return '<td><input type="text" name="fees[]" class="fee"></td>';
+                                    }
+                                }
+                            ],
                         });
-
-                        $('#mem_table').html(memAccLine);
                     }
-
-                    memAccs();
-                    @endif
-                }
-            });
+                });
+            } else {
+                $('#represent').val('');
+            }
         });
 
         function sum(amount, valueId, sumId) {
@@ -357,45 +350,16 @@ if ($emp->lang == 'fr')
             diff.text(money(dif));
         }
 
-        $('#save').click(function () {
-            if ((parseInt(trimOver($('#diff').text(), null)) === 0) && (parseInt(trimOver($('#totrans').val(), null)) === parseInt(trimOver($('#totbil').val(), null)))) {
-                mySwal('@lang('sidebar.cout')', '@lang('confirm.cout_text')', '@lang('confirm.no')', '@lang('confirm.yes')', '#coutForm');
-            } else {
-                myOSwal('@lang('sidebar.cout')', '@lang('confirm.couterror_text')', 'error');
-            }
-        });
+        function submitForm() {
+            let cust = $('#member').val();
+            let totbil = parseInt(trimOver($('#totbil').val(), null));
+            let diff = parseInt(trimOver($('#diff').text(), null));
 
-        {{--function getMemAccs(member, date = null) {--}}
-        {{--    $('#simul-data-table').DataTable({--}}
-        {{--        destroy: true,--}}
-        {{--        paging: false,--}}
-        {{--        info: false,--}}
-        {{--        searching: false,--}}
-        {{--        responsive: true,--}}
-        {{--        ordering: false,--}}
-        {{--        FixedHeader: true,--}}
-        {{--        language: {--}}
-        {{--            url: "{{ asset("plugins/datatables/lang/$emp->lang.json") }}",--}}
-        {{--        },--}}
-        {{--        processing: true,--}}
-        {{--        serverSide: false,--}}
-        {{--        serverMethod: 'GET',--}}
-        {{--        ajax: {--}}
-        {{--            url: "{{url('getFilterMemAccs')}}",--}}
-        {{--            data: {--}}
-        {{--                member: member,--}}
-        {{--                date: date,--}}
-        {{--            },--}}
-        {{--            datatype: 'json'--}}
-        {{--        },--}}
-        {{--        columns: [--}}
-        {{--            {data: 'account', class: 'text-center'},--}}
-        {{--            {data: 'description'},--}}
-        {{--            {data: 'amount', class: 'text-bold text-right debit'},--}}
-        {{--            {data: 'blocked', class: 'text-bold text-right debit'},--}}
-        {{--            {data: 'available', class: 'text-bold text-right debit'}--}}
-        {{--        ]--}}
-        {{--    });--}}
-        {{--}--}}
+            if (diff === 0 && cust !== '' && !isNaN(totbil) && totbil !== 0) {
+                mySwal("{{ $title }}", '@lang('confirm.cout_text')', '@lang('confirm.no')', '@lang('confirm.yes')', '#coutForm');
+            } else {
+                myOSwal("{{ $title }}", '@lang('confirm.couterror_text')', 'error');
+            }
+        }
     </script>
 @stop

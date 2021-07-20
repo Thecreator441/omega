@@ -7,9 +7,7 @@ use App\Models\AccDate;
 use App\Models\Account;
 use App\Models\Cash;
 use App\Models\Money;
-use App\Models\Operation;
 use App\Models\Priv_Menu;
-use App\Models\ValWriting;
 use App\Models\Writing;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -55,7 +53,6 @@ class OtherCashInController extends Controller
             $accounts = Request::input('accounts');
             $operations = Request::input('operations');
             $amounts = Request::input('amounts');
-            $represent = Request::input('represent');
 
             $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
             $cash->mon1 += trimOver(Request::input('B1'), ' ');
@@ -84,7 +81,7 @@ class OtherCashInController extends Controller
             $writing->zone = $emp->zone;
             $writing->institution = $emp->institution;
             $writing->branch = $emp->branch;
-            $writing->represent = $represent;
+            $writing->represent = Request::input('represent');
             $writing->save();
 
             $cashBal = Account::getAccount($cash->cashacc);
@@ -107,7 +104,7 @@ class OtherCashInController extends Controller
                     $writing->zone = $emp->zone;
                     $writing->institution = $emp->institution;
                     $writing->branch = $emp->branch;
-                    $writing->represent = $represent;
+                    $writing->represent = Request::input('represent');
                     $writing->save();
 
                     $accBal = Account::getAccount($account);

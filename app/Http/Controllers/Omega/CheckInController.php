@@ -35,6 +35,10 @@ class CheckInController extends Controller
         // dd(Request::all());
         try {
             DB::beginTransaction();
+
+            if (!dateOpen()) {
+                return Redirect::back()->with('danger', trans('alertDanger.opdate'));
+            }
         
             $emp = Session::get('employee');
 
@@ -65,6 +69,7 @@ class CheckInController extends Controller
 
             foreach ($accounts as $key => $account) {
                 $amount = (int)trimOver($amounts[$key], ' ');
+                
                 if ($amount !== 0) {
                     $checkaccamt = new CheckAccAmt();
                     $checkaccamt->checkno = $check->idcheck;

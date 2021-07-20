@@ -20,8 +20,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
 
-class LoginController extends Controller
-{
+class LoginController extends Controller {
 
     public function index()
     {
@@ -121,9 +120,12 @@ class LoginController extends Controller
 
                         if (Request::input('backURL') !== null) {
                             $backURL = explode('?', Request::input('backURL'));
-                            $params = explode('&', $backURL[1]);
-
-                            return Redirect::route($backURL[0], [$params[0], $params[1]]);
+                            if (array_key_exists(1, $backURL)) {
+                                $params = explode('&', $backURL[1]);
+                                
+                                return Redirect::route($backURL[0], [$params[0], $params[1]]);
+                            }
+                            return Redirect::route('omega');
                         }
                         return Redirect::route('omega');
                     }

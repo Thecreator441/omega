@@ -222,14 +222,14 @@ class Cash extends Model
     }
 
     /**
-     * @param int|null $collector
+     * @param int|null $employee
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getEmpCashOpen(int $collector = null)
+    public static function getEmpCashOpen(int $employee = null)
     {
         $emp = Session::get('employee');
 
-        if ($collector === null) {
+        if ($employee === null) {
             return self::query()->select('cashes.*', 'cA.accnumb AS casAcc_Numb', 'mA.accnumb AS misAcc_Numb', 'eA.accnumb AS excAcc_Numb')
                 ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
                 ->join('accounts AS mA', 'cashes.misacc', '=', 'mA.idaccount')
@@ -243,7 +243,7 @@ class Cash extends Model
             ->join('accounts AS cA', 'cashes.cashacc', '=', 'cA.idaccount')
             ->join('accounts AS mA', 'cashes.misacc', '=', 'mA.idaccount')
             ->join('accounts AS eA', 'cashes.excacc', '=', 'eA.idaccount')
-            ->where('employee', $collector)->where(static function ($query) {
+            ->where('employee', $employee)->where(static function ($query) {
                 $query->orWhere(['status' => 'O', 'cashes.status' => 'R']);
             })->first();
     }
@@ -266,7 +266,7 @@ class Cash extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getOpenCash()
+    public static function getOpenCashes()
     {
         $emp = Session::get('employee');
 

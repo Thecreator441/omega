@@ -25,7 +25,7 @@ if ($emp->lang == 'fr') {
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <label for="member" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.member')<span class="text-red text-bold">*</span></label>
-                                <div class="col-xl-11 col-lg-110col-md-10 col-sm-10">
+                                <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10">
                                     <select class="form-control select2" name="member" id="member" required>
                                         <option value=""></option>
                                         @foreach($members as $member)
@@ -66,14 +66,10 @@ if ($emp->lang == 'fr') {
                                         </tr>
                                     @endif
                                 @endforeach
-                                </tbody>
-                                <thead>
                                 <tr>
                                     <th colspan="2" class="bg-purples">@lang('label.coins')</th>
                                     <th></th>
                                 </tr>
-                                </thead>
-                                <tbody>
                                 @foreach ($moneys as $money)
                                     @if ($money->format == 'C')
                                         <tr>
@@ -229,7 +225,7 @@ if ($emp->lang == 'fr') {
                             },
                             serverMethod: 'GET',
                             ajax: {
-                                url: "{{ url('getAccBalance') }}",
+                                url: "{{ url('getMemBals') }}",
                                 data: {
                                     member: member.idmember,
                                     acctype: 'Or'
@@ -237,19 +233,19 @@ if ($emp->lang == 'fr') {
                                 datatype: 'json'
                             },
                             columns: [
-                                {
-                                    data: null, render: function (data, type, row) {
+                                {data: null, class: 'text-center',
+                                    render: function (data, type, row) {
                                         return '<td><input type="hidden" name="accounts[]" value="' + data.account + '">' + data.accnumb + '</td>';
                                     }
                                 },
-                                {
-                                    data: null, render: function (data, type, row) {
+                                {data: null, 
+                                    render: function (data, type, row) {
                                         return '<td><input type="hidden" name="operations[]" value="' + data.operation + '">' +
                                             '@if ($emp->lang == "fr")' + data.acclabelfr + ' @else ' + data.acclabeleng + '@endif</td>';
                                     }
                                 },
-                                {
-                                    data: null, render: function (data, type, row) {
+                                {data: null, 
+                                    render: function (data, type, row) {
                                         return '<td><input type="text" name="amounts[]" class="amount"></td>';
                                     }
                                 }

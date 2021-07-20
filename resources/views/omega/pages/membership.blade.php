@@ -105,56 +105,43 @@ if ($emp->lang == 'fr') {
                             <tr class="bg-antiquewhite text-blue">
                                 <th>@lang('label.account')</th>
                                 <th>@lang('label.entitle')</th>
-                                {{-- <th>@lang('label.opera')</th> --}}
                                 <th>@lang('label.amount')</th>
                             </tr>
                             </thead>
-                            <tbody id="mem_table">
-                            @foreach ($mem_sets as $mem_set)
-                                @if ($mem_set->accabbr === 'Or')
-                                    <tr>
-                                        <td><input type="hidden" name="mem_sets[]" value="{{$mem_set->idmemset}}">{{$mem_set->accnumb}}</td>
-                                        <td>
-                                            <input type="hidden" name="accounts[]" value="{{$mem_set->account}}">
-                                            <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
-                                            @if($emp->lang == 'fr') {{$mem_set->acclabelfr}} @else {{$mem_set->acclabeleng}} @endif
-                                        </td>
-                                        {{-- <td>
-                                            <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
-                                            @if($emp->lang == 'fr') {{$mem_set->credtfr}} @else {{$mem_set->credteng}} @endif
-                                        </td> --}}
-                                        <td>
-                                            <input type="text" class="amount" name="amounts[]" value="{{money((int)$mem_set->amount)}}" @if ((int)$mem_set->amount > 0) readonly @endif>
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endforeach
-                            </tbody>
-                            <thead class="bg-antiquewhite text-blue">
-                            <tr>
-                                <th colspan="3" class="text-center">@lang('label.gl_account')</th>
-                            </tr>
-                            </thead>
-                            <tbody id="gl_table">
-                            @foreach ($mem_sets as $mem_set)
-                                @if ($mem_set->accabbr !== 'Or')
-                                    <tr>
-                                        <td><input type="hidden" name="mem_sets[]" value="{{$mem_set->idmemset}}">{{$mem_set->accnumb}}</td>
-                                        <td>
-                                            <input type="hidden" name="accounts[]" value="{{$mem_set->account}}">
-                                            <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
-                                            @if($emp->lang == 'fr') {{$mem_set->acclabelfr}} @else {{$mem_set->acclabeleng}} @endif
-                                        </td>
-                                        {{-- <td>
-                                            <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
-                                            @if($emp->lang == 'fr') {{$mem_set->credtfr}} @else {{$mem_set->credteng}} @endif
-                                        </td> --}}
-                                        <td>
-                                            <input type="text" class="amount" name="amounts[]" value="{{money((int)$mem_set->amount)}}" @if ((int)$mem_set->amount > 0) readonly @endif>
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endforeach
+                            <tbody>
+                                @foreach ($mem_sets as $mem_set)
+                                    @if ($mem_set->accabbr === 'Or')
+                                        <tr>
+                                            <td><input type="hidden" name="mem_sets[]" value="{{$mem_set->idmemset}}">{{$mem_set->accnumb}}</td>
+                                            <td>
+                                                <input type="hidden" name="accounts[]" value="{{$mem_set->account}}">
+                                                <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
+                                                @if($emp->lang == 'fr') {{$mem_set->acclabelfr}} @else {{$mem_set->acclabeleng}} @endif
+                                            </td>
+                                            <td>
+                                                <input type="text" class="amount" name="amounts[]" value="{{money((int)$mem_set->amount)}}" @if ((int)$mem_set->amount > 0) readonly @endif>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                                <tr class="bg-antiquewhite text-blue">
+                                    <th colspan="3" class="text-center">@lang('label.gl_account')</th>
+                                </tr>
+                                @foreach ($mem_sets as $mem_set)
+                                    @if ($mem_set->accabbr !== 'Or')
+                                        <tr>
+                                            <td><input type="hidden" name="mem_sets[]" value="{{$mem_set->idmemset}}">{{$mem_set->accnumb}}</td>
+                                            <td>
+                                                <input type="hidden" name="accounts[]" value="{{$mem_set->account}}">
+                                                <input type="hidden" name="operations[]" value="{{$mem_set->operation}}">
+                                                @if($emp->lang == 'fr') {{$mem_set->acclabelfr}} @else {{$mem_set->acclabeleng}} @endif
+                                            </td>
+                                            <td>
+                                                <input type="text" class="amount" name="amounts[]" value="{{money((int)$mem_set->amount)}}" @if ((int)$mem_set->amount > 0) readonly @endif>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
                             </tbody>
                             <tfoot>
                             <tr class="bg-purples text-right text-bold">

@@ -19,6 +19,7 @@ if ($emp->lang == 'fr') {
         <div class="box-body">
             <form action="{{ url('check_in/store') }}" method="post" role="form" id="checkForm" class="needs-validation">
                 {{ csrf_field() }}
+
                 <div class="row">
                     <div class="row">
                         <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-12">
@@ -113,11 +114,7 @@ if ($emp->lang == 'fr') {
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <hr>
-                </div>
-
+            
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="col-xl-4 col-lg-5 col-md-4 col-sm-4 col-sm-12 bg-maroon-gradient"></div>
@@ -163,10 +160,6 @@ if ($emp->lang == 'fr') {
                             </table>
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
-                    <hr>
                 </div>
 
                 <div class="row" id="tableInput3">
@@ -360,6 +353,8 @@ if ($emp->lang == 'fr') {
                         */
                     }
                 });
+            } else {
+                $('#represent').val('');
             }
         });
 

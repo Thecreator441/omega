@@ -15,55 +15,46 @@ if ($emp->lang == 'fr') {
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title text-bold"> {{ $title }} </h3>
+            <div class="box-tools pull-right">
+                {{ $cashes->appends(['level' => $menu->pLevel, 'menu' => $menu->pMenu])->links('layouts.includes.pagination') }}
+            </div>
         </div>
         <div class="box-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="col-md-12">
-                        {{ $cashes->appends(['level' => $menu->pLevel, 'menu' => $menu->pMenu])->links('layouts.includes.pagination') }}
-                    </div>
-                </div>
-            </div>
-
             <form action="{{ url('cash_reconciliation/store') }}" method="post" role="form" id="cashReconForm">
                 {{csrf_field()}}
-                <div class="box-header with-border" id="form">
-                    @foreach ($cashes as $cash)
-                        <input type="hidden" id="idcash" name="idcash" value="{{$cash->idcash}}">
 
+                @foreach ($cashes as $cash)
+                    <div class="row">
                         <div class="row">
-                            <div class="col-md-2"></div>
-                            <div class="col-md-4 col-xs-12">
+                            <input type="hidden" id="idcash" name="idcash" value="{{$cash->idcash}}">
+
+                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-1"></div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-5 col-xs-12">
                                 <div class="form-group">
-                                    <label for="cashcode" class="col-md-2 col-xs-2 control-label">@lang('label.cash')</label>
-                                    <div class="col-md-10 col-xs-10">
+                                    <label for="cashcode" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 col-xs-2 control-label">@lang('label.cash')</label>
+                                    <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10 col-xs-10">
                                         <input type="text" id="cashcode" class="form-control" value="{{$cash->cashcode}} : @if ($emp->lang == 'fr') {{$cash->labelfr}} @else {{$cash->labeleng}} @endif" disabled>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 col-xs-12">
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-5 col-xs-12">
                                 <div class="form-group">
-                                    <label for="employee" class="col-md-3 col-xs-2 control-label">@lang('label.user')</label>
-                                    <div class="col-md-9 col-xs-10">
+                                    <label for="employee" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 col-xs-2 control-label">@lang('label.user')</label>
+                                    <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10 col-xs-10">
                                         <input type="text" id="employee" class="form-control" disabled value="{{$emp->name}} {{$emp->surname}}">
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2 col-xs-0"></div>
+                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-1"></div>
                         </div>
 
-                        <div class="row">
-                            <div class="row">
-                                <div class="col-md-12 col-xs-12">
-                                    <div class="form-group col-md-12">
-                                        <label for="" class="text-blue text-bold">@lang('label.break')</label>
-                                    </div>
-                                </div>
-                            </div>
+                        <hr>
+                    </div>
 
-                            <div class="row">
-                                <div class="col-md-12" id="tableInput">
-                                <table id="billet-data-table" class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
+                    <div class="row" id="tableInput">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="table-responsive">
+                                <table id="billet-data-table" class="table table-striped table-hover table-condensed table-bordered no-padding">
                                     <thead>
                                     <tr class="text-blue">
                                         <th>@lang('label.value')</th>
@@ -82,8 +73,7 @@ if ($emp->lang == 'fr') {
                                                 <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
                                                 <td id="mon{{$money->idmoney}}"><input type="hidden" value="{{money($cash->{'mon'.$money->idmoney}) }}">
                                                     {{money($cash->{'mon'.$money->idmoney}) }}</td>
-                                                <td id="mon{{$money->idmoney}}"
-                                                    class="inamt">{{money($money->value * $cash->{'mon'.$money->idmoney} )}}</td>
+                                                <td id="mon{{$money->idmoney}}" class="inamt">{{money($money->value * $cash->{'mon'.$money->idmoney} )}}</td>
                                                 <td>
                                                     <input type="text" class="tot" name="{{$money->moncode}}" id="{{$money->moncode}}"
                                                         oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
@@ -94,14 +84,7 @@ if ($emp->lang == 'fr') {
                                             </tr>
                                         @endif
                                     @endforeach
-                                    <tr>
-                                        <td class="bg-gray"></td>
-                                        <td class="bg-gray"></td>
-                                        <td class="bg-gray"></td>
-                                        <td class="bg-gray"></td>
-                                        <td class="bg-gray"></td>
-                                        <td class="bg-gray"></td>
-                                    </tr>
+                                    <tr><td colspan="6" class="bg-gray"></td></tr>
                                     @foreach ($moneys as $money)
                                         @if ($money->format == 'C')
                                             <tr>
@@ -135,8 +118,8 @@ if ($emp->lang == 'fr') {
                                                             name="totbil" id="totbil" readonly></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="4" class="bg-green-active text-bold" id="totinword"></td>
-                                        <td colspan="2" class="bg-green-active text-bold" id="totopera"></td>
+                                        <td colspan="4" class="bg-green-active text-bold text-right" id="totinword"></td>
+                                        <td colspan="2" class="bg-green-active text-bold text-right" id="totopera"></td>
                                     </tr>
                                     <tr>
                                         <td colspan="2" style="text-align: center !important;">@lang('label.diff')</td>
@@ -146,11 +129,10 @@ if ($emp->lang == 'fr') {
                                     </tr>
                                     </tfoot>
                                 </table>
-                                </div>
                             </div>
                         </div>
-                    @endforeach
-                </div>
+                    </div>
+                @endforeach
             </form>
         </div>
     </div>

@@ -272,15 +272,36 @@ if (!function_exists('totCash')) {
     }
 }
 
-if (!function_exists('cashOpen')) {
+if (!function_exists('compareCash')) {
     /**
-     * @param int|null $id
+     * @param array $numbers_1
+     * @param array $numbers_2
      * @return bool
      */
-    function cashOpen(int $id = null)
+    function compareCash(array $numbers_1, array $numbers_2)
     {
-        if ($id !== null) {
-            return Cash::getEmpCashOpen($id) !== null;
+        $error = true;
+
+        foreach ($numbers_1 as $key => $number_1) {
+            if ((int)$number_1 > 0 && (int)$numbers_2[$key] > 0) {
+                if ($number_1 < $numbers_2[$key]) {
+                    $error = false;
+                }
+            }
+        }
+        return $error;
+    }
+}
+
+if (!function_exists('cashOpen')) {
+    /**
+     * @param int|null $employee
+     * @return bool
+     */
+    function cashOpen(int $employee = null)
+    {
+        if ($employee !== null) {
+            return Cash::getEmpCashOpen($employee) !== null;
         }
         return Cash::getEmpCashOpen() !== null;
     }
@@ -288,18 +309,18 @@ if (!function_exists('cashOpen')) {
 
 if (!function_exists('cashEmpty')) {
     /**
-     * @param int|null $id
+     * @param int|null $employee
      * @return mixed
      */
-    function cashEmpty(int $id = null)
+    function cashEmpty(int $employee = null)
     {
         $emp = Session::get('employee');
         $cash = null;
 
-        if ($id === null) {
+        if ($employee === null) {
             $cash = Cash::getEmpCash($emp->iduser);
         } else {
-            $cash = Cash::getEmpCash($id);
+            $cash = Cash::getEmpCash($employee);
         }
         return Cash::getSumBillet($cash->idcash)->total;
     }

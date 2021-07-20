@@ -273,8 +273,7 @@ if ($emp->lang == 'fr') {
                             </tbody>
                             <tfoot>
                             <tr class="bg-green-active">
-                                <td colspan="3"
-                                    style="text-align: center !important;">@lang('label.tobreak')</td>
+                                <td colspan="3" style="text-align: center !important;">@lang('label.tobreak')</td>
                                 <td class="text-right text-bold" id="totbil"></td>
                                 <td class="text-left text-bold" id="totopera"></td>
                             </tr>

@@ -8,6 +8,7 @@ use App\Models\Account;
 use App\Models\Cash;
 use App\Models\Money;
 use App\Models\Operation;
+use App\Models\Priv_Menu;
 use App\Models\Writing;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -23,12 +24,9 @@ class OtherCashOutController extends Controller
                 $cash = Cash::getEmpCashOpen();
                 $moneys = Money::getMoneys();
                 $accounts = Account::getAccounts();
+                $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-                return view('omega.pages.other_cash_out', [
-                    'cash' => $cash,
-                    'moneys' => $moneys,
-                    'accounts' => $accounts
-                ]);
+                return view('omega.pages.other_cash_out', compact('menu', 'cash', 'moneys', 'accounts'));
             }
             return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
         }
@@ -37,94 +35,45 @@ class OtherCashOutController extends Controller
 
     public function store()
     {
-        DB::beginTransaction();
+    //    dd(Request::all()); 
         try {
+            DB::beginTransaction();
+
+            if (!dateOpen()) {
+                return Redirect::back()->with('danger', trans('alertDanger.opdate'));
+                if (!cashOpen()) {
+                    return Redirect::back()->with('danger', trans('alertDanger.opencash'));   
+                }
+            }
+
             $emp = Session::get('employee');
 
             $writnumb = getWritNumb();
             $accounts = Request::input('accounts');
-            $descs = Request::input('operations');
+            $operations = Request::input('operations');
             $amounts = Request::input('amounts');
-            $represent = Request::input('represent');
-            $mon1 = Request::input('B1');
-            $mon2 = Request::input('B2');
-            $mon3 = Request::input('B3');
-            $mon4 = Request::input('B4');
-            $mon5 = Request::input('B5');
-            $mon6 = Request::input('P1');
-            $mon7 = Request::input('P2');
-            $mon8 = Request::input('P3');
-            $mon9 = Request::input('P4');
-            $mon10 = Request::input('P5');
-            $mon11 = Request::input('P6');
-            $mon12 = Request::input('P7');
 
             $accdate = AccDate::getOpenAccDate();
-            $cash = Cash::getEmpCashOpen();
-            $opera = Operation::getByCode(34);
+            $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
 
-            if ($mon1 !== null) {
-                $cash->mon1 -= trimOver($mon1, ' ');
-            }
-            if ($mon2 !== null) {
-                $cash->mon2 -= trimOver($mon2, ' ');
-            }
-            if ($mon3 !== null) {
-                $cash->mon3 -= trimOver($mon3, ' ');
-            }
-            if ($mon4 !== null) {
-                $cash->mon4 -= trimOver($mon4, ' ');
-            }
-            if ($mon5 !== null) {
-                $cash->mon5 -= trimOver($mon5, ' ');
-            }
-            if ($mon6 !== null) {
-                $cash->mon6 -= trimOver($mon6, ' ');
-            }
-            if ($mon7 !== null) {
-                $cash->mon7 -= trimOver($mon7, ' ');
-            }
-            if ($mon8 !== null) {
-                $cash->mon8 -= trimOver($mon8, ' ');
-            }
-            if ($mon9 !== null) {
-                $cash->mon9 -= trimOver($mon9, ' ');
-            }
-            if ($mon10 !== null) {
-                $cash->mon10 -= trimOver($mon10, ' ');
-            }
-            if ($mon11 !== null) {
-                $cash->mon11 -= trimOver($mon11, ' ');
-            }
-            if ($mon12 !== null) {
-                $cash->mon12 -= trimOver($mon12, ' ');
-            }
+            $cash->mon1 -= trimOver(Request::input('B1'), ' ');
+            $cash->mon2 -= trimOver(Request::input('B2'), ' ');
+            $cash->mon3 -= trimOver(Request::input('B3'), ' ');
+            $cash->mon4 -= trimOver(Request::input('B4'), ' ');
+            $cash->mon5 -= trimOver(Request::input('B5'), ' ');
+            $cash->mon6 -= trimOver(Request::input('P1'), ' ');
+            $cash->mon7 -= trimOver(Request::input('P2'), ' ');
+            $cash->mon8 -= trimOver(Request::input('P3'), ' ');
+            $cash->mon9 -= trimOver(Request::input('P4'), ' ');
+            $cash->mon10 -= trimOver(Request::input('P5'), ' ');
+            $cash->mon11 -= trimOver(Request::input('P6'), ' ');
+            $cash->mon12 -= trimOver(Request::input('P7'), ' ');
             $cash->update((array)$cash);
-
-            foreach ($accounts as $key => $account) {
-                if (!empty($amounts[$key]) && $amounts[$key] !== null && $amounts[$key] !== '0') {
-                    $writing = new Writing();
-                    $writing->writnumb = $writnumb;
-                    $writing->account = $account;
-                    $writing->operation = $descs[$key];
-                    $writing->debitamt = trimOver($amounts[$key], ' ');
-                    $writing->accdate = $accdate->accdate;
-                    $writing->employee = $emp->iduser;
-                    $writing->cash = $cash->idcash;
-                    $writing->network = $emp->network;
-                    $writing->zone = $emp->zone;
-                    $writing->institution = $emp->institution;
-                    $writing->branch = $emp->branch;
-                    $writing->represent = $represent;
-                    $writing->writ_type = 'O';
-                    $writing->save();
-                }
-            }
 
             $writing = new Writing();
             $writing->writnumb = $writnumb;
             $writing->account = $cash->cashacc;
-            $writing->operation = $opera->idoper;
+            $writing->operation = Request::input('menu_level_operation');
             $writing->creditamt = trimOver(Request::input('totrans'), ' ');
             $writing->accdate = $accdate->accdate;
             $writing->employee = $emp->iduser;
@@ -133,15 +82,44 @@ class OtherCashOutController extends Controller
             $writing->zone = $emp->zone;
             $writing->institution = $emp->institution;
             $writing->branch = $emp->branch;
-            $writing->represent = $represent;
-            $writing->writ_type = 'O';
+            $writing->represent = Request::input('represent');
             $writing->save();
 
+            $cashBal = Account::getAccount($cash->cashacc);
+            $cashBal->available -= trimOver(Request::input('totrans'), ' ');
+            $cashBal->update((array)$cashBal);
+
+            foreach ($accounts as $key => $account) {
+                $amount = (int)trimOver($amounts[$key], ' ');
+
+                if ($amount !== 0) {
+                    $writing = new Writing();
+                    $writing->writnumb = $writnumb;
+                    $writing->account = $account;
+                    $writing->operation = $operations[$key];
+                    $writing->debitamt = $amount;
+                    $writing->accdate = $accdate->accdate;
+                    $writing->employee = $emp->iduser;
+                    $writing->cash = $cash->idcash;
+                    $writing->network = $emp->network;
+                    $writing->zone = $emp->zone;
+                    $writing->institution = $emp->institution;
+                    $writing->branch = $emp->branch;
+                    $writing->represent = Request::input('represent');
+                    $writing->save();
+
+                    $accBal = Account::getAccount($account);
+                    $accBal->available -= $amount;
+                    $accBal->update((array)$accBal);
+                }
+            }
+
             DB::commit();
-            return Redirect::route('omega')->with('success', trans('alertSuccess.ocin'));
+            return Redirect::back()->with('success', trans('alertSuccess.other_cash_out'));
         } catch (\Exception $ex) {
+            dd($ex);
             DB::rollBack();
-            return Redirect::back()->with('danger', trans('alertDanger.ocin'));
+            return Redirect::back()->with('danger', trans('alertDanger.other_cash_out'));
         }
     }
 }

@@ -17,31 +17,30 @@ if ($emp->lang == 'fr') {
             <h3 class="box-title text-bold"> {{ $title }} </h3>
         </div>
         <div class="box-body">
-            <form action="{{ url('cash_open/store') }}" method="post" role="form" id="cashopenForm" class="needs-validation">
-                {{csrf_field()}}
+            <form action="{{ url('reception/store') }}" method="post" role="form" id="recFundsForm" class="needs-validation">
+                {{ csrf_field() }}
 
                 <div class="row">
                     <div class="row">
-                        <input type="hidden" id="idcash" name="idcash" value="{{$cash->idcash}}">
-
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-1"></div>
-                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-5 col-xs-12">
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-2"></div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-8 col-xs-12">
                             <div class="form-group">
-                                <label for="cashcode" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 col-xs-2 control-label">@lang('label.cash')</label>
-                                <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10 col-xs-10">
-                                    <input type="text" id="cashcode" class="form-control" value="{{$cash->cashcode}} : @if ($emp->lang == 'fr') {{$cash->labelfr}} @else {{$cash->labeleng}} @endif" disabled>
+                                <label for="cashfr" class="col-xl-1 col-lg-2 col-md-3 col-sm-4 col-xs-3 control-label">@lang('label.cashfr')</label>
+                                <div class="col-xl-11 col-lg-10 col-md-9 col-sm-8 col-xs-9">
+                                    <select name="cashfr" id="cashfr" class="form-control select2" disabled>
+                                        @foreach($cashes as $cash)
+                                            @if ($cash->idcash === $cash_replen_init->cash)
+                                                <option value="{{$cash->idcash}}">{{$cash->cashcode}}
+                                                : @if ($emp->lang == 'fr') {{$cash->labelfr}} @else {{$cash->labeleng}} @endif
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                    <input type="hidden" name="cashfr" value="{{ $cash_replen_init->cash }}">
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-5 col-xs-12">
-                            <div class="form-group">
-                                <label for="cash_amt" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 col-xs-2 control-label">@lang('label.amount')</label>
-                                <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10 col-xs-10">
-                                    <input type="text" name="cash_amt" id="cash_amt" class="form-control text-bold text-right" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-1"></div>
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-2"></div>
                     </div>
 
                     <hr>
@@ -50,7 +49,7 @@ if ($emp->lang == 'fr') {
                 <div class="row" id="tableInput">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="table-responsive">
-                            <table id="billet-data-table" class="table table-striped table-hover table-condensed table-bordered no-padding">
+                            <table id="billet-data-table" class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
                                 <thead>
                                 <tr class="text-blue">
                                     <th>@lang('label.value')</th>
@@ -66,8 +65,11 @@ if ($emp->lang == 'fr') {
                                         <tr>
                                             <td id="bil">{{$money->value}}</td>
                                             <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
-                                            <td id="mon{{$money->idmoney}}" class="text-right text-bold">{{money($cash->{'mon'.$money->idmoney}) }}</td>
-                                            <td class="text-right amount text-bold" id="{{$money->moncode}}Sum">{{money($money->value * $cash->{'mon'.$money->idmoney} )}}</td>
+                                            <td id="mon{{$money->idmoney}}" class="text-right text-bold">
+                                                <input type="hidden" name="{{$money->moncode}}" id="{{$money->moncode}}" value="{{ $cash_replen_init->{'mon'.$money->idmoney} }}">
+                                                {{money($cash_replen_init->{'mon'.$money->idmoney}) }}
+                                            </td>
+                                            <td class="text-right amount text-bold" id="{{$money->moncode}}Sum">{{money($money->value * $cash_replen_init->{'mon'.$money->idmoney} )}}</td>
                                             <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
                                         </tr>
                                     @endif
@@ -78,8 +80,11 @@ if ($emp->lang == 'fr') {
                                         <tr>
                                             <td id="bil">{{$money->value}}</td>
                                             <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
-                                            <td id="mon{{$money->idmoney}}" class="text-right text-bold">{{money($cash->{'mon'.$money->idmoney}) }}</td>
-                                            <td class="text-right amount text-bold" id="{{$money->moncode}}Sum">{{money($money->value * $cash->{'mon'.$money->idmoney} )}}</td>
+                                            <td id="mon{{$money->idmoney}}" class="text-right text-bold">
+                                                <input type="hidden" name="{{$money->moncode}}" id="{{$money->moncode}}" value="{{ $cash_replen_init->{'mon'.$money->idmoney} }}">
+                                                {{money($cash_replen_init->{'mon'.$money->idmoney}) }}
+                                            </td>
+                                            <td class="text-right amount text-bold" id="{{$money->moncode}}Sum">{{money($money->value * $cash_replen_init->{'mon'.$money->idmoney} )}}</td>
                                             <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
                                         </tr>
                                     @endif
@@ -87,20 +92,20 @@ if ($emp->lang == 'fr') {
                                 </tbody>
                                 <tfoot>
                                 <tr class="bg-green-active">
-                                    <td colspan="3"
-                                        style="text-align: center !important;">@lang('label.tobreak')</td>
+                                    <td colspan="3" style="text-align: center !important;">@lang('label.tobreak')</td>
                                     <td class="text-bold text-right" id="totamt"></td>
                                     <td class="text-bold" id="totinword"></td>
                                 </tr>
                                 </tfoot>
                             </table>
+                            <input type="hidden" name="totamt" class="totamt">
                         </div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <button type="submit" id="close" class="btn btn-sm bg-blue pull-right btn-raised fa fa-folder-open"></button>
+                        <button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
                     </div>
                 </div>
             </form>
@@ -112,23 +117,30 @@ if ($emp->lang == 'fr') {
     <script>
         $(document).ready(function () {
             let sumIn = 0;
-
+    
             $('.amount').each(function () {
                 var input = trimOver($(this).text(), null);
-
+                
                 if (parseInt(input)) {
                     sumIn += parseInt(input);
                     $('.' + $(this).prop('id') + 'Word').text(toWord(input, '{{$emp->lang}}'));
                 }
             });
-            $('#totamt').text(money(parseInt(sumIn)));
-            $('#totinword').text(toWord(sumIn, '{{$emp->lang}}'));
 
-            $('#cash_amt').val(money(parseInt(sumIn)));
+            $('#totamt').text(money(sumIn));
+            $('.totamt').val(sumIn);
+            $('#totinword').text(toWord(sumIn, '{{$emp->lang}}'));
         });
 
         function submitForm() {
-            mySwal("{{ $title }}", "@lang('confirm.open_text')", '@lang('confirm.no')', '@lang('confirm.yes')', '#cashopenForm');
+            let cash = parseInt($('#cashfr').val());
+            let tot = parseInt(trimOver($('#totamt').text(), null));
+
+            if (cash !== '' && !isNaN(tot) && tot !== 0) {
+                mySwal('{{ $title }}', '@lang('confirm.reception_text')', '@lang('confirm.no')', '@lang('confirm.yes')', '#recFundsForm');
+            } else {
+                myOSwal('{{ $title }}', '@lang('confirm.reception_error_text')', 'error');
+            }
         }
     </script>
 @stop

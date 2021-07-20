@@ -191,7 +191,7 @@ if ($emp->lang == 'fr') {
 
             let line = '<tr>' +
                 '<td style="text-align: center; width: 5%"><input type="checkbox" class="check"></td>' +
-                '<td><input type="hidden" name="accounts[]" value="' + accId + '">' + accNumb + '</td>' +
+                '<td class="text-center"><input type="hidden" name="accounts[]" value="' + accId + '">' + accNumb + '</td>' +
                 '<td><input type="hidden" name="operations[]" value="' + opera.val() + '">' + opera.val() + '</td>' +
                 '<td class="text-right text-bold amount"><input type="hidden" name="amounts[]" value="' + amount.val() + '">' + money(amount.val()) + '</td>' +
                 '</tr>';

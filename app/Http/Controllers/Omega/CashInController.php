@@ -112,8 +112,7 @@ class CashInController extends Controller
             $writing->branch = $emp->branch;
             $writing->represent = $represent;
             $writing->save();
-
-
+            
             $cashBal = Account::getAccount($cash->cashacc);
             $cashBal->available += trimOver(Request::input('totrans'), ' ');
             $cashBal->update((array)$cashBal);
@@ -430,11 +429,11 @@ class CashInController extends Controller
             // }
 
             DB::commit();
-            return Redirect::back()->with('success', trans('alertSuccess.memsave'));
+            return Redirect::back()->with('success', trans('alertSuccess.cash_in'));
         } catch (\Exception $ex) {
             dd($ex);
             DB::rollBack();
-            return Redirect::back()->with('danger', trans('alertDanger.memsave'));
+            return Redirect::back()->with('danger', trans('alertDanger.cash_in'));
         }
     }
 }
