@@ -15,43 +15,38 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 class CashRegularisationController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
+        if (dateOpen()) {
+            if (cashOpen()) {
+                $cashes = Cash::getCashes();
+                $moneys = Money::getMoneys();
+                $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            if (dateOpen()) {
-                if (cashOpen()) {
-                    $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
-                    $cashes = Cash::getCashes();
-                    $moneys = Money::getMoneys();
-                    $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-                    return view('omega.pages.cash_regularisation', compact('cash', 'cashes', 'moneys', 'menu'));
-                }
-                return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
+                return view('omega.pages.cash_regularisation', compact('cashes', 'moneys', 'menu'));
             }
-            return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+            return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
 
     public function store()
     {
         // dd(Request::all());
-        DB::beginTransaction();
-
         try {
-            $emp = verifSession('employee');
-            if($emp === null) {
-                return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
+            DB::beginTransaction();
+            if (!dateOpen()) {
+                return Redirect::back()->with('danger', trans('alertDanger.opdate'));
+                if (!cashOpen()) {
+                    return Redirect::back()->with('danger', trans('alertDanger.opencash'));   
+                }
             }
+            
+            $emp = Session::get('employee');
 
             $writnumb = getWritNumb();
             $totbil = trimOver(Request::input('totbil'), ' ');

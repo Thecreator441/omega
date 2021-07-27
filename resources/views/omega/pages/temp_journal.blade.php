@@ -1,44 +1,27 @@
 <?php
 $emp = Session::get('employee');
 
-if ($emp->lang == 'fr')
+$title = $menu->labeleng;
+if ($emp->lang == 'fr') {
+    $title = $menu->labelfr;
     App::setLocale('fr');
+};
 ?>
-
 @extends('layouts.dashboard')
 
-@section('title', trans('sidebar.tempjour'))
+@section('title', $title)
 
 @section('content')
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title text-bold"> @lang('sidebar.tempjour') </h3>
+            <h3 class="box-title text-bold"> {{ $title }} </h3>
         </div>
-        <div class="box-body">
-            <div class="box-header with-border">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            @if ($emp->collector === null && ((int)$emp->code !== 1 && (int)$emp->code !== 2))
-                                <label for="user" class="col-md-3 control-label">@lang('label.user')</label>
-                                <div class="col-md-9">
-                                    <select name="user" id="user" class="from-control select2">
-                                        <option value=""></option>
-                                        @foreach ($employees as $employee)
-                                            <option value="{{$employee->iduser}}">{{$employee->username}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @else
-                                <input type="hidden" name="user" id="user" value="{{$emp->iduser}}">
-                            @endif
-                        </div>
-                    </div>
-                </div>
 
+        <div class="box-body">
+            <div class="row">
                 <div class="row">
-                    <div class="col-md-1 col-sm-1"></div>
-                    <div class="col-md-2 col-sm-2 col-xs-6">
+                    <div class="col-xl-2 col-lg-2"></div>
+                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-6">
                         <div class="form-group">
                             <div class="radio">
                                 <label for="general" class="text-blue">
@@ -47,7 +30,7 @@ if ($emp->lang == 'fr')
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3 col-xs-6">
+                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-6">
                         <div class="form-group">
                             <div class="radio">
                                 <label for="cin" class="text-green">
@@ -55,7 +38,7 @@ if ($emp->lang == 'fr')
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3 col-xs-6">
+                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-6">
                         <div class="form-group">
                             <div class="radio">
                                 <label for="cout" class="text-yellow">
@@ -63,7 +46,7 @@ if ($emp->lang == 'fr')
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3 col-xs-6">
+                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-6">
                         <div class="form-group">
                             <div class="radio">
                                 <label for="forced" class="text-red">
@@ -72,95 +55,81 @@ if ($emp->lang == 'fr')
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-1 col-sm-1"></div>
+                    <div class="col-xl-2 col-lg-2"></div>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-10 col-xs-12">
                         <div class="form-group">
-                            <button type="button" id="search" class="btn btn-sm bg-green pull-right btn-raised fa fa-search"></button>
+                            <label for="user" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.user')</label>
+                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                <select name="user" id="user" class="from-control select2">
+                                    <option value=""></option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->employee }}">{{ $employee->name }} {{ $employee->surname }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-4 col-sm-2 col-xs-12">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <button type="button" id="search" class="btn btn-sm bg-green pull-right btn-raised fa fa-search"></button>
+                            </div>
                         </div>
                     </div>
                 </div>
+    
+                <hr>
             </div>
 
             <div class="row">
-                <div class="col-md-12">
-                    <table id="admin-data-table" class="table display table-bordered table-hover table-striped">
-                        <thead>
-                        <tr>
-                            <th>@lang('label.refer')</th>
-                            <th>@lang('label.account')</th>
-                            <th>@lang('label.aux')</th>
-                            <th>@lang('label.opera')</th>
-                            <th>@lang('label.debt')</th>
-                            <th>@lang('label.credt')</th>
-                            <th>@lang('label.date')</th>
-                            <th>@lang('label.time')</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($writings as $writing)
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="table-responsive">
+                        <table id="admin-data-table" class="table display table-bordered table-hover table-striped">
+                            <thead>
                             <tr>
-                                <td class="text-center">{{formWriting($writing->accdate, $writing->network, $writing->zone, $writing->institution, $writing->branch, $writing->writnumb)}}</td>
-                                <td class="text-center">
-                                    @foreach ($accounts as $account)
-                                        @if ($account->idaccount === $writing->account)
-                                            {{$account->accnumb}}
-                                        @endif
-                                    @endforeach
-                                </td>
-                                <td class="text-center">
-                                    @if ($writing->aux !== null)
-                                        @foreach ($members as $member)
-                                            @if ($member->idmember === $writing->aux)
-                                                {{pad($member->memnumb, 6)}}
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                    @if ($writing->collector !== null)
-                                        @foreach($collectors as $collector)
-                                            @if ($collector->idcoll === $writing->collector)
-                                                {{pad($collector->code, 6)}}
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                    @if ($writing->coll_aux !== null)
-                                        @foreach ($coll_members as $coll_member)
-                                            @if ($coll_member->idcollect_mem === $writing->coll_aux)
-                                                {{pad($coll_member->coll_memnumb, 6)}}
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                </td>
-                                <td>
-                                    @if (is_numeric($writing->operation))
-                                        @foreach ($operas as $opera)
-                                            @if ($opera->idoper == $writing->operation)
-                                                @if($emp->lang == 'fr') {{$opera->labelfr}} @else {{$opera->labeleng}} @endif
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        {{$writing->operation}}
-                                    @endif
-                                </td>
-                                <td class="debit text-right text-bold">{{money((int)$writing->debitamt)}}</td>
-                                <td class="credit text-right text-bold">{{money((int)$writing->creditamt)}}</td>
-                                <td class="text-center">{{changeFormat($writing->accdate)}}</td>
-                                <td class="text-center">{{getsTime($writing->created_at)}}</td>
+                                <th>@lang('label.refer')</th>
+                                <th>@lang('label.account')</th>
+                                <th>@lang('label.aux')</th>
+                                <th>@lang('label.opera')</th>
+                                <th>@lang('label.debt')</th>
+                                <th>@lang('label.credt')</th>
+                                <th>@lang('label.date')</th>
+                                <th>@lang('label.time')</th>
                             </tr>
-                        @endforeach
-                        </tbody>
-                        <tfoot id="tableInput" class="bg-antiquewhite">
-                        <tr class="text-right text-blue text-bold">
-                            <th colspan="4"></th>
-                            <th id="debit" class="text-right">{{money((int)$debit)}}</th>
-                            <th id="credit" class="text-right">{{money((int)$credit)}}</th>
-                            <th class="text-black text-center">@lang('label.balance')</th>
-                            <th id="tot_bal" class="text-center text-black">{{money((int)$debit - (int)$credit)}}</th>
-                        </tr>
-                        </tfoot>
-                    </table>
+                            </thead>
+                            <tbody>
+                            @foreach ($writings as $writing)
+                                <tr>
+                                    <td class="text-center">{{formWriting($writing->accdate, $writing->network, $writing->zone, $writing->institution, $writing->branch, $writing->writnumb)}}</td>
+                                    <td class="text-center">
+                                        {{ $writing->accnumb }}
+                                        @if($writing->code !== null)
+                                            - {{ $writing->code }}
+                                        @endif
+                                    </td>
+                                    <td class="text-center">{{ explode(' ', $writing->name)[0] }} {{ explode(' ', $writing->surname)[0] }} </td>
+                                    <td>{{ $writing->operation }}</td>
+                                    <td class="debit text-right text-bold">{{money((int)$writing->debitamt)}}</td>
+                                    <td class="credit text-right text-bold">{{money((int)$writing->creditamt)}}</td>
+                                    <td class="text-center">{{changeFormat($writing->accdate)}}</td>
+                                    <td class="text-center">{{getsTime($writing->created_at)}}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                            <tfoot id="tableInput" class="bg-antiquewhite">
+                            <tr class="text-right text-blue text-bold">
+                                <th colspan="4"></th>
+                                <th id="debit" class="text-right">{{money((int)$debit)}}</th>
+                                <th id="credit" class="text-right">{{money((int)$credit)}}</th>
+                                <th class="text-black text-center">@lang('label.balance')</th>
+                                <th id="tot_bal" class="text-center text-black">{{money((int)$debit - (int)$credit)}}</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -173,10 +142,9 @@ if ($emp->lang == 'fr')
             <input type="hidden" id="bra">
             <input type="hidden" id="braTel">
 
-            <div class="col-md-12">
-                <button type="button" id="print" class="btn btn-sm bg-default pull-right btn-raised fa fa-print">
-                </button>
-            </div>
+            {{-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <button type="button" id="print" class="btn btn-sm bg-default pull-right btn-raised fa fa-print"></button>
+            </div> --}}
         </div>
     </div>
 @stop
@@ -276,9 +244,9 @@ if ($emp->lang == 'fr')
                 head += " ( @lang('label.gen') )";
             }
 
-                @if($emp->collector === null && ((int)$emp->code !== 1 && (int)$emp->code !== 2))
-            let user = $('#user').select2('data');
-            username = user[0].text;
+            @if($emp->collector === null && ((int)$emp->code !== 1 && (int)$emp->code !== 2))
+                let user = $('#user').select2('data');
+                username = user[0].text;
             @else
                 username = "{{$emp->name}} {{$emp->surname}}";
             @endif

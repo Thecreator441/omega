@@ -14,33 +14,26 @@ class MoneyExchangeController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
+        if (dateOpen()) {
+            if (cashOpen()) {
+                $cash = Cash::getEmpCashOpen();
+                $moneys = Money::getMoneys();
+                $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            if (dateOpen()) {
-                if (cashOpen()) {
-                    $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
-                    $moneys = Money::getMoneys();
-                    $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-    
-                    return view('omega.pages.money_exchange', compact('cash', 'moneys', 'menu'));
-                }
-                return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
+                return view('omega.pages.money_exchange', compact('cash', 'moneys', 'menu'));
             }
-            return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+            return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
 
     public function store()
     {
         dd(Request::all());        
-        DB::beginTransaction();
         try {
-            $cash = Cash::getCash(Request::input('idcash'));
+            DB::beginTransaction();
+        
+            $cash = Cash::getEmpCashOpen();
 
             $cash->mon1 += trimOver(Request::input('B1In'), ' ');
             $cash->mon2 += trimOver(Request::input('B2In'), ' ');

@@ -15,14 +15,74 @@ class MemBalance extends Model
 
     /**
      * @param int $member
+     * @param string $acctype
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getMemBal(int $member)
+    public static function getMemBals(int $member, string $acctype = null)
     {
-        return self::query()->select('mem_mem_balances.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.labelfr AS atlabelfr', 'At.labeleng AS atlabeleng', 'At.accabbr')
-            ->join('accounts AS A', 'mem_mem_balances.account', '=', 'A.idaccount')
+        if ($acctype !== null) {
+            return self::query()->select('mem_balances.*', 'A.idplan', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.labelfr AS atlabelfr', 'At.labeleng AS atlabeleng', 'At.accabbr')
+                ->join('accounts AS A', 'mem_balances.account', '=', 'A.idaccount')
+                ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
+                ->where(['member' => $member, 'At.accabbr' => $acctype])->orderBy('A.accnumb')->get();
+        }
+        return self::query()->select('mem_balances.*', 'A.idplan', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.labelfr AS atlabelfr', 'At.labeleng AS atlabeleng', 'At.accabbr')
+            ->join('accounts AS A', 'mem_balances.account', '=', 'A.idaccount')
             ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
             ->where('member', $member)->orderBy('A.accnumb')->get();
+    }
+
+    /**
+     * @param int $member
+     * @param string $acctype
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getMemCashOutBals(int $member, string $acctype = null)
+    {
+        $members = self::query()->select('mem_balances.*', 'A.idplan', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.labelfr AS atlabelfr', 'At.labeleng AS atlabeleng', 'At.accabbr')
+            ->join('accounts AS A', 'mem_balances.account', '=', 'A.idaccount')
+            ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
+            ->where('member', $member)->orderBy('A.accnumb')->get();
+
+        if ($acctype !== null) {
+            $members = self::query()->select('mem_balances.*', 'A.idplan', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.labelfr AS atlabelfr', 'At.labeleng AS atlabeleng', 'At.accabbr')
+                ->join('accounts AS A', 'mem_balances.account', '=', 'A.idaccount')
+                ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
+                ->where(['member' => $member, 'At.accabbr' => $acctype])->orderBy('A.accnumb')->get();
+        }
+        
+        $comakers = Comaker::getComakers(['member' => $member]);
+        $demComakers = DemComaker::getDemComakers(['member' => $member]);
+
+        $block_amt = 0;
+        $block_acc = 0;
+        
+        foreach ($comakers as $comaker) {
+            $block_amt += (int)$comaker->guaramt - (int)$comaker->paidguar;
+            $block_acc = (int)$comaker->account;
+        }
+
+        foreach ($demComakers as $demComaker) {
+            $block_amt += (int)$demComaker->guaramt - (int)$demComaker->paidguar;
+            $block_acc = (int)$demComaker->account;
+        }
+
+        $membals = [];
+        foreach ($members as $member) {
+            $member->block_amt = 0;
+            $member->block_acc = 0;
+
+            if ($member->account === $block_amt) {
+                $member->block_amt = $block_amt;
+                $member->block_acc = $block_acc;
+            }
+
+            if ($member->accabbr === 'Or' || $member->accabbr === 'Co') {
+                $membals[] = $member;
+            }
+        }
+
+        return $membals;
     }
 
     /**
@@ -32,8 +92,8 @@ class MemBalance extends Model
      */
     public static function getMemAcc(int $member, int $account)
     {
-        return self::query()->select('mem_mem_balances.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.labelfr AS atlabelfr', 'At.labeleng AS atlabeleng', 'At.accabbr')
-            ->join('accounts AS A', 'mem_mem_balances.account', '=', 'A.idaccount')
+        return self::query()->select('mem_balances.*', 'A.idplan', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'At.labelfr AS atlabelfr', 'At.labeleng AS atlabeleng', 'At.accabbr')
+            ->join('accounts AS A', 'mem_balances.account', '=', 'A.idaccount')
             ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
             ->where(['member' => $member, 'account' => $account])->first();
     }
@@ -98,18 +158,4 @@ class MemBalance extends Model
 
         return ['data' => $result];
     }
-
-    /**
-     * @param int $member
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public static function getMemAccBal(int $member)
-    {
-        return self::query()->where('member', $member)
-            ->join('accounts AS A', 'mem_balances.account', '=', 'A.idaccount')
-            ->join('acc_types AS At', 'A.acctype', '=', 'At.idacctype')
-            ->select('mem_balances.*', 'A.accnumb', 'At.accabbr', 'A.labelfr', 'A.labeleng', 'A.idplan')
-            ->distinct('member')->orderBy('A.accnumb')->get();
-    }
-
 }

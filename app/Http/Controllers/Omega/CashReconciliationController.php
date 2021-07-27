@@ -296,7 +296,7 @@ class CashReconciliationController extends Controller
             }
 
             DB::commit();
-            $cashs = Cash::getOpenCash();
+            $cashs = Cash::getOpenCashes();
 
             if ($cashs->count() === 0) {
                 return Redirect::route('omega')->with('success', trans('alertSuccess.cashclosed'));

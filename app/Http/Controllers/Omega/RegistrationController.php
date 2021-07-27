@@ -79,7 +79,7 @@ class RegistrationController extends Controller
             $signature = null;
             $signature2 = null;
             $signature3 = null;
-        
+
             if ($idregis === null) {
                 $register = new Register();
                 if ($regLast !== null) {
@@ -149,13 +149,13 @@ class RegistrationController extends Controller
                     $register->name = Request::input('assoc_name');
                     $register->assno = Request::input('assno');
                     $register->assmemno = Request::input('assmemno');
-                    
+
                     if (Request::hasFile('signature2')) {
                         $sign = Request::file('signature2');
                         $signature2 = $reference . '-2.' . $sign->getClientOriginalExtension();
                         $sign->storePubliclyAs('registereds/signatures', $signature2);
                     }
-    
+
                     if (Request::hasFile('signature3')) {
                         $sign = Request::file('signature3');
                         $signature3 = $reference . '-3.' . $sign->getClientOriginalExtension();
@@ -163,7 +163,7 @@ class RegistrationController extends Controller
                     }
 
                     $register->sign2 = $signature2;
-                    $register->sign3 = $signature3;     
+                    $register->sign3 = $signature3;
                 } else {
                     $register->name = Request::input('moral_name');
                     $register->taxpaynumb = Request::input('taxpaynumb');
@@ -277,5 +277,5 @@ class RegistrationController extends Controller
                 return Redirect::back()->with('danger', trans('alertDanger.register_edit'));
             }
         }
-    }       
+    }
 }

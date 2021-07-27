@@ -3,29 +3,40 @@
 use App\Models\Institution;
 use App\Models\AccDate;
 use App\Models\Branch_Param;
+use App\Models\Priv_Menu;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 
 $emp = Session::get('employee');
 $menus_1 = Session::get('menus_1');
 $accdate = Session::get('accdate');
+$menu_level_operation = null;
 $bParam = null;
 $level = null;
 $menu = null;
+
+$uri = explode('?', $_SERVER["REQUEST_URI"]);
+if (count($uri) > 1) {
+    $params = explode('&', $uri[1]);
+    $level = explode('=', $params[0])[1];
+    $menu = explode('=', $params[1])[1];
+}
+
+if ($level !== null AND $menu !== null) {
+    $getMenu = Priv_Menu::getMenu($level, $menu);
+    $menu_level_operation = $getMenu->operation;
+}
 
 if($emp->level === 'B') {
     $accdate = AccDate::getOpenAccDate();
     $bParam = Branch_Param::getBranchParam($emp->branch);
 }
 
-$institution = null;
-$institute = null;
-$tit = env('APP_NAME');
+$title = env('APP_NAME');
 
 if ($emp->institution !== null) {
-    $institution = Institution::getInstitution($emp->institution)->abbr;
-    $institute = Institution::getInstitution($emp->institution);
-    $tit = $institution;
+    $institution = Institution::getInstitution($emp->institution);
+    $title = $institution->abbr;
 }
 
 if ($accdate !== null) {
@@ -35,14 +46,7 @@ if ($accdate !== null) {
 }
 
 if ($emp->lang === 'fr') {
-    App::setLocale('fr');   
-}
-
-$uri = explode('?', $_SERVER["REQUEST_URI"]);
-if (count($uri) > 1) {
-    $params = explode('&', $uri[1]);
-    $level = explode('=', $params[0])[1];
-    $menu = explode('=', $params[1])[1];
+    App::setLocale('fr');
 }
 ?>
 
@@ -58,7 +62,7 @@ if (count($uri) > 1) {
 
         {{--<meta http-equiv="refresh" content="1000; url={{url('logout')}}" />--}}
 
-        <title>{{env('APP_NAME', $institution)}} | @yield('title')</title>
+        <title>{{ $title }} | @yield('title')</title>
 
         <link rel="apple-touch-icon" href="{{ asset('images/favicon.png') }}"/>
         <link rel="shortcut icon" href="{{ asset('images/favicon.png') }}"/>
@@ -116,8 +120,9 @@ if (count($uri) > 1) {
     </head>
 
     <body class="hold-transition skin-blue-light sidebar-mini sidebar-collapse fixed" id="page-top">
-        <input type="hidden" id="edit" value="{{$emp->edit}}">
-        <input type="hidden" id="emp_level" value="{{$emp->level}}">
+        <input type="hidden" name="edit" id="edit" value="{{$emp->edit}}">
+        <input type="hidden" name="emp_level" id="emp_level" value="{{$emp->level}}">
+
         <div class="wrapper">
 
             <header class="main-header">
@@ -183,7 +188,7 @@ if (count($uri) > 1) {
                                                 @if ($emp->level === 'O')
                                                     - @lang('label.organ')
                                                 @elseif ($emp->level === 'N')
-                                                    - @lang('label.network')  
+                                                    - @lang('label.network')
                                                 @elseif ($emp->level === 'Z')
                                                     - @lang('label.zone')
                                                 @elseif ($emp->level === 'I')
@@ -299,11 +304,11 @@ if (count($uri) > 1) {
                 <div class="pull-right hidden-xs">
                     <b>Version</b> 1.0.0
                 </div>
-                <strong>Copyright &copy; {{date('Y')}} <a href="https://tamcho-tech.com">{{env('APP_NAME', $institution)}}</a>.</strong> @lang('sidebar.footer')
+                <strong>Copyright &copy; {{date('Y')}} <a href="https://tamcho-tech.com">{{ $title }}</a>.</strong> @lang('sidebar.footer')
                 @if($emp->level === 'B')
-                    <strong>@lang('label.accdate') : 
+                    <strong>@lang('label.accdate') :
                         @if ($accdate !== null)
-                            @if ($accdate->status === 'O') 
+                            @if ($accdate->status === 'O')
                                 @if($accdate->accdate !== null)
                                     {{changeFormat($accdate->accdate)}}
                                 @endif
@@ -385,8 +390,10 @@ if (count($uri) > 1) {
             // let plat_param = JSON.parse(localStorage.getItem('plat_param'));
 
             $(document).ready(function () {
-                $("form").prepend("<input type='hidden' name='level' value='{{ $level }}'><input type='hidden' name='menu' value='{{ $menu }}'>");
-                
+                $("form").prepend("<input type='hidden' name='level' value='{{ $level }}'>" +
+                    "<input type='hidden' name='menu' value='{{ $menu }}'>" +
+                    "<input type='hidden' name='menu_level_operation' value='{{ $menu_level_operation }}'>");
+
                 // if ($('#edit').val() !== 'null') {
                 //     let changeURL = "{{url('user/change')}}";
                 //     if ($('#emp_level').val() !== 'A') {
@@ -478,7 +485,7 @@ if (count($uri) > 1) {
                 //         }
                 //     });
                 // }
-                
+
                 // $.ajax({
                 //     url: "{{url('getPlatParam')}}",
                 //     method: 'GET',
@@ -487,7 +494,7 @@ if (count($uri) > 1) {
                 //         sessionStorage.setItem('plat_param', JSON.stringify(response));
                 //     }
                 // });
-                    
+
                 // Datatable initialisation
                 $('#admin-data-table, #admin-data-table2').DataTable({
                     paging: true,
@@ -500,31 +507,35 @@ if (count($uri) > 1) {
                     },
                     dom: 'lBfrtip',
                     buttons: [
-                        {
-                            extend: 'copy',
-                            text: '',
-                            className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
-                            titleAttr: "@lang('label.copy')",
-                        },
-                        {
-                            extend: 'excel',
-                            text: '',
-                            className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
-                            titleAttr: "@lang('label.excel')",
-                        },
-                        {
-                            extend: 'pdf',
-                            text: '',
-                            className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
-                            titleAttr: "@lang('label.pdf')",
-                        },
-                        {
-                            extend: 'print',
-                            text: '',
-                            className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
-                            titleAttr: "@lang('label.print')",
-                        }
-                    ],
+                            {
+                                extend: 'copy',
+                                text: '',
+                                className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
+                                titleAttr: '@lang('label.copy')',
+                                footer: true
+                            },
+                            {
+                                extend: 'excel',
+                                text: '',
+                                className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
+                                titleAttr: '@lang('label.excel')',
+                                footer: true
+                            },
+                            {
+                                extend: 'pdf',
+                                text: '',
+                                className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
+                                titleAttr: '@lang('label.pdf')',
+                                footer: true
+                            },
+                            {
+                                extend: 'print',
+                                text: '',
+                                className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
+                                titleAttr: '@lang('label.print')',
+                                footer: true
+                            }
+                        ],
                     dom:
                         "<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
@@ -543,31 +554,35 @@ if (count($uri) > 1) {
                     },
                     dom: 'lBfrtip',
                     buttons: [
-                        {
-                            extend: 'copy',
-                            text: '',
-                            className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
-                            titleAttr: "@lang('label.copy')",
-                        },
-                        {
-                            extend: 'excel',
-                            text: '',
-                            className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
-                            titleAttr: "@lang('label.excel')",
-                        },
-                        {
-                            extend: 'pdf',
-                            text: '',
-                            className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
-                            titleAttr: "@lang('label.pdf')",
-                        },
-                        {
-                            extend: 'print',
-                            text: '',
-                            className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
-                            titleAttr: "@lang('label.print')",
-                        }
-                    ],
+                            {
+                                extend: 'copy',
+                                text: '',
+                                className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
+                                titleAttr: '@lang('label.copy')',
+                                footer: true
+                            },
+                            {
+                                extend: 'excel',
+                                text: '',
+                                className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
+                                titleAttr: '@lang('label.excel')',
+                                footer: true
+                            },
+                            {
+                                extend: 'pdf',
+                                text: '',
+                                className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
+                                titleAttr: '@lang('label.pdf')',
+                                footer: true
+                            },
+                            {
+                                extend: 'print',
+                                text: '',
+                                className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
+                                titleAttr: '@lang('label.print')',
+                                footer: true
+                            }
+                        ],
                     dom:
                         "<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
@@ -585,7 +600,7 @@ if (count($uri) > 1) {
                     }
                 });
 
-                $('#billet-data-table, #billet-data-table2').DataTable({
+                $('#billet-data-table, #billet-data-table2, #billet-data-table3').DataTable({
                     paging: false,
                     info: false,
                     responsive: true,
@@ -609,6 +624,53 @@ if (count($uri) > 1) {
                         url: "{{ asset("plugins/datatables/lang/$emp->lang.json") }}",
                     },
                     searching: false
+                });
+
+                $('#loan-data-table').DataTable({
+                    paging: false,
+                    info: false,
+                    responsive: true,
+                    searching: false,
+                    ordering: false,
+                    FixedHeader: true,
+                    language: {
+                        url: "{{ asset("plugins/datatables/lang/$emp->lang.json") }}",
+                    },
+                    dom: 'lBfrtip',
+                    buttons: [
+                            {
+                                extend: 'copy',
+                                text: '',
+                                className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
+                                titleAttr: '@lang('label.copy')',
+                                footer: true
+                            },
+                            {
+                                extend: 'excel',
+                                text: '',
+                                className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
+                                titleAttr: '@lang('label.excel')',
+                                footer: true
+                            },
+                            {
+                                extend: 'pdf',
+                                text: '',
+                                className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
+                                titleAttr: '@lang('label.pdf')',
+                                footer: true
+                            },
+                            {
+                                extend: 'print',
+                                text: '',
+                                className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
+                                titleAttr: '@lang('label.print')',
+                                footer: true
+                            }
+                        ],
+                    dom:
+                        "<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 });
 
                 $('#logOutBtn').click(function () {
@@ -757,8 +819,8 @@ if (count($uri) > 1) {
             //                         url: "{{url('check_session')}}",
             //                         method: "POST",
             //                         data: {
-            //                             user: '{{$emp->iduser}}', 
-            //                             password: result, 
+            //                             user: '{{$emp->iduser}}',
+            //                             password: result,
             //                             _token: '{{csrf_token()}}'
             //                         },
             //                         success: function (response) {
@@ -783,7 +845,7 @@ if (count($uri) > 1) {
             //                                 localStorage.removeItem('classic_verif_user');
             //                                 sessionStorage.removeItem('classic_verif_user');
             //                             }
-                        
+
             //                             if (response.danger) {
             //                                 location.href = '{{url('edit_logout')}}';
             //                             }
@@ -804,25 +866,25 @@ if (count($uri) > 1) {
             //             // $.ajax({ url: session.keepaliveUrl });
             //         }
             //     };
-                
+
             //     if (localStorage.hasOwnProperty('classic_verif_user') || sessionStorage.hasOwnProperty('classic_verif_user')) {
             //         session.warning();
             //     }
-                
+
             //     $(document).on("idle.idleTimer", function (event, elem, obj) {
             //         //Get time when user was last active
             //         var diff = (+new Date()) - obj.lastActive - obj.timeout,
             //             warning = (+new Date()) - diff;
-                    
+
             //         //On mobile js is paused, so see if this was triggered while we were sleeping
             //         if (diff >= session.warningTimeout || warning <= session.minWarning) {
             //             $("#mdlLoggedOut").modal("show");
             //         } else {
             //                 //Show dialog, and note the time
             //                 $('#sessionSecondsRemaining').html(Math.round((session.warningTimeout - diff) / 1000));
-                            
+
             //                 $("#myModal").modal("show");
-                            
+
             //                 session.warningStart = (+new Date()) - diff;
 
             //                 //Update counter downer every second
@@ -854,7 +916,7 @@ if (count($uri) > 1) {
             //     $("#extendSession").click(function () {
             //         clearTimeout(session.warningTimer);
             //     });
-                
+
             //     //User clicked logout
             //     $("#logoutSession").click(function () {
             //         session.warning();

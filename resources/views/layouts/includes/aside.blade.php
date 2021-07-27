@@ -268,7 +268,7 @@
                 @endif
             @endforeach
 
-            <!-- @if ($emp->employee === null && $emp->collector === null)
+            {{-- @if ($emp->employee === null && $emp->collector === null)
                 @include('admin.sidebar')
             @elseif ($emp->collector !== null)
                 @include('collector.sidebar')
@@ -355,7 +355,7 @@
                     @include('admin.sidebar')
                     @break
                 @endswitch
-            @endif -->
+            @endif --}}
 
             {{--            <li class="treeview {{active(['employee_list', 'collect_list', 'client_list', 'registered_file', 'member_file', 'account_file', 'client_acc', 'collect_acc', 'client_sit', 'collect_sit', 'collect_report', 'commis_report', 'shared_commis_report']) }}">--}}
             {{--                <a href=""><i class="fa fa-files-o"></i>--}}

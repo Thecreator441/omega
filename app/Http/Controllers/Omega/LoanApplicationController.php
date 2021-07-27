@@ -11,6 +11,7 @@ use App\Models\LoanMan;
 use App\Models\LoanPur;
 use App\Models\LoanType;
 use App\Models\Member;
+use App\Models\Priv_Menu;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -21,37 +22,33 @@ class LoanApplicationController extends Controller
     public function index()
     {
         if (dateOpen()) {
-            $members = Member::getActiveMembers();
-            $ltypes = LoanType::getLoanTypes();
-            $lpurs = LoanPur::getLoanPurs();
-            $employees = Employee::getEmployees(['privilege' => 6]);
+            $members = Member::getMembers(['members.memstatus' => 'A']);
+            $loan_types = LoanType::getLoanTypes();
+            $loan_purs = LoanPur::getLoanPurs();
+            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-            return view('omega.pages.loan_application', [
-                'members' => $members,
-                'ltypes' => $ltypes,
-                'lpurs' => $lpurs,
-                'emprofs' => $employees
-            ]);
+            return view('omega.pages.loan_application', compact('members', 'menu', 'loan_types', 'loan_purs'));
         }
         return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
 
     public static function store()
     {
-//        dd(Request::all());
-        DB::beginTransaction();
-        $emp = Session::get('employee');
-
-        $loanno = 1;
-        $guarantee = Request::input('guarantee');
-        $member = Request::input('member');
-        $comakers = Request::input('coMakers');
-        $accounts = Request::input('coAccs');
-        $amounts = Request::input('coAmts');
-        $mortNames = Request::input('mortNames');
-        $mortNatures = Request::input('mortNatures');
-        $mortAmts = Request::input('mortAmts');
+        // dd(Request::all());
         try {
+            DB::beginTransaction();
+            $emp = Session::get('employee');
+
+            $loanno = 1;
+            $guarantee = Request::input('guarantee');
+            $member = Request::input('member');
+            $comakers = Request::input('coMakers');
+            $accounts = Request::input('coAccs');
+            $amounts = Request::input('coAmts');
+            $mortNames = Request::input('mortNames');
+            $mortNatures = Request::input('mortNatures');
+            $mortAmts = Request::input('mortAmts');
+
             $loan = DemLoan::getLast();
             if ($loan !== null) {
                 $loanno = $loan->demloanno + 1;

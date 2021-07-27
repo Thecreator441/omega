@@ -31,8 +31,10 @@ class Account extends Model
     {
         $emp = Session::get('employee');
 
-        return self::query()->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
-            ->join('acc_types AS At', 'acctype', '=', 'idacctype')
+        return self::query()->select('accounts.*', 'Ac.plan_code', 'Ac.labelfr AS Acfr', 'Ac.labeleng AS Aceng', 'At.labelfr AS Atfr', 
+        'At.labeleng AS Ateng', 'At.accabbr')
+            ->join('acc_plans AS Ac', 'idplan', '=', 'Ac.idaccplan')
+            ->join('acc_types AS At', 'accounts.acctype', '=', 'At.idacctype')
             ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'N') {
                     $query->where('accounts.network', $emp->network);
@@ -58,8 +60,10 @@ class Account extends Model
         $emp = Session::get('employee');
 
         if ($where !== null) {
-            return self::query()->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
-                ->join('acc_types AS At', 'acctype', '=', 'idacctype')
+            return self::query()->select('accounts.*', 'Ac.plan_code', 'Ac.labelfr AS Acfr', 'Ac.labeleng AS Aceng', 'At.labelfr AS Atfr', 
+            'At.labeleng AS Ateng', 'At.accabbr')
+                ->join('acc_plans AS Ac', 'idplan', '=', 'Ac.idaccplan')
+                ->join('acc_types AS At', 'accounts.acctype', '=', 'At.idacctype')
                 ->where(static function ($query) use ($emp) {
                     if ($emp->level === 'N') {
                         $query->where('accounts.network', $emp->network);
@@ -76,8 +80,10 @@ class Account extends Model
                 })->where($where)->orderBy('accnumb')->get();
         }
 
-        return self::query()->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
-            ->join('acc_types AS At', 'acctype', '=', 'idacctype')
+        return self::query()->select('accounts.*', 'Ac.plan_code', 'Ac.labelfr AS Acfr', 'Ac.labeleng AS Aceng', 'At.labelfr AS Atfr', 
+        'At.labeleng AS Ateng', 'At.accabbr')
+            ->join('acc_plans AS Ac', 'idplan', '=', 'Ac.idaccplan')
+            ->join('acc_types AS At', 'accounts.acctype', '=', 'At.idacctype')
             ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'N') {
                     $query->where('accounts.network', $emp->network);
@@ -103,17 +109,19 @@ class Account extends Model
         $emp = Session::get('employee');
 
         if ($where !== null) {
-            return self::query()->where($where)->where('network', $emp->network)
-                ->join('acc_types AS At', 'acctype', '=', 'idacctype')
-                ->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
+            return self::query()->select('accounts.*', 'Ac.plan_code', 'Ac.labelfr AS Acfr', 'Ac.labeleng AS Aceng', 'At.labelfr AS Atfr', 
+            'At.labeleng AS Ateng', 'At.accabbr')
+                ->join('acc_plans AS Ac', 'idplan', '=', 'Ac.idaccplan')
+                ->join('acc_types AS At', 'accounts.acctype', '=', 'At.idacctype')
+                ->where($where)->where('accounts.network', $emp->network)
                 ->orderBy('accnumb')->get();
         }
-        return self::query()->where('network', $emp->network)
-            ->join('acc_types AS At', 'acctype', '=', 'idacctype')
-            ->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
-            ->orderBy('accnumb')->get();
+        return self::query()->select('accounts.*', 'Ac.plan_code', 'Ac.labelfr AS Acfr', 'Ac.labeleng AS Aceng', 'At.labelfr AS Atfr', 
+        'At.labeleng AS Ateng', 'At.accabbr')
+            ->join('acc_plans AS Ac', 'idplan', '=', 'Ac.idaccplan')
+            ->join('acc_types AS At', 'accounts.acctype', '=', 'At.idacctype')
+            ->where('accounts.network', $emp->network)->orderBy('accnumb')->get();
     }
-
 
     /**
      * @param int $network
@@ -121,10 +129,11 @@ class Account extends Model
      */
     public static function getAccountsMob(int $network)
     {
-        return self::query()->where('accounts.network', $network)
-            ->join('acc_types AS At', 'acctype', '=', 'idacctype')
-            ->select('accounts.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
-            ->orderBy('accnumb')->get();
+        return self::query()->select('accounts.*', 'Ac.plan_code', 'Ac.labelfr AS Acfr', 'Ac.labeleng AS Aceng', 'At.labelfr AS Atfr', 
+        'At.labeleng AS Ateng', 'At.accabbr')
+            ->join('acc_plans AS Ac', 'idplan', '=', 'Ac.idaccplan')
+            ->join('acc_types AS At', 'accounts.acctype', '=', 'At.idacctype')
+            ->where('accounts.network', $network)->orderBy('accnumb')->get();
     }
 
     public static function getCharts(string $select = 'idplan')

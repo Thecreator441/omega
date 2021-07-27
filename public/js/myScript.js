@@ -231,6 +231,28 @@ function formDate(days) {
     return Date.parse(date).toString('yyyy-MM-dd');
 }
 
+function installment_date(grace) {
+    var date = new Date();
+    
+    if (grace === 'D') {
+        date = date.addDays(1);
+    } else if (grace === 'W') {
+        date = date.addDays(7);
+    } else if (grace === 'B') {
+        date = date.addDays(15);
+    } else if (grace === 'M') {
+        date = date.addMonths(1);
+    } else if (grace === 'T') {
+        date = date.addMonths(3);
+    } else if (grace === 'S') {
+        date = date.addMonths(6);
+    } else {
+        date = date.addYears(i);
+    }
+
+    return Date.parse(date).toString('yyyy-MM-dd');
+}
+
 /**
  * Used to get Data
  * @param url

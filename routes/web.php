@@ -84,41 +84,17 @@ Route::get('change_logout', 'Omega\LoginController@changeLogout')->name('change_
  ***************************************************************/
 
 Route::middleware([VerifySessionPrivilege::class])->group(function () {
+
     /***************************
-     ********** HOME **********
+     ******** DASHBOARD ********
     ***************************/
 
     Route::get('omega', 'Omega\OmegaController@index')->name('omega');
 
-    /***************************
-     ********** FILES **********
-    ***************************/
-
-    //     Registered File
-    Route::get('registered_file', static function () {
-        $registers = Register::getRegistersFile();
-        return view('omega.pages.registered_file', [
-            'registers' => $registers
-        ]);
-    });
-
-    //     Member File
-    Route::get('member_file', static function () {
-        $members = Member::getMembersFile();
-        return view('omega.pages.member_file', [
-            'members' => $members
-        ]);
-    });
-
-    //     Account File
-    Route::get('account_file', static function () {
-        $accounts = Account::getAccountsFile();
-        return view('omega.pages.account_file', [
-            'accounts' => $accounts
-        ]);
-    });
 
 
+
+    
     /****************************
      ******** OPERATIONS ********
     ****************************/
@@ -199,18 +175,14 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
         Route::post('store', 'Omega\OtherCheckOutController@store')->name('other_check_out/store');
     });
 
-    //     Funds and Cash to Cash Replenishment, Funds Emission
+    //     Funds Replenishment, Funds Reception
     Route::prefix('replenish')->group(static function () {
         Route::get('/', 'Omega\ReplenishController@index')->name('replenish');
         Route::post('store', 'Omega\ReplenishController@store')->name('replenish/store');
     });
-    Route::prefix('emission')->group(static function () {
-        Route::get('/', 'Omega\EmissionController@index')->name('emission');
-        Route::post('store', 'Omega\EmissionController@store')->name('emission/store');
-    });
-    Route::prefix('cashtocash')->group(static function () {
-        Route::get('/', 'Omega\CashToCashController@index')->name('cashtocash');
-        Route::post('store', 'Omega\CashToCashController@store')->name('cashtocash/store');
+    Route::prefix('reception')->group(static function () {
+        Route::get('/', 'Omega\ReceptionController@index')->name('reception');
+        Route::post('store', 'Omega\ReceptionController@store')->name('reception/store');
     });
 
     //    Cash Situation, Reconciliation and Regularisation
@@ -332,15 +304,12 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
     //    Temporal Journal, Journal and Transactions
     Route::prefix('temp_journal')->group(static function () {
         Route::get('/', 'Omega\TempJournalController@index')->name('temp_journal');
-        Route::post('store', 'Omega\TempJournalController@store')->name('temp_journal/store');
     });
     Route::prefix('journal')->group(static function () {
         Route::get('/', 'Omega\JournalController@index')->name('journal');
-        Route::post('store', 'Omega\JournalController@store')->name('journal/store');
     });
     Route::prefix('transaction')->group(static function () {
         Route::get('/', 'Omega\TransactionController@index')->name('transaction');
-        Route::post('store', 'Omega\TransactionController@store')->name('transaction/store');
     });
 
     //    Commission Sharing
@@ -423,7 +392,7 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
     //    Loan Simulation
     Route::prefix('loan_simulation')->group(static function () {
         Route::get('/', 'Omega\LoanSimulationController@index')->name('loan_simulation');
-        Route::post('store', 'Omega\LoanSimulationController@store')->name('loan_simulation/store');
+        Route::get('print', 'Omega\LoanSimulationController@print')->name('loan_simulation/print');
     });
 
     //    Loan Application
@@ -1127,26 +1096,6 @@ Route::get('getMoneys', static function () {
     return Money::getMoneys(['idmoney' => Request::input('money')]);
 });
 
-//      Get Cash Description
-Route::get('getCash', static function () {
-    return Cash::getCash(Request::input('cash'));
-});
-
-//      Get Operation Description
-Route::get('getOperation', static function () {
-    return Operation::getOperation(Request::input('operation'));
-});
-
-//      Get Member Account
-Route::get('getMemAcc', static function () {
-    return MemBalance::getMemAcc(Request::input('member'), Request::input('account'));
-});
-
-//      Get Account Balance
-Route::get('getCollAccBalance', static function () {
-    return Collect_Bal::getMemBal(Request::input('member'));
-});
-
 //      Get Profile
 Route::get('getProfile', static function () {
     $owner = Request::input('owner');
@@ -1271,6 +1220,127 @@ Route::get('getPrivilege', static function () {
 //      Get Account Type
 Route::get('getAccType', static function () {
     return AccType::getAccType(Request::input('acctype'));
+});
+
+// Get Loan Simulation Preview
+Route::get('getLoanSimulationPreview', static function () {
+    $tot_amort_amt = 0;
+    $tot_int_amt = 0;
+    $tot_ann_amt = 0;
+    $tot_tax_amt = 0;
+    $tot_tot_amt = 0;
+
+    $amount = (int)trimOver(Request::input('amount'), ' ');
+    $inst_no = (int)trimOver(Request::input('numb_inst'), ' ');
+    $int_rate = (float)Request::input('int_rate') / (float)100;
+    $tax_rate = (float)Request::input('tax_rate') / (float)100;
+    $period = Request::input('period');
+
+    $simulations = [];
+
+    for ($i = 1; $i < $inst_no + 1; $i++) {
+        $amort_amt = 0;
+        $capital = $amount;
+        $date = new \DateTime(Request::input('date'));
+        
+        if (Request::input('amorti') === 'C') {
+            $amort_amt = $amount / $inst_no;
+
+            if ($i > 1) {
+                $new_capital = $amount - $amort_amt;
+                for ($j = 1; $j < $i - 1; $j++) {
+                    $new_capital -= $amort_amt;
+                }
+                $capital = $new_capital;
+            }
+        }
+
+        if (Request::input('amorti') === 'V') {
+            $amort_amt = ($capital * $int_rate) / (pow((1 + $int_rate), $inst_no) - 1);
+
+            if ($i > 1) {
+                $new_capital = $capital - $amort_amt;
+                $amo = ($new_capital * $int_rate) / (pow((1 + $int_rate), $inst_no - 1) - 1);
+
+                for ($j = 1; $j < $i - 1 ; $j++) {
+                    $new_capital -= $amo;
+                    $amo = ($new_capital * $int_rate) / (pow((1 + $int_rate), ($inst_no - ($j + 1))) - 1);
+                }
+
+                $capital = $new_capital;
+                $amort_amt = $amo;
+            }
+        }
+
+        if ($i === 1) {
+            $date = $date;
+        } else {
+            if ($period === 'D') {
+                $interval = $i - 1;
+                $date = $date->add(new \DateInterval("P{$interval}D"));
+            } else if ($period === 'W') {
+                $interval = 7 * ($i - 1);
+                $date = $date->add(new \DateInterval("P{$interval}D"));
+            } else if ($period === 'B') {
+                $interval = 15 * ($i - 1);
+                $date = $date->add(new \DateInterval("P{$interval}D"));
+            } else if ($period === 'M') {
+                $interval = ($i - 1);
+                $date = $date->add(new \DateInterval("P{$interval}M"));
+            } else if ($period === 'T') {
+                $interval = 3 * ($i - 1);
+                $date = $date->add(new \DateInterval("P{$interval}M"));
+            } else if ($period === 'S') {
+                $interval = 6 * ($i - 1);
+                $date = $date->add(new \DateInterval("P{$interval}M"));
+            } else {
+                $interval = 12 * ($i - 1);
+                $date = $date->add(new \DateInterval("P{$interval}M"));
+            }
+        }
+
+        $int_amt = $capital * $int_rate;
+        $ann_amt = $amort_amt + $int_amt;
+        $tax_amt = $int_amt * $tax_rate;
+        $tot_amt = $ann_amt + $tax_amt;
+
+        $date = $date->format('d/m/Y');
+
+        $tot_amort_amt += $amort_amt;
+        $tot_int_amt += $int_amt;
+        $tot_ann_amt += $ann_amt;
+        $tot_tax_amt += $tax_amt;
+        $tot_tot_amt += $tot_amt;
+
+        $simulations[] = [
+            'intallment' => $i,
+            'capital' => money($capital),
+            'amort_amt' => money($amort_amt),
+            'int_amt' => money($int_amt),
+            'ann_amt' => money($ann_amt),
+            'tax_amt' => money($tax_amt),
+            'tot_amt' => money($tot_amt),
+            'date' => $date
+        ];
+    }
+
+    $simulations[] = [
+        'intallment' => null,
+        'capital' => 0,
+        'amort_amt' => 0,
+        'int_amt' => 0,
+        'ann_amt' => 0,
+        'tax_amt' => 0,
+        'tot_amt' => 0,
+        'date' => null
+    ];
+
+    return ['data' => $simulations];
+});
+
+// Get Member Savings Balance
+Route::get('getMemberSavingsBalance', static function () {
+    return MemBalance::getMemCashOutBals(Request::input('member'));
 });
 
 //      Get Filter Collectors
@@ -1598,21 +1668,36 @@ Route::get('getOperation', static function () {
 
 //      Get Member Account
 Route::get('getMemAcc', static function () {
-    return MemBalance::getMemAcc(Request::input('member'), Request::input('account'));
+    return MemBalance::getMemAccBal(Request::input('member'), Request::input('account'));
 });
 
 //      Get Account Balance
-Route::get('getAccBalance', static function () {
-    if (\request()->ajax()) {
-        return Collect_Bal::getMemBal(Request::input('member'));
+Route::get('getMemBals', static function () {
+    $members = MemBalance::getMemBals(Request::input('member'));
+    if (Request::input('acctype') !== null) {
+        $members = MemBalance::getMemBals(Request::input('member'), Request::input('acctype'));
     }
 
-    $emp = Session::get('employee');
-
-    if ($emp->collector !== null) {
-        return Collect_Bal::getMemBal(Request::input('member'));
+    if (Request::ajax()) {
+        return ['data' => $members->toArray()];
     }
-    return MemBalance::getMemAccBal(Request::input('member'));
+    return $members;
+});
+
+//      Get Member Cash Out Account Balance
+Route::get('getMemCashOutBals', static function () {
+    $members = MemBalance::getMemCashOutBals(Request::input('member'));
+    if (Request::input('acctype') !== null) {
+        $members = MemBalance::getMemCashOutBals(Request::input('member'), Request::input('acctype'));
+    }
+
+    if (Request::ajax()) {
+        if (is_array($members)) {
+            return ['data' => $members];
+        }
+        return ['data' => $members->toArray()];
+    }
+    return $members;
 });
 
 //      Get Member Sum Debit
