@@ -130,13 +130,13 @@ if ($emp->lang == 'fr') {
 
                 <div class="row" id="tableInput">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <button type="button" id="print" class="btn btn-sm bg-blue pull-right btn-raised fa fa-print"></button>
-                        <button type="button" id="display" class="btn btn-sm bg-green pull-right btn-raised fa fa-eye"></button>
+                        {{-- <button type="submit" id="print" class="btn btn-sm bg-blue pull-right btn-raised fa fa-print"></button> --}}
+                        <button type="button" id="preview" class="btn btn-sm bg-green pull-right btn-raised fa fa-eye"></button>
                     </div>
 
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="table-responsive">
-                            <table id="billet-data-table" class="table table-striped table-hover table-condensed table-bordered no-padding">
+                            <table id="loan-data-table" class="table table-striped table-hover table-condensed table-bordered no-padding">
                                 <thead>
                                     <tr class="text-center text-bold">
                                         <th>@lang('label.install')</th>
@@ -163,58 +163,61 @@ if ($emp->lang == 'fr') {
 @section('script')
     <script>
         $(document).ready(function () {
-            installment_date($('#grace').val());
+            $('#date').val(installment_date($('#grace').val()));
         });
 
         $('#grace').change(function () {
-            installment_date($(this).val());
+            $('#date').val(installment_date($(this).val()));
         });
-
-        function installment_date(grace) {
-            var date = new Date();
-            
-            if (grace === 'D') {
-                date = date.addDays(1);
-            } else if (grace === 'W') {
-                date = date.addDays(7);
-            } else if (grace === 'B') {
-                date = date.addDays(15);
-            } else if (grace === 'M') {
-                date = date.addMonths(1);
-            } else if (grace === 'T') {
-                date = date.addMonths(3);
-            } else if (grace === 'S') {
-                date = date.addMonths(6);
-            } else {
-                date = date.addYears(i);
-            }
-
-            $('#date').val(Date.parse(date).toString('yyyy-MM-dd'));
-        }
 
         $('#amount').on('input', function () {
             $(this).val(money($(this).val()));
         });
 
-        $(document).on('click', '#display', function () {
-            {{-- $.ajax({
-                url: "{{ url('loan_simulation/view') }}",
-                method: 'GET',
-                data: $("#loanSimulation").serialize(),
-                datatype: 'json',
-                success: function (member) {
-                    console.log(simulation)
-                }
-            }); --}}
-
-            {{-- $('#billet-data-table').DataTable({
+        $(document).on('click', '#preview', function () {
+            $('#loan-data-table').DataTable({
                 destroy: true,
                 paging: false,
                 info: false,
+                searching: false,
                 responsive: true,
                 ordering: false,
-                searching: false,
                 FixedHeader: true,
+                dom: 'lBfrtip',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '',
+                        className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
+                        titleAttr: '@lang('label.copy')',
+                        footer: true
+                    },
+                    {
+                        extend: 'excel',
+                        text: '',
+                        className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
+                        titleAttr: '@lang('label.excel')',
+                        footer: true
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '',
+                        className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
+                        titleAttr: '@lang('label.pdf')',
+                        footer: true
+                    },
+                    {
+                        extend: 'print',
+                        text: '',
+                        className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
+                        titleAttr: '@lang('label.print')',
+                        footer: true
+                    }
+                ],
+                dom:
+                    "<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 processing: true,
                 serverSide: false,
                 language: {
@@ -222,138 +225,45 @@ if ($emp->lang == 'fr') {
                 },
                 serverMethod: 'GET',
                 ajax: {
-                    url: "{{ url('loan_simulation_view') }}",
-                    data: $("#loanSimulation").serialize(),
+                    url: "{{ url('getLoanSimulationPreview') }}",
+                    data: {
+                        amount: $('#amount').val(),
+                        numb_inst: $('#numb_inst').val(),
+                        int_rate: $('#int_rate').val(),
+                        tax_rate: $('#tax_rate').val(),
+                        period: $('#period').val(),
+                        inst1: $('#inst1').val(),
+                        date: $('#date').val(),
+                        amorti: $('#amorti').val()
+                    },
                     datatype: 'json'
                 },
                 columns: [
-                    {data: null, class: 'text-center',
-                        render: function (data, type, row) {
-                            return '<td><input type="hidden" name="accounts[]" value="' + data.account + '">' + data.accnumb + '</td>';
-                        }
-                    },
-                    {data: null, 
-                        render: function (data, type, row) {
-                            return '<td><input type="hidden" name="operations[]" value="' + data.operation + '">' +
-                                '@if ($emp->lang == "fr")' + data.acclabelfr + ' @else ' + data.acclabeleng + '@endif</td>';
-                        }
-                    },
-                    {data: null, 
-                        render: function (data, type, row) {
-                            return '<td><input type="text" name="amounts[]" class="amount"></td>';
-                        }
-                    }
+                    {data: 'intallment', class: 'text-center'},
+                    {data: 'capital', class: 'text-right text-bold'},
+                    {data: 'amort_amt', class: 'text-right text-bold'},
+                    {data: 'int_amt', class: 'text-right text-bold'},
+                    {data: 'ann_amt', class: 'text-right text-bold'},
+                    {data: 'tax_amt', class: 'text-right text-bold'},
+                    {data: 'tot_amt', class: 'text-right text-bold'},
+                    {data: 'date', class: 'text-center'}
                 ],
-            }); --}}
-            
-            let amt = parseInt(trimOver($('#amount').val(), null));
-            let period = $('#period').val();
-            let amort = $('#amorti').val();
-            let instno = parseInt($('#numb_inst').val());
-            let tax = parseFloat(parseFloat($('#tax_rate').val()) / 100);
-            if (isNaN(tax)) {
-                tax = 0;
-            }
-            let intra = parseFloat(parseFloat($('#int_rate').val()) / 100);
-            let intdate = $('#date').val();
-            let line = '';
-            
-            let totAmorAmt = 0;
-            let totIntAmt = 0;
-            let totAnnAmt = 0;
-            let totTaxAmt = 0;
-            let totTotAmt = 0;
+            });
+        });
 
-            for (let i = 1; i < instno + 1; i++) {
-                let amortAmt;
-                let capital = amt;
-                let date = new Date(intdate);
+        $(document).on('click', '#print', function () {
+            var forms = document.getElementsByClassName("needs-validation");
 
-                if (amort === 'C') {
-                    amortAmt = amt / instno;
-                    if (i > 1) {
-                        let cap = amt - amortAmt;
-                        for (let j = 1; j < i - 1; j++) {
-                            cap -= amortAmt;
-                        }
-                        capital = cap;
-                    }
-                }
-
-                if (amort === 'V') {
-                    amortAmt = (capital * intra) / (Math.pow((1 + intra), instno) - 1);
-                    if (i > 1) {
-                        let cap = capital - amortAmt;
-                        let amo = (cap * intra) / (Math.pow((1 + intra), instno - 1) - 1);
-                        for (let j = 1; j < i - 1; j++) {
-                            cap -= amo;
-                            amo = (cap * intra) / (Math.pow((1 + intra), (instno - (j + 1))) - 1);
-                        }
-                        capital = cap;
-                        amortAmt = amo;
-                    }
-                }
-
-                if (i === 1) {
-                    date = date;
-                } else {
-                    if (period === 'D') {
-                        date = date.addDays(i - 1);
-                    } else if (period === 'W') {
-                        date = date.addDays(7 * (i - 1));
-                    } else if (period === 'B') {
-                        date = date.addDays(15 * (i - 1));
-                    } else if (period === 'M') {
-                        date = date.addMonths(i - 1);
-                    } else if (period === 'T') {
-                        date = date.addMonths(3 * (i - 1));
-                    } else if (period === 'S') {
-                        date = date.addMonths(6 * (i - 1));
+            var validator = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener("submit", function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
                     } else {
-                        date = date.addYears(i - 1);
+                        $('#loanSimulation').submit();
                     }
-                }
-
-                let intAmt = capital * intra;
-                let annAmt = amortAmt + intAmt;
-                let taxAmt = intAmt * tax;
-                let totAmt = annAmt + taxAmt;
-
-                date = Date.parse(date).toString('dd/MM/yyyy');
-
-                line += '<tr>' +
-                    '<td class="text-center">' + i + '</td>' +
-                    '<td class="text-right text-bold">' + money(Math.round(capital)) + '</td>' +
-                    '<td class="text-right text-bold">' + money(Math.round(amortAmt)) + '</td>' +
-                    '<td class="text-right text-bold">' + money(Math.round(intAmt)) + '</td>' +
-                    '<td class="text-right text-bold">' + money(Math.round(annAmt)) + '</td>' +
-                    '<td class="text-right text-bold">' + money(Math.round(taxAmt)) + '</td>' +
-                    '<td class="text-right text-bold">' + money(Math.round(totAmt)) + '</td>' +
-                    '<td class="text-center">' + date + '</td>' +
-                    '</tr>';
-
-                totAmorAmt += amortAmt;
-                totIntAmt += intAmt;
-                totAnnAmt += annAmt;
-                totTaxAmt += taxAmt;
-                totTotAmt += totAmt;
-            }
-            $('#amoAmt').val(money(totAmorAmt));
-            $('#intAmt').val(money(totIntAmt));
-            $('#annAmt').val(money(totAnnAmt));
-            $('#taxAmt').val(money(totTaxAmt));
-            $('#totAmt').val(money(totTotAmt));
-
-            line += '<tr>' +
-                '<td class="text-center">' + ++instno + '</td>' +
-                '<td class="text-right text-bold">0</td>' +
-                '<td class="text-right text-bold">0</td>' +
-                '<td class="text-right text-bold">0</td>' +
-                '<td class="text-right text-bold">0</td>' +
-                '<td class="text-right text-bold">0</td>' +
-                '<td colspan="2"></td>' +
-                '</tr>';
-            $('#amorDisplay').html(line);
+                }, false);
+            });
         });
     </script>
 @stop

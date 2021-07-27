@@ -626,6 +626,53 @@ if ($emp->lang === 'fr') {
                     searching: false
                 });
 
+                $('#loan-data-table').DataTable({
+                    paging: false,
+                    info: false,
+                    responsive: true,
+                    searching: false,
+                    ordering: false,
+                    FixedHeader: true,
+                    language: {
+                        url: "{{ asset("plugins/datatables/lang/$emp->lang.json") }}",
+                    },
+                    dom: 'lBfrtip',
+                    buttons: [
+                            {
+                                extend: 'copy',
+                                text: '',
+                                className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
+                                titleAttr: '@lang('label.copy')',
+                                footer: true
+                            },
+                            {
+                                extend: 'excel',
+                                text: '',
+                                className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
+                                titleAttr: '@lang('label.excel')',
+                                footer: true
+                            },
+                            {
+                                extend: 'pdf',
+                                text: '',
+                                className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
+                                titleAttr: '@lang('label.pdf')',
+                                footer: true
+                            },
+                            {
+                                extend: 'print',
+                                text: '',
+                                className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
+                                titleAttr: '@lang('label.print')',
+                                footer: true
+                            }
+                        ],
+                    dom:
+                        "<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                });
+
                 $('#logOutBtn').click(function () {
                     mySwal("@lang('sidebar.user')", "@lang('confirm.logout_text')", "@lang('confirm.no')", "@lang('confirm.yes')", '#logOutForm');
                 });

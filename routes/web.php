@@ -84,41 +84,17 @@ Route::get('change_logout', 'Omega\LoginController@changeLogout')->name('change_
  ***************************************************************/
 
 Route::middleware([VerifySessionPrivilege::class])->group(function () {
+
     /***************************
-     ********** HOME **********
+     ******** DASHBOARD ********
     ***************************/
 
     Route::get('omega', 'Omega\OmegaController@index')->name('omega');
 
-    /***************************
-     ********** FILES **********
-    ***************************/
-
-    //     Registered File
-    Route::get('registered_file', static function () {
-        $registers = Register::getRegistersFile();
-        return view('omega.pages.registered_file', [
-            'registers' => $registers
-        ]);
-    });
-
-    //     Member File
-    Route::get('member_file', static function () {
-        $members = Member::getMembersFile();
-        return view('omega.pages.member_file', [
-            'members' => $members
-        ]);
-    });
-
-    //     Account File
-    Route::get('account_file', static function () {
-        $accounts = Account::getAccountsFile();
-        return view('omega.pages.account_file', [
-            'accounts' => $accounts
-        ]);
-    });
 
 
+
+    
     /****************************
      ******** OPERATIONS ********
     ****************************/
@@ -416,7 +392,6 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
     //    Loan Simulation
     Route::prefix('loan_simulation')->group(static function () {
         Route::get('/', 'Omega\LoanSimulationController@index')->name('loan_simulation');
-        // Route::get('view', 'Omega\LoanSimulationController@view');
         Route::get('print', 'Omega\LoanSimulationController@print')->name('loan_simulation/print');
     });
 
@@ -1247,16 +1222,16 @@ Route::get('getAccType', static function () {
     return AccType::getAccType(Request::input('acctype'));
 });
 
-// Get Loan Simulation
-Route::get('loan_simulation_view', static function () {
+// Get Loan Simulation Preview
+Route::get('getLoanSimulationPreview', static function () {
     $tot_amort_amt = 0;
     $tot_int_amt = 0;
     $tot_ann_amt = 0;
     $tot_tax_amt = 0;
     $tot_tot_amt = 0;
 
-    $amount = trimOver(Request::input('amount'), ' ');
-    $inst_no = trimOver(Request::input('amount'), ' ');
+    $amount = (int)trimOver(Request::input('amount'), ' ');
+    $inst_no = (int)trimOver(Request::input('numb_inst'), ' ');
     $int_rate = (float)Request::input('int_rate') / (float)100;
     $tax_rate = (float)Request::input('tax_rate') / (float)100;
     $period = Request::input('period');
@@ -1266,7 +1241,7 @@ Route::get('loan_simulation_view', static function () {
     for ($i = 1; $i < $inst_no + 1; $i++) {
         $amort_amt = 0;
         $capital = $amount;
-        $date = new \DateTime(Request::input('inst1'));
+        $date = new \DateTime(Request::input('date'));
         
         if (Request::input('amorti') === 'C') {
             $amort_amt = $amount / $inst_no;
@@ -1306,7 +1281,6 @@ Route::get('loan_simulation_view', static function () {
             } else if ($period === 'W') {
                 $interval = 7 * ($i - 1);
                 $date = $date->add(new \DateInterval("P{$interval}D"));
-                $date = date.addDays(7 * ($i - 1));
             } else if ($period === 'B') {
                 $interval = 15 * ($i - 1);
                 $date = $date->add(new \DateInterval("P{$interval}D"));
@@ -1338,23 +1312,35 @@ Route::get('loan_simulation_view', static function () {
         $tot_tax_amt += $tax_amt;
         $tot_tot_amt += $tot_amt;
 
-        $simulations['intallment'] = $i;
-        $simulations['capital'] = $capital;
-        $simulations['amort_amt'] = $amort_amt;
-        $simulations['int_amt'] = $int_amt;
-        $simulations['ann_amt'] = $ann_amt;
-        $simulations['tax_amt'] = $tax_amt;
-        $simulations['tot_amt'] = $tot_amt;
-        $simulations['date'] = $date;
-
-        $simulations['capital'] = 0;
-        $simulations['amort_amt'] = 0;
-        $simulations['int_amt'] = 0;
-        $simulations['ann_amt'] = 0;
-        $simulations['tax_amt'] = 0;
+        $simulations[] = [
+            'intallment' => $i,
+            'capital' => money($capital),
+            'amort_amt' => money($amort_amt),
+            'int_amt' => money($int_amt),
+            'ann_amt' => money($ann_amt),
+            'tax_amt' => money($tax_amt),
+            'tot_amt' => money($tot_amt),
+            'date' => $date
+        ];
     }
 
+    $simulations[] = [
+        'intallment' => null,
+        'capital' => 0,
+        'amort_amt' => 0,
+        'int_amt' => 0,
+        'ann_amt' => 0,
+        'tax_amt' => 0,
+        'tot_amt' => 0,
+        'date' => null
+    ];
+
     return ['data' => $simulations];
+});
+
+// Get Member Savings Balance
+Route::get('getMemberSavingsBalance', static function () {
+    return MemBalance::getMemCashOutBals(Request::input('member'));
 });
 
 //      Get Filter Collectors
