@@ -34,7 +34,7 @@ class MemSettingController extends Controller
 
     public function store()
     {
-        dd(Request::all());
+        // dd(Request::all());
         DB::beginTransaction();
 
         try {
@@ -61,8 +61,8 @@ class MemSettingController extends Controller
 
                             $memAcc->idplan = $memAcc_Plan->idaccplan;
                             $memAcc->accnumb = $memAcc_Numb;
-                            $memAcc->labelfr = Request::input('labelfr');
-                            $memAcc->labeleng = Request::input('labeleng');
+                            $memAcc->labelfr = $memAcc_Plan->labelfr;
+                            $memAcc->labeleng = $memAcc_Plan->labeleng;
                             $memAcc->class = $memAcc_Plan->class;
                             $memAcc->acctype = $memAcc_Plan->acc_type;
                             $memAcc->network = $emp->network;
@@ -73,11 +73,9 @@ class MemSettingController extends Controller
                             $memAcc->save();
                         }
 
-                        $opercode = Operation::all()->count() - 1;
-
-                        $operation->opercode = pad($opercode, 3);
-                        $operation->labelfr = "VERSEMENT ESPECES " . Request::input('labelfr');
-                        $operation->labeleng = "CASH IN " . Request::input('labeleng');
+                        $operation->opercode = Operation::all()->count() + 1;
+                        $operation->labelfr = $memAcc_Plan->labelfr;
+                        $operation->labeleng = $memAcc_Plan->labeleng;
 
                         $operation->save();
 
@@ -96,6 +94,7 @@ class MemSettingController extends Controller
                 }
             } else {
                 $accounts = Request::input('accounts');
+                $operations = Request::input('operations');
                 $mem_settings = MemSetting::getMemSettings();
 
                 if (isset($accplans) AND count($accplans) > 0) {
@@ -104,13 +103,12 @@ class MemSettingController extends Controller
                             $amount = (int)trimOver($amounts[$index], ' ');
                             $acc_plan = AccPlan::getAccPlan($accplan);
 
-                            if ($mem_settings->offsetExists($index)) {
+                            if ($amount > 0) {
                                 $account = Account::getAccount($accounts[$index]);
                                 $accnumb = pad($acc_plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
 
-                                if ($amount > 0 AND $account->acccnumb !== $accnumb) {
+                                if ($account->acccnumb !== $accnumb) {
                                     $account = new Account();
-                                    $accnumb = pad($acc_plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
 
                                     $account->idplan = $acc_plan->idaccplan;
                                     $account->accnumb = $accnumb;
@@ -126,42 +124,35 @@ class MemSettingController extends Controller
                                     $account->save();
                                 }
 
-                                if ($amount > 0) {
+                                $operation = Operation::getOperation($operations[$index]);
+                                $opercode = Operation::all()->count() + 1;
+
+                                if ($operation->opercode !== $opercode) {
+                                    $operation = new Operation();
+
+                                    $operation->opercode = $opercode;
+                                    $operation->labelfr = $acc_plan->labelfr;
+                                    $operation->labeleng = $acc_plan->labeleng;
+
+                                    $operation->save();
+                                }
+
+                                if ($mem_settings->offsetExists($index)) {
                                     $mem_settings[$index]->account = $account->idaccount;
                                     $mem_settings[$index]->amount = $amount;
+                                    $mem_settings[$index]->operation = $operation->idoper;
                                     $mem_settings[$index]->network = $emp->network;
                                     $mem_settings[$index]->zone = $emp->zone;
                                     $mem_settings[$index]->institution = $emp->institution;
                                     $mem_settings[$index]->branch = $emp->branch;
 
                                     $mem_settings[$index]->update((array)$mem_settings[$index]);
-                                }
-                            } else {
-                                $account = Account::getAccount($accounts[$index]);
-                                $accnumb = pad($acc_plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
+                                } else {
+                                    $mem_setting = new MemSetting();
 
-                                if ($amount > 0 AND $account->acccnumb !== $accnumb) {
-                                    $account = new Account();
-                                    $accnumb = pad($acc_plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
-
-                                    $account->idplan = $acc_plan->idaccplan;
-                                    $account->accnumb = $accnumb;
-                                    $account->labelfr = $acc_plan->labelfr;
-                                    $account->labeleng = $acc_plan->labeleng;
-                                    $account->class = $acc_plan->class;
-                                    $account->acctype = $acc_plan->acc_type;
-                                    $account->network = $emp->network;
-                                    $account->zone = $emp->zone;
-                                    $account->institution = $emp->institution;
-                                    $account->branch = $emp->branch;
-
-                                    $account->save();
-                                }
-
-                                $mem_setting = new MemSetting();
-                                if ($amount > 0) {
                                     $mem_setting->account = $account->idaccount;
                                     $mem_setting->amount = $amount;
+                                    $mem_setting->operation = $operation->idoper;
                                     $mem_setting->network = $emp->network;
                                     $mem_setting->zone = $emp->zone;
                                     $mem_setting->institution = $emp->institution;
@@ -176,52 +167,14 @@ class MemSettingController extends Controller
                     if ($mem_settings->count() === count($accplans)) {
                         foreach ($mem_settings as $index => $mem_setting) {
                             $amount = (int)trimOver($amounts[$index], ' ');
-                            $acc_plan = AccPlan::getAccPlan($accplan);
-                            $account = Account::getAccount($accounts[$index]);
-                            $accnumb = pad($acc_plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
-
-                            if ($amount > 0 AND $account->acccnumb !== $accnumb) {
-                                $account = new Account();
-                                $accnumb = pad($acc_plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
-
-                                $account->idplan = $acc_plan->idaccplan;
-                                $account->accnumb = $accnumb;
-                                $account->labelfr = $acc_plan->labelfr;
-                                $account->labeleng = $acc_plan->labeleng;
-                                $account->class = $acc_plan->class;
-                                $account->acctype = $acc_plan->acc_type;
-                                $account->network = $emp->network;
-                                $account->zone = $emp->zone;
-                                $account->institution = $emp->institution;
-                                $account->branch = $emp->branch;
-
-                                $account->save();
-                            }
+                            $acc_plan = AccPlan::getAccPlan($accplans[$index]);
 
                             if ($amount > 0) {
-                                $mem_setting->account = $account->idaccount;
-                                $mem_setting->amount = $amount;
-                                $mem_setting->network = $emp->network;
-                                $mem_setting->zone = $emp->zone;
-                                $mem_setting->institution = $emp->institution;
-                                $mem_setting->branch = $emp->branch;
-
-                                $mem_setting->update((array)$mem_setting);
-                            }
-                        }
-                    }
-
-                    if ($mem_settings->count() > count($accplans)) {
-                        foreach ($mem_settings as $index => $mem_setting) {
-                            if (array_key_exists($index, $accplans)) {
-                                $amount = (int)trimOver($amounts[$index], ' ');
-                                $acc_plan = AccPlan::getAccPlan($accplan);
                                 $account = Account::getAccount($accounts[$index]);
                                 $accnumb = pad($acc_plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
 
-                                if ($amount > 0 AND $account->acccnumb !== $accnumb) {
+                                if ($account->acccnumb !== $accnumb) {
                                     $account = new Account();
-                                    $accnumb = pad($acc_plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
 
                                     $account->idplan = $acc_plan->idaccplan;
                                     $account->accnumb = $accnumb;
@@ -237,9 +190,75 @@ class MemSettingController extends Controller
                                     $account->save();
                                 }
 
+                                $operation = Operation::getOperation($operations[$index]);
+                                $opercode = Operation::all()->count() + 1;
+
+                                if ($operation->opercode !== $opercode) {
+                                    $operation = new Operation();
+
+                                    $operation->opercode = $opercode;
+                                    $operation->labelfr = $acc_plan->labelfr;
+                                    $operation->labeleng = $acc_plan->labeleng;
+
+                                    $operation->save();
+                                }
+
+                                $mem_setting->account = $account->idaccount;
+                                $mem_setting->amount = $amount;
+                                $mem_setting->operation = $operation->idoper;
+                                $mem_setting->network = $emp->network;
+                                $mem_setting->zone = $emp->zone;
+                                $mem_setting->institution = $emp->institution;
+                                $mem_setting->branch = $emp->branch;
+
+                                $mem_setting->update((array)$mem_setting);
+                            }
+                        }
+                    }
+
+                    if ($mem_settings->count() > count($accplans)) {
+                        foreach ($mem_settings as $index => $mem_setting) {
+                            if (array_key_exists($index, $accplans)) {
+                                $amount = (int)trimOver($amounts[$index], ' ');
+                                $acc_plan = AccPlan::getAccPlan($accplan[$index]);
+
                                 if ($amount > 0) {
+                                    $account = Account::getAccount($accounts[$index]);
+                                    $accnumb = pad($acc_plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
+
+                                    if ($account->acccnumb !== $accnumb) {
+                                        $account = new Account();
+
+                                        $account->idplan = $acc_plan->idaccplan;
+                                        $account->accnumb = $accnumb;
+                                        $account->labelfr = $acc_plan->labelfr;
+                                        $account->labeleng = $acc_plan->labeleng;
+                                        $account->class = $acc_plan->class;
+                                        $account->acctype = $acc_plan->acc_type;
+                                        $account->network = $emp->network;
+                                        $account->zone = $emp->zone;
+                                        $account->institution = $emp->institution;
+                                        $account->branch = $emp->branch;
+
+                                        $account->save();
+                                    }
+
+                                    $operation = Operation::getOperation($operations[$index]);
+                                    $opercode = Operation::all()->count() + 1;
+
+                                    if ($operation->opercode !== $opercode) {
+                                        $operation = new Operation();
+
+                                        $operation->opercode = $opercode;
+                                        $operation->labelfr = $acc_plan->labelfr;
+                                        $operation->labeleng = $acc_plan->labeleng;
+
+                                        $operation->save();
+                                    }
+
                                     $mem_setting->account = $account->idaccount;
                                     $mem_setting->amount = $amount;
+                                    $mem_setting->operation = $operation->idoper;
                                     $mem_setting->network = $emp->network;
                                     $mem_setting->zone = $emp->zone;
                                     $mem_setting->institution = $emp->institution;

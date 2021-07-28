@@ -11,7 +11,6 @@ use App\Models\Cash;
 use App\Models\Member;
 use App\Models\MemSetting;
 use App\Models\Money;
-use App\Models\Operation;
 use App\Models\Priv_Menu;
 use App\Models\RegBenef;
 use App\Models\Register;
@@ -25,54 +24,49 @@ class MembershipController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
+        if (dateOpen()) {
+            if (cashOpen()) {
+                $registers = Register::getRegisters();
+                $cash = Cash::getEmpCashOpen();
+                $moneys = Money::getMoneys();
+                $mem_sets = MemSetting::getMemSettings();
+                $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            if (dateOpen()) {
-                if (cashOpen()) {
-                    $registers = Register::getRegisters();
-                    $cash = Cash::getEmpCashOpen();
-                    $moneys = Money::getMoneys();
-                    $mem_sets = MemSetting::getMemSettings();
-                    $accounts = Account::getAccounts();
-                    $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-    
-                    return view('omega.pages.membership', compact('menu', 'registers', 'cash', 'moneys', 'mem_sets', 'accounts'));
-                }
-                return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
+                return view('omega.pages.membership', compact('menu', 'registers', 'cash', 'moneys', 'mem_sets'));
             }
-            return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+            return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
 
     public function store()
     {
-
         try {
-            // dd(Request::all());
             DB::beginTransaction();
+            
             $emp = Session::get('employee');
 
+            if (!dateOpen()) {
+                return Redirect::back()->with('danger', trans('alertDanger.opdate'));
+                if (!cashOpen()) {
+                    return Redirect::back()->with('danger', trans('alertDanger.opencash'));   
+                }
+            }
+            
             $idreg = Request::input('register');
             $memnumb = 1;
-            
+
             $accounts = Request::input('accounts');
             $operations = Request::input('operations');
             $amounts = Request::input('amounts');
-            
+
             $profile = null;
             $signature = null;
             $signature2 = null;
             $signature3 = null;
 
-            $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
             $writnumb = getWritNumb();
             $accdate = AccDate::getOpenAccDate();
-            $opera = Operation::getByCode(52);
             $register = Register::getRegister($idreg);
             $member = Member::getLast();
             if ($member !== null) {
@@ -81,30 +75,18 @@ class MembershipController extends Controller
 
             $reference = formWriting(now(), $emp->network, $emp->zone, $emp->institution, $emp->branch, $memnumb);
 
-            $cash->mon1 += trimOver(Request::input('B1'), ' ');
-            $cash->mon2 += trimOver(Request::input('B2'), ' ');
-            $cash->mon3 += trimOver(Request::input('B3'), ' ');
-            $cash->mon4 += trimOver(Request::input('B4'), ' ');
-            $cash->mon5 += trimOver(Request::input('B5'), ' ');
-            $cash->mon6 += trimOver(Request::input('P1'), ' ');
-            $cash->mon7 += trimOver(Request::input('P2'), ' ');
-            $cash->mon8 += trimOver(Request::input('P3'), ' ');
-            $cash->mon9 += trimOver(Request::input('P4'), ' ');
-            $cash->mon10 += trimOver(Request::input('P5'), ' ');
-            $cash->mon11 += trimOver(Request::input('P6'), ' ');
-            $cash->mon12 += trimOver(Request::input('P7'), ' ');
-            $cash->update((array)$cash);
-
             $member = new Member();
 
             if ($register->pic !== null) {
                 $profile = $reference . '.' . explode('.', $register->pic)[1];
-//                $rename = rename(storage_path('app/public/registereds/profiles/' . $register->pic), storage_path('app/public/members/profiles/' . $profile));
-//                move_uploaded_file($rename, storage_path('app/public/members/profiles'));
+                $file = storage_path('app/public/registereds/profiles/' . $register->pic);
+                if (file_exists($file)) {
+                    $rename = rename($file, storage_path('app/public/members/profiles/' . $profile));
+                    move_uploaded_file($rename, storage_path('app/public/members/profiles'));
+                }
             }
 
-            if (($register->gender === 'M' || $register->gender === 'F' || $register->gender === 'G') &&
-                ($register->grptype === 'E' || $register->grptype === null)) {
+            if ($register->grptype === 'E' || $register->grptype === null) {
                 if ($register->signature !== null) {
                     $signature = $reference . '.' . explode('.', $register->signature)[1];
                     $file = storage_path('app/public/registereds/signatures/' . $register->signature);
@@ -115,7 +97,7 @@ class MembershipController extends Controller
                 }
             }
 
-            if ($register->gender === 'G' && $register->grptype === 'A') {
+            if ($register->grptype === 'A') {
                 if ($register->signature !== null) {
                     $signature = $reference . '-' . explode('-', $register->signature)[1];
                     $file = storage_path('app/public/registereds/signatures/' . $register->signature);
@@ -207,10 +189,25 @@ class MembershipController extends Controller
                 $regBenef->delete();
             }
 
+            $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
+            $cash->mon1 += trimOver(Request::input('B1'), ' ');
+            $cash->mon2 += trimOver(Request::input('B2'), ' ');
+            $cash->mon3 += trimOver(Request::input('B3'), ' ');
+            $cash->mon4 += trimOver(Request::input('B4'), ' ');
+            $cash->mon5 += trimOver(Request::input('B5'), ' ');
+            $cash->mon6 += trimOver(Request::input('P1'), ' ');
+            $cash->mon7 += trimOver(Request::input('P2'), ' ');
+            $cash->mon8 += trimOver(Request::input('P3'), ' ');
+            $cash->mon9 += trimOver(Request::input('P4'), ' ');
+            $cash->mon10 += trimOver(Request::input('P5'), ' ');
+            $cash->mon11 += trimOver(Request::input('P6'), ' ');
+            $cash->mon12 += trimOver(Request::input('P7'), ' ');
+            $cash->update((array)$cash);
+
             $writing = new Writing();
             $writing->writnumb = $writnumb;
             $writing->account = $cash->cashacc;
-            $writing->operation = $opera->idoper;
+            $writing->operation = Request::input('menu_level_operation');
             $writing->debitamt = trimOver(Request::input('totrans'), ' ');
             $writing->accdate = $accdate->accdate;
             $writing->employee = $emp->iduser;
@@ -222,14 +219,20 @@ class MembershipController extends Controller
             $writing->represent = Request::input('represent');
             $writing->save();
 
+            $cashBal = Account::getAccount($cash->cashacc);
+            $cashBal->available += trimOver(Request::input('totrans'), ' ');
+            $cashBal->update((array)$cashBal);
+
             foreach ($accounts as $key => $account) {
-                if (!empty($amounts[$key]) && $amounts[$key] !== null && $amounts[$key] !== '0') {
+                $amount = (int)trimOver($amounts[$key], ' ');
+
+                if ($amount !== 0) {
                     $writing = new Writing();
                     $writing->writnumb = $writnumb;
                     $writing->account = $account;
-                    $writing->aux = $member->idmember;
+                    $writing->mem_aux = $member->idmember;
                     $writing->operation = $operations[$key];
-                    $writing->creditamt = trimOver($amounts[$key], ' ');
+                    $writing->creditamt = $amount;
                     $writing->accdate = $accdate->accdate;
                     $writing->employee = $emp->iduser;
                     $writing->cash = $cash->idcash;
@@ -240,11 +243,12 @@ class MembershipController extends Controller
                     $writing->represent = Request::input('represent');
                     $writing->save();
 
-                $balance = new MemBalance();
+
+                    $balance = new MemBalance();
                     $balance->member = $member->idmember;
                     $balance->account = $account;
-                    // $balance->operation = $operations[$key];
-                    $balance->available = trimOver($amounts[$key], ' ');
+                    $balance->operation = $operations[$key];
+                    $balance->available += $amount;
                     $balance->save();
                 }
             }

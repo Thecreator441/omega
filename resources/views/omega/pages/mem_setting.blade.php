@@ -86,7 +86,7 @@ if ($emp->lang == 'fr') {
                                     <tr>
                                         <td class="text-center" style="width: 5%;"><input type="hidden" name="memsets[]" value="{{ $memset->idmemset }}"><input type="checkbox" class="gl_checks"></td>
                                         <td class="text-center"><input type="hidden" name="accounts[]" value="{{ $memset->account }}"> {{ $memset->accnumb }}</td>
-                                        <td>@if($emp->lang === 'fr') {{$memset->acclabelfr}} @else {{$memset->acclabeleng}} @endif</td>
+                                        <td><input type="hidden" name="operations[]" value="{{ $memset->operation }}">@if($emp->lang === 'fr') {{$memset->acclabelfr}} @else {{$memset->acclabeleng}} @endif</td>
                                         <td class="text-right text-bold"><input type="hidden" name="amounts[]" value="{{ (int)$memset->amount }}">{{ money((int)$memset->amount) }}</td>
                                     </tr>
                                 @endif
@@ -159,7 +159,7 @@ if ($emp->lang == 'fr') {
                                     <tr>
                                         <td class="text-center" style="width: 5%;"><input type="hidden" name="memsets[]" value="{{ $memset->idmemset }}"><input type="checkbox" class="gl_checks"></td>
                                         <td class="text-center"><input type="hidden" name="accounts[]" value="{{ $memset->account }}"> {{ $memset->accnumb }}</td>
-                                        <td>@if($emp->lang === 'fr') {{$memset->acclabelfr}} @else {{$memset->acclabeleng}} @endif</td>
+                                        <td><input type="hidden" name="operations[]" value="{{ $memset->operation }}">@if($emp->lang === 'fr') {{$memset->acclabelfr}} @else {{$memset->acclabeleng}} @endif</td>
                                         <td class="text-right text-bold"><input type="hidden" name="amounts[]" value="{{ (int)$memset->amount }}">{{ money((int)$memset->amount) }}</td>
                                     </tr>
                                 @endif
@@ -222,7 +222,7 @@ if ($emp->lang == 'fr') {
             var row = '<tr>' +
                     '<td class="text-center" style="width: 5%"><input type="checkbox" class="chart_check"></td>' +
                     '<td class="text-center" style="text-align: center"><input type="hidden" name="accplans[]" value="' + chart_acc.val() + '">' + chart_acc_code + '</td>' +
-                    '<td><input type="hidden" name="accounts[]" value="">' + chart_acc_name.val() + '</td>' +
+                    '<td><input type="hidden" name="accounts[]" value=""><input type="hidden" name="operations[]" value="">' + chart_acc_name.val() + '</td>' +
                     '<td class="text-right text-bold amount"><input type="hidden" name="amounts[]" value="' + trimOver(chart_amt.val(), null) + '">' + money(chart_amt.val()) + '</td>' +
                 '</tr>';
 
@@ -273,7 +273,7 @@ if ($emp->lang == 'fr') {
             var row = '<tr>' +
                     '<td class="text-center" style="width: 5%"><input type="checkbox" class="gl_check"></td>' +
                     '<td class="text-center"><input type="hidden" name="accplans[]" value="' + gl_acc.val() + '">' + gl_acc_code + '</td>' +
-                    '<td><input type="hidden" name="accounts[]" value="">' + gl_acc_name.val() + '</td>' +
+                    '<td><input type="hidden" name="accounts[]" value=""><input type="hidden" name="operations[]" value="">' + gl_acc_name.val() + '</td>' +
                     '<td class="text-right text-bold amount"><input type="hidden" name="amounts[]" value="' + trimOver(gl_amt.val(), null) + '">' + money(gl_amt.val()) + '</td>' +
                 '</tr>';
 

@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Omega;
 
 use App\Http\Controllers\Controller;
-use App\Models\AccDate;
 use App\Models\Cash;
-use App\Models\Cash_Writing;
+use App\Models\Cash_ReplenClose_Init;
 use App\Models\Money;
-use App\Models\Operation;
+use App\Models\Priv_Menu;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -17,13 +16,14 @@ class ReplenishController extends Controller
 {
     public function index()
     {
-        if (dateOpen()) {
+        if (dateOpen()) { 
             if (cashOpen()) {
                 $cash = Cash::getEmpCashOpen();
-                $cashes = Cash::getOpenCash();
+                $cashes = Cash::getOpenCashes();
                 $moneys = Money::getMoneys();
+                $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-                return view('omega.pages.replenish', compact('cash', 'cashes', 'moneys'));
+                return view('omega.pages.replenish', compact('menu', 'cash', 'cashes', 'moneys'));
             }
             return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
         }
@@ -32,147 +32,85 @@ class ReplenishController extends Controller
 
     public function store()
     {
-        DB::beginTransaction();
-        $emp = Session::get('employee');
-
+        // dd(Request::all());
         try {
-            $writnumb = getCashWritNumb();
-            $cash = Cash::getEmpCashOpen();
-            $cashto = Cash::getCash(Request::input('cashto'));
-            $accdate = AccDate::getOpenAccDate();
-            $opera = Operation::getByCode(4);
+            DB::beginTransaction();
 
-            $amt = trimOver(Request::input('totbil'), ' ');
-            $mon1 = Request::input('B1');
-            $mon2 = Request::input('B2');
-            $mon3 = Request::input('B3');
-            $mon4 = Request::input('B4');
-            $mon5 = Request::input('B5');
-            $mon6 = Request::input('P1');
-            $mon7 = Request::input('P2');
-            $mon8 = Request::input('P3');
-            $mon9 = Request::input('P4');
-            $mon10 = Request::input('P5');
-            $mon11 = Request::input('P6');
-            $mon12 = Request::input('P7');
-
-            $cash_tot = totCash([$cash->mon1, $cash->mon2, $cash->mon3, $cash->mon4, $cash->mon5, $cash->mon6, $cash->mon7, $cash->mon8, $cash->mon9, $cash->mon10, $cash->mon11, $cash->mon12]);
-            $cashto_tot = totCash([$cashto->mon1, $cashto->mon2, $cashto->mon3, $cashto->mon4, $cashto->mon5, $cashto->mon6, $cashto->mon7, $cashto->mon8, $cashto->mon9, $cashto->mon10, $cashto->mon11, $cashto->mon12]);
-
-            if (($cash_tot < $cashto_tot) || ($cash_tot === $cashto_tot)) {
-                return Redirect::back()->with('danger', trans('alertDanger.suffund'));
+            if (!dateOpen()) {
+                return Redirect::back()->with('danger', trans('alertDanger.opdate'));
+                if (!cashOpen()) {
+                    return Redirect::back()->with('danger', trans('alertDanger.opencash'));   
+                }
+            }
+            
+            $emp = Session::get('employee');
+            $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
+            $cash_to = Cash::getCashBy(['cashes.status' => 'O', 'cashes.idcash' => Request::input('cashto')]);
+            
+            $cash_replen_init = Cash_ReplenClose_Init::getCashInit(Request::input('cashto'));
+            if ($cash_replen_init === null) {
+                $cash_replen_init = new Cash_ReplenClose_Init();
+            } else {
+                if ($cash_replen_init->cash !== $cash->idcash) {
+                    return Redirect::back()->with('danger', trans('alertDanger.already_on_replenishment_by_another_till'));
+                }
             }
 
-            if ($mon1 !== null) {
-                $cashto->mon1 += trimOver($mon1, ' ');
-            }
-            if ($mon2 !== null) {
-                $cashto->mon2 += trimOver($mon2, ' ');
-            }
-            if ($mon3 !== null) {
-                $cashto->mon3 += trimOver($mon3, ' ');
-            }
-            if ($mon4 !== null) {
-                $cashto->mon4 += trimOver($mon4, ' ');
-            }
-            if ($mon5 !== null) {
-                $cashto->mon5 += trimOver($mon5, ' ');
-            }
-            if ($mon6 !== null) {
-                $cashto->mon6 += trimOver($mon6, ' ');
-            }
-            if ($mon7 !== null) {
-                $cashto->mon7 += trimOver($mon7, ' ');
-            }
-            if ($mon8 !== null) {
-                $cashto->mon8 += trimOver($mon8, ' ');
-            }
-            if ($mon9 !== null) {
-                $cashto->mon9 += trimOver($mon9, ' ');
-            }
-            if ($mon10 !== null) {
-                $cashto->mon10 += trimOver($mon10, ' ');
-            }
-            if ($mon11 !== null) {
-                $cashto->mon11 += trimOver($mon11, ' ');
-            }
-            if ($mon12 !== null) {
-                $cashto->mon12 += trimOver($mon12, ' ');
-            }
-            $cashto->update((array)$cashto);
+            $cashSum = Cash::getSumBillet($cash->idcash)->total;
+            $cash_toSum = Cash::getSumBillet(Request::input('cashto'))->total;
 
-            $writing = new Cash_Writing();
-            $writing->writnumb = $writnumb;
-            $writing->account = $cashto->cashacc;
-            $writing->operation = $opera->idoper;
-            $writing->debitamt = $amt;
-            $writing->accdate = $accdate->accdate;
-            $writing->employee = $cashto->employee;
-            $writing->cash = $cashto->idcash;
-            $writing->network = $emp->network;
-            $writing->zone = $emp->zone;
-            $writing->institution = $emp->institution;
-            $writing->branch = $emp->branch;
-            $writing->save();
+            if (($cashSum < $cash_toSum) || ($cashSum === $cash_toSum)) {
+                return Redirect::back()->with('danger', trans('alertDanger.no_sufficient_funds'));
+            }
 
-            if ($mon1 !== null) {
-                $cash->mon1 -= trimOver($mon1, ' ');
+            $compareCash = compareCash(
+                [$cash_to->mon1, $cash_to->mon2, $cash_to->mon3, $cash_to->mon4, $cash_to->mon5, $cash_to->mon6, $cash_to->mon7,
+                    $cash_to->mon8, $cash_to->mon9, $cash_to->mon10, $cash_to->mon11, $cash_to->mon12
+                ],
+                [trimOver(Request::input('B1'), ' '), trimOver(Request::input('B2'), ' '), trimOver(Request::input('B3'), ' '),
+                    trimOver(Request::input('B4'), ' '), trimOver(Request::input('B5'), ' '), trimOver(Request::input('P1'), ' '),
+                    trimOver(Request::input('P2'), ' '), trimOver(Request::input('P3'), ' '), trimOver(Request::input('P4'), ' '),
+                    trimOver(Request::input('P5'), ' '), trimOver(Request::input('P6'), ' '), trimOver(Request::input('P7'), ' ')
+                ]
+            );
+            
+            if (!$compareCash) {
+                return Redirect::back()->with('danger', trans('alertDanger.no_sufficient_funds_on_input'));
             }
-            if ($mon2 !== null) {
-                $cash->mon2 -= trimOver($mon2, ' ');
-            }
-            if ($mon3 !== null) {
-                $cash->mon3 -= trimOver($mon3, ' ');
-            }
-            if ($mon4 !== null) {
-                $cash->mon4 -= trimOver($mon4, ' ');
-            }
-            if ($mon5 !== null) {
-                $cash->mon5 -= trimOver($mon5, ' ');
-            }
-            if ($mon6 !== null) {
-                $cash->mon6 -= trimOver($mon6, ' ');
-            }
-            if ($mon7 !== null) {
-                $cash->mon7 -= trimOver($mon7, ' ');
-            }
-            if ($mon8 !== null) {
-                $cash->mon8 -= trimOver($mon8, ' ');
-            }
-            if ($mon9 !== null) {
-                $cash->mon9 -= trimOver($mon9, ' ');
-            }
-            if ($mon10 !== null) {
-                $cash->mon10 -= trimOver($mon10, ' ');
-            }
-            if ($mon11 !== null) {
-                $cash->mon11 -= trimOver($mon11, ' ');
-            }
-            if ($mon12 !== null) {
-                $cash->mon12 -= trimOver($mon12, ' ');
-            }
-            $cash->update((array)$cash);
 
-            $writing = new Cash_Writing();
-            $writing->writnumb = $writnumb;
-            $writing->account = $cash->cashacc;
-            $writing->operation = $opera->idoper;
-            $writing->creditamt = $amt;
-            $writing->accdate = $accdate->accdate;
-            $writing->employee = $cash->employee;
-            $writing->cash = $cash->idcash;
-            $writing->network = $emp->network;
-            $writing->zone = $emp->zone;
-            $writing->institution = $emp->institution;
-            $writing->branch = $emp->branch;
-            $writing->save();
+            $cash_replen_init->cash = $cash->idcash;
+            $cash_replen_init->mon1 += trimOver(Request::input('B1'), ' ');
+            $cash_replen_init->mon2 += trimOver(Request::input('B2'), ' ');
+            $cash_replen_init->mon3 += trimOver(Request::input('B3'), ' ');
+            $cash_replen_init->mon4 += trimOver(Request::input('B4'), ' ');
+            $cash_replen_init->mon5 += trimOver(Request::input('B5'), ' ');
+            $cash_replen_init->mon6 += trimOver(Request::input('P1'), ' ');
+            $cash_replen_init->mon7 += trimOver(Request::input('P2'), ' ');
+            $cash_replen_init->mon8 += trimOver(Request::input('P3'), ' ');
+            $cash_replen_init->mon9 += trimOver(Request::input('P4'), ' ');
+            $cash_replen_init->mon10 += trimOver(Request::input('P5'), ' ');
+            $cash_replen_init->mon11 += trimOver(Request::input('P6'), ' ');
+            $cash_replen_init->mon12 += trimOver(Request::input('P7'), ' ');
+            $cash_replen_init->init_type = 'R';
+            $cash_replen_init->init_cash = Request::input('cashto');
+            $cash_replen_init->init_file = null;
+            $cash_replen_init->network = $emp->network;
+            $cash_replen_init->zone = $emp->zone;
+            $cash_replen_init->institution = $emp->institution;
+            $cash_replen_init->branch = $emp->branch;
 
+            if ($cash_replen_init === null) {
+                $cash_replen_init->save();
+            } else {
+                $cash_replen_init->update((array)$cash_replen_init);
+            }
+            
             DB::commit();
-            return Redirect::route('omega')->with('success', trans('alertSuccess.recfund'));
+            return Redirect::route('omega')->with('success', trans('alertSuccess.replenish'));
         } catch (\Exception $ex) {
             dd($ex);
             DB::rollBack();
-            return Redirect::back()->with('danger', trans('alertDanger.recfund'));
+            return Redirect::back()->with('danger', trans('alertDanger.replenish'));
         }
     }
 }

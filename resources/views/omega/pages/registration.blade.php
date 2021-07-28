@@ -12,7 +12,7 @@ if ($emp->lang == 'fr') {
 @section('title', $title)
 
 @section('content')
-    <div class="box box-info" id="form" style="display: block;">
+    <div class="box box-info" id="form" style="display: none;">
         <div class="box-header with-border">
             <h3 class="box-title text-bold" id="title"> @lang('label.newmem')</h3>
             <div class="box-tools pull-right">
@@ -25,7 +25,7 @@ if ($emp->lang == 'fr') {
             <form action="{{ url('registration/store') }}" id="regForm" method="post" role="form" enctype="multipart/form-data" class="needs-validation">
                 {{ csrf_field() }}
                 <input type="hidden" name="idregister" id="idregister">
-                
+
                 <div id="fillform">
                     <div class="row">
                         <div class="col-md-8 col-xs-12">
@@ -117,7 +117,7 @@ if ($emp->lang == 'fr') {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-12 col-xs-12 physical">
                                     <div class="form-group has-error">
@@ -148,7 +148,7 @@ if ($emp->lang == 'fr') {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-6 col-xs-6 physical">
                                     <div class="form-group has-error">
@@ -495,7 +495,7 @@ if ($emp->lang == 'fr') {
                                 <td><input type="text" name="bene_name[]" class="reg" required></td>
                                 <td><input type="text" name="bene_relate[]" class="reg" required></td>
                                 <td><input type="number" name="bene_phone[]" class="reg" required></td>
-                                <td><input type="text" name="bene_ratio[]" class="reg bene_reg text-right text-bold" required></td>
+                                <td><input type="number" name="bene_ratio[]" class="reg bene_reg text-right text-bold" required></td>
                             </tr>
                             </tbody>
                             <tfoot>
@@ -739,7 +739,8 @@ if ($emp->lang == 'fr') {
                 '<td><input type="checkbox" class="check" disabled></td>' +
                 '<td><input type="text" name="bene_name[]" class="reg" required></td>' +
                 '<td><input type="text" name="bene_relate[]" class="reg" required></td>' +
-                '<td><input type="text" name="bene_ratio[]" class="reg bene_reg text-right text-bold" required></td>' +
+                '<td><input type="number" name="bene_phone[]" class="reg" required></td>' +
+                '<td><input type="number" name="bene_ratio[]" class="reg bene_reg text-right text-bold" required></td>' +
                 '</tr>';
             $('#registerInput tbody').html(tr);
 
@@ -759,8 +760,8 @@ if ($emp->lang == 'fr') {
                 '<td><input type="checkbox" class="check"></td>' +
                 '<td><input type="text" name="bene_name[]" id="name_sur" class="reg"></td>' +
                 '<td><input type="text" name="bene_relate[]" id="rela" class="reg"></td>' +
-                '<td><input type="number" name="bene_phone[]" id="rela" class="reg"></td>' +
-                '<td><input type="text" name="bene_ratio[]" class="reg bene_reg"></td>' +
+                '<td><input type="number" name="bene_phone[]" id="phone" class="reg"></td>' +
+                '<td><input type="number" name="bene_ratio[]" class="reg bene_reg"></td>' +
                 '</tr>';
             $('#registerInput tbody').append(tr);
             $('#del_bene').removeAttr('disabled');
@@ -821,7 +822,7 @@ if ($emp->lang == 'fr') {
 
                     $('#grptype').val(register.grptype).select2();
                     $('#moral_dob').val(register.dob);
-                    $('#moral_pob').val(register.pob);               
+                    $('#moral_pob').val(register.pob);
                     $('#assno').val(register.assno);
                     $('#assmemno').val(register.assmemno);
                     $('#comregis').val(register.comregis);
@@ -855,7 +856,7 @@ if ($emp->lang == 'fr') {
                             }
                         });
                     }
-                    
+
                     if (register.grptype === 'A') {
                         $.ajax({
                             url: "{{url('getSignature')}}",
@@ -893,7 +894,7 @@ if ($emp->lang == 'fr') {
                             }
                         });
                     }
-                    
+
                     $.ajax({
                         url: "{{url('getRegBenef')}}",
                         method: 'get',

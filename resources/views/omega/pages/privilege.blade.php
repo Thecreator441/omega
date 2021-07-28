@@ -79,9 +79,9 @@ if ($emp->lang == 'fr') {
 
                         <div class="col-md-4 col-xs-12">
                             <div class="form-group has-error">
-                                <label for="level" class="col-md-3 col-xs-5 control-label">@lang('label.level')<span class="text-red text-bold">*</span></label>
+                                <label for="priv_level" class="col-md-3 col-xs-5 control-label">@lang('label.level')<span class="text-red text-bold">*</span></label>
                                 <div class="col-md-9 col-xs-7">
-                                    <select class="form-control select2" id="level" name="level" required>
+                                    <select class="form-control select2" id="priv_level" name="priv_level" required>
                                         <option value=""></option>
                                         @if($emp->level === 'P')
                                             <option value="P">@lang('label.platform')</option>
@@ -126,7 +126,7 @@ if ($emp->lang == 'fr') {
                                         @if($menus_1->count() > 0)
                                             @foreach($menus_1 as $menu_1)
                                                 <?php
-                                                    $menus_2 = Menu_Level_II::getMenus(null, ['menu_1' => $menu_1->idmenus_1]); 
+                                                    $menus_2 = Menu_Level_II::getMenus(null, ['menu_1' => $menu_1->idmenus_1]);
                                                 ?>
 
                                                 @if($menus_2->count() > 0)
@@ -150,7 +150,7 @@ if ($emp->lang == 'fr') {
                                                                 <div class="row">
                                                                     @foreach($menus_2 as $menu_2)
                                                                         <?php
-                                                                            $menus_3 = Menu_Level_III::getMenus(null, ['menu_2' => $menu_2->idmenus_2]); 
+                                                                            $menus_3 = Menu_Level_III::getMenus(null, ['menu_2' => $menu_2->idmenus_2]);
                                                                         ?>
 
                                                                         @if($menus_3->count() > 0)
@@ -170,14 +170,14 @@ if ($emp->lang == 'fr') {
                                                                                             <button type="button" class="btn btn-box-tool" data-widget="collapse">
                                                                                                 <i class="fa fa-plus"></i>
                                                                                             </button>
-                                                                                        </div>      
+                                                                                        </div>
                                                                                     </div>
 
                                                                                     <div class="box-body">
                                                                                         <div class="row">
                                                                                             @foreach($menus_3 as $menu_3)
                                                                                                 <?php
-                                                                                                    $menus_4 = Menu_Level_IV::getMenus(null, ['menu_3' => $menu_3->idmenus_3]); 
+                                                                                                    $menus_4 = Menu_Level_IV::getMenus(null, ['menu_3' => $menu_3->idmenus_3]);
                                                                                                 ?>
 
                                                                                                 @if($menus_4->count() > 0)
@@ -244,10 +244,10 @@ if ($emp->lang == 'fr') {
                                                                                         &nbsp;&nbsp;@if($emp->lang == 'fr') {{$menu_2->labelfr}} @else {{$menu_2->labeleng}} @endif
                                                                                     </label>
                                                                                 </div>
-                                                                            </div> 
+                                                                            </div>
                                                                         @endif
                                                                     @endforeach
-                                                                </div> 
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -370,8 +370,8 @@ if ($emp->lang == 'fr') {
                     $('#idmain_menu').val(idmain_menu);
                     $('#labelfr').val(privilege.labelfr);
                     $('#labeleng').val(privilege.labeleng);
-                    $('#level').val(privilege.level).select2();
-                    
+                    $('#priv_level').val(privilege.level).select2();
+
                     $.ajax({
                         url: "{{url('getPrivMenusAside')}}",
                         method: 'get',
@@ -459,7 +459,7 @@ if ($emp->lang == 'fr') {
                             }
                         }
                     });
-                    
+
                     $('#save').replaceWith('<button type="submit" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit edit"></button>');
 
                     $('#newForm').show();
