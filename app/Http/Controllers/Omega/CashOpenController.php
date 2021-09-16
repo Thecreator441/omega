@@ -19,24 +19,21 @@ class CashOpenController extends Controller
             return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            if (dateOpen()) {
-                if (cashOpen()) {
-                    return Redirect::route('omega')->with('danger', trans('alertDanger.alrcash'));
-                }
-    
-                if (CashReOpen()) {
-                    $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
-                    $moneys = Money::getMoneys();
-                    $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-    
-                    return view('omega.pages.cash_open', compact('cash', 'moneys', 'menu'));
-                }
-                return Redirect::route('omega')->with('danger', trans('alertDanger.accalert'));
+        if (dateOpen()) {
+            if (cashOpen()) {
+                return Redirect::route('omega')->with('danger', trans('alertDanger.alrcash'));
             }
-            return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+
+            if (CashReOpen()) {
+                $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
+                $moneys = Money::getMoneys();
+                $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+                return view('omega.pages.cash_open', compact('cash', 'moneys', 'menu'));
+            }
+            return Redirect::route('omega')->with('danger', trans('alertDanger.accalert'));
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
 
     public function store()

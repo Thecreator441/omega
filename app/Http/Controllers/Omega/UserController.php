@@ -33,69 +33,66 @@ class UserController extends Controller
             return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $countries = Country::getCountries();
-            $regions = Region::getRegions();
-            $divisions = Division::getDivisions();
-            $subdivs = SubDiv::getSubDivs();
-            $towns = Town::getTowns();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-            $privileges = Privilege::getPrivileges();
-            if ($emp->level !== 'P') {
-                $privileges = Privilege::getPrivileges(['level' => $emp->level]);
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
+        $subdivs = SubDiv::getSubDivs();
+        $towns = Town::getTowns();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+        $privileges = Privilege::getPrivileges();
+        if ($emp->level !== 'P') {
+            $privileges = Privilege::getPrivileges(['level' => $emp->level]);
+        }
+
+        $networks = Network::getNetworks();
+        $zones = Zone::getZones();
+        $institutions = Institution::getInstitutions();
+        $branches = Branch::getBranches();
+
+        $users = User::getUsers();
+        if ($emp->level !== 'P') {
+            $users = User::getUsers(['P.level' => $emp->level]);
+        }
+
+        foreach ($users as $user) {
+            $priv = Privilege::getPrivilege($user->privilege);
+
+            foreach ($priv->getAttributes() as $index => $value) {
+                if ($user->offsetExists($index) === false) {
+                    $user->$index = $value;
+                }
             }
 
-            $networks = Network::getNetworks();
-            $zones = Zone::getZones();
-            $institutions = Institution::getInstitutions();
-            $branches = Branch::getBranches();
-
-            $users = User::getUsers();
-            if ($emp->level !== 'P') {
-                $users = User::getUsers(['P.level' => $emp->level]);
+            $empl = null;
+            if ($user->platform !== null) {
+                $empl = Platform::getPlatform($user->platform);
+            } elseif ($user->employee !== null) {
+                $empl = Employee::getEmployee($user->employee);
             }
 
-            foreach ($users as $user) {
-                $priv = Privilege::getPrivilege($user->privilege);
-
-                foreach ($priv->getAttributes() as $index => $value) {
+            if($empl !== null) {
+                foreach ($empl->getAttributes() as $index => $value) {
                     if ($user->offsetExists($index) === false) {
                         $user->$index = $value;
                     }
                 }
-
-                $empl = null;
-                if ($user->platform !== null) {
-                    $empl = Platform::getPlatform($user->platform);
-                } elseif ($user->employee !== null) {
-                    $empl = Employee::getEmployee($user->employee);
-                }
-
-                if($empl !== null) {
-                    foreach ($empl->getAttributes() as $index => $value) {
-                        if ($user->offsetExists($index) === false) {
-                            $user->$index = $value;
-                        }
-                    }
-                }
             }
-
-            return view('omega.pages.user', compact(
-                'menu',
-                'countries',
-                'regions',
-                'divisions',
-                'subdivs',
-                'towns',
-                'users',
-                'privileges',
-                'networks',
-                'zones',
-                'institutions',
-                'branches'
-            ));
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+
+        return view('omega.pages.user', compact(
+            'menu',
+            'countries',
+            'regions',
+            'divisions',
+            'subdivs',
+            'towns',
+            'users',
+            'privileges',
+            'networks',
+            'zones',
+            'institutions',
+            'branches'
+        ));
     }
 
     public function store()

@@ -58,7 +58,7 @@ class CheckInController extends Controller
             $check->type = 'I';
             $check->status = 'D';
             $check->sorted = 'N';
-            $check->amount = trimOver(Request::input('totrans'), ' ');
+            $check->amount = (int)trimOver(Request::input('totrans'), ' ');
             $check->carrier = Request::input('represent');
             $check->member = Request::input('member');
             $check->network = $emp->network;

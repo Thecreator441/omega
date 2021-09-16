@@ -57,7 +57,7 @@ class OtherCheckOutController extends Controller
             $writing->writnumb = $writnumb;
             $writing->account = $bank->theiracc;
             $writing->operation = Request::input('menu_level_operation');
-            $writing->creditamt = trimOver(Request::input('totdist'), ' ');
+            $writing->creditamt = (int)trimOver(Request::input('totdist'), ' ');
             $writing->accdate = $accdate->accdate;
             $writing->employee = $emp->iduser;
             $writing->cash = $cash->idcash;
@@ -69,7 +69,7 @@ class OtherCheckOutController extends Controller
             $writing->save();
 
             $bankBal = Account::getAccount($bank->theiracc);
-            $bankBal->available -= trimOver(Request::input('totdist'), ' ');
+            $bankBal->available -= (int)trimOver(Request::input('totdist'), ' ');
             $bankBal->update((array)$bankBal);
 
             foreach ($accounts as $key => $account) {
@@ -101,7 +101,7 @@ class OtherCheckOutController extends Controller
             $check->checknumb = Request::input('checkno');
             $check->bank = Request::input('bank');
             $check->type = 'O';
-            $check->amount = trimOver(Request::input('totdist'), ' ');
+            $check->amount = (int)trimOver(Request::input('totdist'), ' ');
             $check->carrier = Request::input('represent');
             $check->network = $emp->network;
             $check->zone = $emp->zone;

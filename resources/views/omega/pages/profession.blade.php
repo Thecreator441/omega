@@ -29,24 +29,45 @@ if ($emp->lang == 'fr') {
                     <input type="hidden" name="idcountry" id="idcountry">
 
                     <div class="row">
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group has-error">
-                                <label for="labeleng" class="col-md-3 control-label">@lang('label.labeleng')<span class="text-red text-bold">*</span></label>
-                                <div class="col-md-9">
-                                    <input type="text" class="form-control" name="labeleng" id="labeleng" required>
-                                    <div class="help-block">@lang('placeholder.nameeng')</div>
+                        @if($emp->lang === 'fr')
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group has-error">
+                                    <label for="labelfr" class="col-md-3 control-label">@lang('label.professionfr')<span class="text-red text-bold">*</span></label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" name="labelfr" id="labelfr" required>
+                                        <div class="help-block">@lang('placeholder.namefr')</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group has-error">
-                                <label for="labelfr" class="col-md-3 control-label">@lang('label.labelfr')<span class="text-red text-bold">*</span></label>
-                                <div class="col-md-9">
-                                    <input type="text" class="form-control" name="labelfr" id="labelfr" required>
-                                    <div class="help-block">@lang('placeholder.namefr')</div>
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group has-error">
+                                    <label for="labeleng" class="col-md-3 control-label">@lang('label.professioneng')<span class="text-red text-bold">*</span></label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" name="labeleng" id="labeleng" required>
+                                        <div class="help-block">@lang('placeholder.nameeng')</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group has-error">
+                                    <label for="labeleng" class="col-md-3 control-label">@lang('label.professioneng')<span class="text-red text-bold">*</span></label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" name="labeleng" id="labeleng" required>
+                                        <div class="help-block">@lang('placeholder.nameeng')</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group has-error">
+                                    <label for="labelfr" class="col-md-3 control-label">@lang('label.professionfr')<span class="text-red text-bold">*</span></label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" name="labelfr" id="labelfr" required>
+                                        <div class="help-block">@lang('placeholder.namefr')</div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -69,7 +90,7 @@ if ($emp->lang == 'fr') {
         <div class="box-body">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="col-md-12">
+                    <div class="table-responsive">
                         <table id="admin-data-table" class="table table-bordered table-striped table-hover table-responsive-xl">
                             <thead>
                             <tr>

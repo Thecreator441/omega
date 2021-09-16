@@ -64,7 +64,7 @@ class CheckSortController extends Controller
             $writing->writnumb = $writnumb;
             $writing->account = $bank->theiracc;
             $writing->operation = $check->operation;
-            $writing->debitamt = trimOver(Request::input('totrans'), ' ');
+            $writing->debitamt = (int)trimOver(Request::input('totrans'), ' ');
             $writing->accdate = $accdate->accdate;
             $writing->employee = $emp->iduser;
             $writing->network = $emp->network;
@@ -72,7 +72,6 @@ class CheckSortController extends Controller
             $writing->institution = $emp->institution;
             $writing->branch = $emp->branch;
             $writing->represent = $check->carrier;
-            $writing->writ_type = 'I';
             $writing->save();
 
             if (isset($accounts)) {
@@ -91,7 +90,6 @@ class CheckSortController extends Controller
                         $writing->institution = $emp->institution;
                         $writing->branch = $emp->branch;
                         $writing->represent = $check->carrier;
-                        $writing->writ_type = 'I';
                         $writing->save();
 
                         $memBal = Balance::getMemAcc($check->member, $account);

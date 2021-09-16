@@ -215,70 +215,64 @@ if ($emp->lang == 'fr') {
                 </div>
 
                 <div class="row">
-                    <div class="row">
-                        <div class="col-md-12 col-xs-12">
-                            <div class="form-group col-md-12">
-                                <label for="" class="text-blue text-bold">@lang('label.break')</label>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="col-md-12" id="tableInput">
-                        <table id="billet-data-table" class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
-                            <thead>
-                            <tr class="text-blue">
-                                <th>@lang('label.value')</th>
-                                <th>@lang('label.label')</th>
-                                <th>@lang('label.in')</th>
-                                <th>@lang('label.amount')</th>
-                                <th>@lang('label.letters')</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach ($moneys as $money)
-                                @if ($money->format == 'B')
-                                    <tr>
-                                        <td id="bil">{{$money->value}}</td>
-                                        <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
-                                        <td class="input">
-                                            <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
-                                                    oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
-                                        </td>
-                                        <td class="sum text-right {{ $money->moncode }}Sum" id="{{$money->moncode}}Sum"></td>
-                                        <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
-                                    </tr>
-                                @endif
-                            @endforeach
-                            <tr>
-                                <td class="bg-gray"></td>
-                                <td class="bg-gray"></td>
-                                <td class="bg-gray"></td>
-                                <td class="bg-gray"></td>
-                                <td class="bg-gray"></td>
-                            </tr>
-                            @foreach ($moneys as $money)
-                                @if ($money->format == 'C')
-                                    <tr>
-                                        <td id="bil">{{$money->value}}</td>
-                                        <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
-                                        <td class="input">
-                                            <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
-                                                    oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
-                                        </td>
-                                        <td class="sum text-right {{ $money->moncode }}Sum" id="{{$money->moncode}}Sum"></td>
-                                        <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
-                                    </tr>
-                                @endif
-                            @endforeach
-                            </tbody>
-                            <tfoot>
-                            <tr class="bg-green-active">
-                                <td colspan="3" style="text-align: center !important;">@lang('label.tobreak')</td>
-                                <td class="text-right text-bold" id="totbil"></td>
-                                <td class="text-left text-bold" id="totopera"></td>
-                            </tr>
-                            </tfoot>
-                        </table>
+                        <div class="table-responsive">
+                            <table id="billet-data-table" class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
+                                <thead>
+                                <tr class="text-blue">
+                                    <th>@lang('label.value')</th>
+                                    <th>@lang('label.label')</th>
+                                    <th>@lang('label.in')</th>
+                                    <th>@lang('label.amount')</th>
+                                    <th>@lang('label.letters')</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach ($moneys as $money)
+                                    @if ($money->format == 'B')
+                                        <tr>
+                                            <td id="bil">{{$money->value}}</td>
+                                            <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
+                                            <td class="input">
+                                                <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
+                                                        oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
+                                            </td>
+                                            <td class="sum text-right {{ $money->moncode }}Sum" id="{{$money->moncode}}Sum"></td>
+                                            <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                                <tr>
+                                    <td class="bg-gray"></td>
+                                    <td class="bg-gray"></td>
+                                    <td class="bg-gray"></td>
+                                    <td class="bg-gray"></td>
+                                    <td class="bg-gray"></td>
+                                </tr>
+                                @foreach ($moneys as $money)
+                                    @if ($money->format == 'C')
+                                        <tr>
+                                            <td id="bil">{{$money->value}}</td>
+                                            <td id="bill">@if($emp->lang == 'fr') {{$money->labelfr}} @else {{$money->labeleng}} @endif</td>
+                                            <td class="input">
+                                                <input type="text" class="tot {{ $money->moncode }}In" name="{{$money->moncode}}" id="{{$money->moncode}}"
+                                                        oninput="sum('{{$money->value}}', '#{{$money->moncode}}', '#{{$money->moncode}}Sum')">
+                                            </td>
+                                            <td class="sum text-right {{ $money->moncode }}Sum" id="{{$money->moncode}}Sum"></td>
+                                            <td class="text-light-blue text-bold {{ $money->moncode }}SumWord"></td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                                </tbody>
+                                <tfoot>
+                                <tr class="bg-green-active">
+                                    <td colspan="3" style="text-align: center !important;">@lang('label.tobreak')</td>
+                                    <td class="text-right text-bold" id="totbil"></td>
+                                    <td class="text-left text-bold" id="totopera"></td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

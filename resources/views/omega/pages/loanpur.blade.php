@@ -87,15 +87,14 @@ if ($emp->lang == 'fr') {
             <h3 class="box-title text-bold">{{$title}}</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-success bg-green btn-sm pull-right" id="insertForm">
-                    <i class="fa fa-plus"></i>&nbsp; @if($emp->lang == 'fr') Nouveau Type de compte @else New Account
-                    Type @endif
+                    <i class="fa fa-plus"></i>&nbsp; @lang('label.new_loanpur')
                 </button>
             </div>
         </div>
         <div class="box-body">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="col-md-12">
+                    <div class="table-responsive">
                         <table id="admin-data-table" class="table table-striped table-hover table-responsive-xl">
                             <thead>
                             <tr>

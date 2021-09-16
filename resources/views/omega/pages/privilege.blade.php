@@ -4,6 +4,7 @@ use App\Models\Menu_Level_I;
 use App\Models\Menu_Level_II;
 use App\Models\Menu_Level_III;
 use App\Models\Menu_Level_IV;
+use App\Models\Priv_Menu;
 
 $emp = session()->get('employee');
 
@@ -127,6 +128,9 @@ if ($emp->lang == 'fr') {
                                             @foreach($menus_1 as $menu_1)
                                                 <?php
                                                     $menus_2 = Menu_Level_II::getMenus(null, ['menu_1' => $menu_1->idmenus_1]);
+                                                    if ($emp->level !== 'P') {
+                                                        $menus_2 = Priv_Menu::getMenus(2, ['priv_menus.menu_1' => $menu_1->idmenus_1, 'priv_menus.privilege' => $emp->privilege]);
+                                                    }
                                                 ?>
 
                                                 @if($menus_2->count() > 0)
@@ -151,6 +155,9 @@ if ($emp->lang == 'fr') {
                                                                     @foreach($menus_2 as $menu_2)
                                                                         <?php
                                                                             $menus_3 = Menu_Level_III::getMenus(null, ['menu_2' => $menu_2->idmenus_2]);
+                                                                            if ($emp->level !== 'P') {
+                                                                                $menus_3 = Priv_Menu::getMenus(3, ['priv_menus.menu_2' => $menu_2->idmenus_2, 'priv_menus.privilege' => $emp->privilege]);
+                                                                            }
                                                                         ?>
 
                                                                         @if($menus_3->count() > 0)
@@ -178,6 +185,9 @@ if ($emp->lang == 'fr') {
                                                                                             @foreach($menus_3 as $menu_3)
                                                                                                 <?php
                                                                                                     $menus_4 = Menu_Level_IV::getMenus(null, ['menu_3' => $menu_3->idmenus_3]);
+                                                                                                    if ($emp->level !== 'P') {
+                                                                                                        $menus_4 = Priv_Menu::getMenus(4, ['priv_menus.menu_3' => $menu_3->idmenus_3, 'priv_menus.privilege' => $emp->privilege]);
+                                                                                                    }
                                                                                                 ?>
 
                                                                                                 @if($menus_4->count() > 0)
@@ -295,7 +305,7 @@ if ($emp->lang == 'fr') {
         <div class="box-body">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="col-md-12">
+                    <div class="table-responsive">
                         <table id="admin-data-table" class="table table-bordered table-striped table-hover table-responsive-xl">
                             <thead>
                             <tr>
@@ -309,15 +319,29 @@ if ($emp->lang == 'fr') {
                                 <tr>
                                     <td>@if($emp->lang == 'fr') {{$privilege->labelfr}} @else {{$privilege->labeleng}} @endif </td>
                                     <td>
+                                        @if($privilege->level === 'O')
+                                            @lang('label.organ')
+                                        @elseif($privilege->level === 'N')
+                                            @lang('label.network')
+                                        @elseif($privilege->level === 'Z')
+                                            @lang('label.zone')
+                                        @elseif($privilege->level === 'I')
+                                            @lang('label.institution')
+                                        @elseif($privilege->level === 'B')
+                                            @lang('label.branch')
+                                        @else
+                                            @lang('label.platform')
+                                        @endif
+{{--                                         
                                         @switch($privilege->level)
                                             @case ('O')
                                                 @lang('label.organ')
                                                 @break
                                             @case ('N')
-                                                @lang('label.network')
+                                                
                                                 @break
                                             @case ('Z')
-                                                @lang('label.zone')
+                                                
                                                 @break
                                             @case ('I')
                                                 @lang('label.institution')
@@ -328,7 +352,7 @@ if ($emp->lang == 'fr') {
                                             @default
                                                 @lang('label.platform')
                                                 @break
-                                        @endswitch
+                                        @endswitch --}}
                                     </td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-info bg-aqua btn-sm fa fa-edit" onclick="edit('{{$privilege->idpriv}}')"></button>

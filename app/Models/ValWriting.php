@@ -1113,6 +1113,154 @@ class ValWriting extends Model
         return $val_writings;
     }
 
+    public static function getValidJournals(int $network = null, int $zone = null, int $institution = null, int $branch = null, int $user = null, string $state = null, string $from = null, string $to = null, string $lang = 'eng')
+    {
+        $date1 = dbDate($from);
+        $date2 = dbDate($to);
+        $val_writings = '';
+        $sumDebit = '';
+        $sumCredit = '';
+
+        $val_writings = self::query()->select('val_writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'C.cashcode')
+        ->join('accounts AS A', 'val_writings.account', '=', 'A.idaccount')
+        ->join('cashes AS C', 'val_writings.cash', '=', 'C.idcash')
+        ->where(static function ($query) use ($user, $state) {
+            if ($user !== null && $state === null) {
+                $query->where('val_writings.employee', $user);
+            }
+            if ($user === null && $state !== null) {
+                $query->where('val_writings.writ_type', $state);
+            }
+            if ($user !== null && $state !== null) {
+                $query->where([
+                    'val_writings.employee' => $user,
+                    'val_writings.writ_type' => $state,
+                ]);
+            }
+        })->where(static function ($query) use ($date1, $date2) {
+            if ($date1 !== null && $date2 === null) {
+                $query->where('val_writings.accdate', '>=', $date1);
+            }
+            if ($date1 === null && $date2 !== null) {
+                $query->where('val_writings.accdate', '<=', $date2);
+            }
+            if ($date1 !== null && $date2 !== null) {
+                $query->whereRaw('val_writings.accdate >= ' . $date1 . ' AND val_writings.accdate <= ' . $date2);
+            }
+        })->where(static function ($query) use ($network, $zone, $institution, $branch) {
+            $query->orWhere([
+                'val_writings.branch' => $branch,
+                'val_writings.institution' => $institution,
+                'val_writings.zone' => $zone,
+                'val_writings.network' => $network
+            ]);
+        })->orderBy('writnumb')->get();
+
+        $sumDebit = self::query()->where(static function ($query) use ($user, $state) {
+            if ($user !== null && $state === null) {
+                $query->where('val_writings.employee', $user);
+            }
+            if ($user === null && $state !== null) {
+                $query->where('val_writings.writ_type', $state);
+            }
+            if ($user !== null && $state !== null) {
+                $query->where([
+                    'val_writings.employee' => $user,
+                    'val_writings.writ_type' => $state,
+                ]);
+            }
+        })->where(static function ($query) use ($date1, $date2) {
+            if ($date1 !== null && $date2 === null) {
+                $query->where('val_writings.accdate', '>=', $date1);
+            }
+            if ($date1 === null && $date2 !== null) {
+                $query->where('val_writings.accdate', '<=', $date2);
+            }
+            if ($date1 !== null && $date2 !== null) {
+                $query->whereRaw('val_writings.accdate >= ' . $date1 . ' AND val_writings.accdate <= ' . $date2);
+            }
+        })->where(static function ($query) use ($network, $zone, $institution, $branch) {
+            $query->orWhere([
+                'val_writings.branch' => $branch,
+                'val_writings.institution' => $institution,
+                'val_writings.zone' => $zone,
+                'val_writings.network' => $network
+            ]);
+        })->sum('debitamt');
+
+        $sumCredit = self::query()->where(static function ($query) use ($user, $state) {
+            if ($user !== null && $state === null) {
+                $query->where('val_writings.employee', $user);
+            }
+            if ($user === null && $state !== null) {
+                $query->where('val_writings.writ_type', $state);
+            }
+            if ($user !== null && $state !== null) {
+                $query->where([
+                    'val_writings.employee' => $user,
+                    'val_writings.writ_type' => $state,
+                ]);
+            }
+        })->where(static function ($query) use ($date1, $date2) {
+            if ($date1 !== null && $date2 === null) {
+                $query->where('val_writings.accdate', '>=', $date1);
+            }
+            if ($date1 === null && $date2 !== null) {
+                $query->where('val_writings.accdate', '<=', $date2);
+            }
+            if ($date1 !== null && $date2 !== null) {
+                $query->whereRaw('val_writings.accdate >= ' . $date1 . ' AND val_writings.accdate <= ' . $date2);
+            }
+        })->where(static function ($query) use ($network, $zone, $institution, $branch) {
+            $query->orWhere([
+                'val_writings.branch' => $branch,
+                'val_writings.institution' => $institution,
+                'val_writings.zone' => $zone,
+                'val_writings.network' => $network
+            ]);
+        })->sum('creditamt');
+
+        foreach ($val_writings as $val_writing) {
+            $val_writing->refs = formWriting($val_writing->accdate, $val_writing->network, $val_writing->zone, $val_writing->institution, $val_writing->branch, $val_writing->writnumb);
+
+            $aux = null;
+            if ($val_writing->mem_aux !== null) {
+                $member = Member::getMember($val_writing->mem_aux);
+                $val_writing->code = pad($member->memnumb, 6);
+                $val_writing->name = $member->name;
+                $val_writing->surname = $member->surname;
+            } elseif ($val_writing->emp_aux !== null) {
+                $employee = Employee::getEmployee($val_writing->emp_aux);
+                $val_writing->code = pad($employee->empmat, 6);
+                $val_writing->name = $employee->name;
+                $val_writing->surname = $employee->surname;
+            }
+
+            if (is_numeric($val_writing->operation)) {
+                $opera = Operation::getOperation($val_writing->operation);
+                $val_writing->operation = $opera->labeleng;
+                if ($lang === 'fr') {
+                    $val_writing->operation = $opera->labelfr;
+                }
+            }
+
+            $val_writing->account = $val_writing->accnumb;
+            $val_writing->aux = $val_writing->code . ' - ' . $val_writing->name . ' ' . $val_writing->surname;
+            // $val_writing->aux = $val_writing->code . ' - ' . explode(' ', $val_writing->name)[0] . ' ' . explode(' ', $val_writing->surname)[0];
+            $val_writing->debit = money((int)$val_writing->debitamt);
+            $val_writing->credit = money((int)$val_writing->creditamt);
+            $val_writing->accdate = changeFormat($val_writing->accdate);
+            $val_writing->operdate = changeFormat($val_writing->created_at);
+            $val_writing->time = getsTime($val_writing->created_at);
+        }
+
+        return [
+            'data' => $val_writings,
+            'sumDebit' => money((int)$sumDebit),
+            'sumCredit' => money((int)$sumCredit),
+            'sumBal' => money((int)$sumDebit - (int)$sumCredit)
+        ];
+    }
 
     /**
      * @param int $network

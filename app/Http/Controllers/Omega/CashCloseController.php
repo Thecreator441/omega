@@ -20,12 +20,16 @@ class CashCloseController extends Controller
                 $emp = Session::get('employee');
                 $cash = Cash::getEmpCashOpen();
 
-                $cashes = Cash::getCashesPaginate(['cashes.employee' => $emp->iduser, 'cashes.status' => 'O']);
+                $cashes = Cash::getCashesPaginate(['cashes.employee' => $emp->iduser, 'cashes.status' => 'I']);
                 if ($cash->view_other_tills === 'Y') {
-                    $cashes = Cash::getCashesPaginate(['cashes.status' => 'O']);
+                    $cashes = Cash::getCashesPaginate(['cashes.status' => 'I']);
                 }
                 $moneys = Money::getMoneys();
                 $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+                if ($cashes->count() <= 0) {
+                    return Redirect::route('omega')->with('danger', trans('alertDanger.no_cash_init'));
+                }
 
                 return view('omega.pages.cash_close', compact('cashes', 'moneys', 'menu'));
             }

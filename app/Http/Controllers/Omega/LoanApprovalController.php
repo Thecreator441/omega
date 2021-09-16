@@ -5,16 +5,21 @@ namespace App\Http\Controllers\Omega;
 use App\Http\Controllers\Controller;
 use App\Models\AccDate;
 use App\Models\Account;
-use App\Models\Balance;
+use App\Models\Cash;
 use App\Models\Comaker;
 use App\Models\DemComaker;
 use App\Models\DemLoan;
 use App\Models\DemMortgage;
+use App\Models\Employee;
 use App\Models\Installment;
 use App\Models\Loan;
+use App\Models\LoanPur;
 use App\Models\LoanType;
+use App\Models\MemBalance;
+use App\Models\Member;
 use App\Models\Mortgage;
 use App\Models\Operation;
+use App\Models\Priv_Menu;
 use App\Models\Writing;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -24,148 +29,146 @@ use Illuminate\Support\Facades\Session;
 
 class LoanApprovalController extends Controller
 {
+    public function index()
+    {
+        if (dateOpen()) {
+            $members = Member::getMembers(['members.memstatus' => 'A']);
+            $dem_loans = DemLoan::getDemLoans(['dem_loans.status' => 'A']);
+            $loan_types = LoanType::getLoanTypes();
+            $loan_purs = LoanPur::getLoanPurs();
+            $employees = Employee::getEmployees();
+            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+            return view('omega.pages.loan_approval', compact('members', 'menu', 'loan_types', 'loan_purs', 'employees', 'dem_loans'));
+        }
+        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+    }
+
     public static function store()
     {
-//        dd(Request::all());
-        DB::beginTransaction();
-        $emp = Session::get('employee');
-
-        $idloan = Request::input('loan');
-        $loanno = 1;
-        $amount = trimOver(Request::input('amount'), ' ');
-        $nos = Request::input('nos');
-        $capitals = Request::input('capitals');
-        $amortAmts = Request::input('amortAmts');
-        $intAmts = Request::input('intAmts');
-        $annAmts = Request::input('annAmts');
-        $taxAmts = Request::input('taxAmts');
-        $totAmts = Request::input('totAmts');
-        $dates = Request::input('dates');
-
+        // dd(Request::all());
         try {
-            $last = Loan::getLast();
-            if ($last !== null) {
-                $loanno = $last->loanno + 1;
+            DB::beginTransaction();
+
+            if (!dateOpen()) {
+                return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
             }
-            $demLoan = DemLoan::getLoan($idloan);
-            $loanType = LoanType::getLoanType($demLoan->loantype);
+
+            $emp = Session::get('employee');
+
+            $installs = Request::input('installs');
+            $capitals = Request::input('capitals');
+            $amo_amts = Request::input('amo_amts');
+            $int_amts = Request::input('int_amts');
+            $ann_amts = Request::input('ann_amts');
+            $tax_amts = Request::input('tax_amts');
+            $tot_amts = Request::input('tot_amts');
+            $dates = Request::input('dates');
+
+            $loan_no = 1;
+            $last_loan = Loan::getLast();
+            if ($last_loan !== null) {
+                $loan_no = $last_loan->loanno + 1;
+            }
+
+            $dem_loan = DemLoan::getDemLoan(Request::input('dem_loan'));
+            $loan_type = LoanType::getLoanType($dem_loan->loantype);
+            $cash = null;
+            $user_cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
+            if ($user_cash !== null) {
+                $cash = $user_cash->idcash;
+            }
+            
             $writnumb = getWritNumb();
             $accdate = AccDate::getOpenAccDate();
-            $opera1 = Operation::getByCode(19);
-            $opera2 = Operation::getByCode(33);
 
             $loan = new Loan();
 
-            $loan->loanno = $loanno;
-            $loan->member = $demLoan->member;
-            $loan->memacc = $loanType->transacc;
-            $loan->amount = $amount;
-            $loan->vat = $demLoan->vat;
-            $loan->amortype = $demLoan->amortype;
-            $loan->periodicity = $demLoan->periodicity;
-            $loan->grace = $demLoan->grace;
-            $loan->instdate1 = $demLoan->instdate1;
-            $loan->nbrinst = $demLoan->nbrinst;
-            $loan->intrate = $demLoan->intrate;
+            $loan->loanno = $loan_no;
+            $loan->member = $dem_loan->member;
+            $loan->memacc = $loan_type->trans_acc;
+            $loan->employee = $dem_loan->employee;
+            $loan->loantype = $dem_loan->loantype;
+            $loan->loanpur = $dem_loan->loanpur;
+            $loan->amount = (int)trimOver(Request::input('amount'), ' ');
+            $loan->amortype = $dem_loan->amortype;
+            $loan->grace = $dem_loan->grace;
+            $loan->periodicity = $dem_loan->periodicity;
+            $loan->intrate = $dem_loan->intrate;
+            $loan->vat = $dem_loan->vat;
+            $loan->nbrinst = $dem_loan->nbrinst;
+            $loan->instdate1 = Request::input('inst1');
+            $loan->guarantee = $dem_loan->guarantee;
             $loan->appdate = getsDate(now());
-            $loan->demdate = getsDate($demLoan->created_at);
-            $loan->lastdate = $demLoan->instdate1;
-            $loan->loanpur = $demLoan->loanpur;
-            $loan->loantype = $demLoan->loantype;
-            $loan->isforce = $demLoan->isforce;
-            $loan->isforceby = $demLoan->isforceby;
-            $loan->guarantee = $demLoan->guarantee;
-            $loan->employee = $demLoan->employee;
-            $loan->institution = $demLoan->institution;
-            $loan->branch = $demLoan->branch;
+            $loan->demdate = getsDate($dem_loan->created_at);
+            $loan->lastdate = $dem_loan->instdate1;
+            if ($dem_loan->employee !== $emp->idemp) {
+                $loan->isforce = 'Y';
+                $loan->isforceby = $emp->idemp;
+            }
+            $loan->network = $emp->network;
+            $loan->zone = $emp->zone;
+            $loan->institution = $emp->institution;
+            $loan->branch = $emp->branch;
             $loan->save();
 
-            if ($demLoan->guarantee === 'F') {
-                $demcoMakers = DemComaker::getComakers($idloan);
-                if ($demcoMakers->count() !== 0) {
-                    foreach ($demcoMakers as $demcoMaker) {
-                        $coMaker = new Comaker();
-                        $coMaker->loan = $loan->idloan;
-                        $coMaker->member = $demcoMaker->member;
-                        $coMaker->account = $demcoMaker->account;
-                        $coMaker->guaramt = $demcoMaker->guaramt;
-                        $coMaker->save();
+            if ($dem_loan->guarantee === 'F' || $dem_loan->guarantee === 'F&M') {
+                $dem_comakers = DemComaker::getDemComakers(['demloan' => Request::input('dem_loan')]);
 
-                        $demcoMaker->delete();
+                if ((int)$dem_comakers->count() > 0) {
+                    foreach ($dem_comakers as $dem_comaker) {
+                        $comaker = new Comaker();
+                        $comaker->loan = $loan->idloan;
+                        $comaker->member = $dem_comaker->member;
+                        $comaker->account = $dem_comaker->account;
+                        $comaker->guaramt = $dem_comaker->guaramt;
+                        $comaker->save();
+
+                        $dem_comaker->delete();
                     }
                 }
             }
-            if ($demLoan->guarantee === 'M') {
-                $mortgno = 1;
-                $demMortgages = DemMortgage::getMortgages($idloan);
-                if ($demMortgages->count() !== 0) {
-                    foreach ($demMortgages as $demMortgage) {
-                        $last = Mortgage::getLast($loan->idloan);
+
+            if ($dem_loan->guarantee === 'M' || $dem_loan->guarantee === 'F&M') {
+                $dem_mortgages = DemMortgage::getDemMortgages(['demloan' => Request::input('dem_loan')]);
+                
+                if ($dem_mortgages->count() !== 0) {
+                    foreach ($dem_mortgages as $dem_mortgage) {
+                        $mortg_no = 1;
+                        $last_mortgage = Mortgage::getLast($loan->idloan);
                         $mortgage = new Mortgage();
-                        if ($last !== null) {
-                            $mortgno = $last->mortgno + 1;
+                        if ($last_mortgage !== null) {
+                            $mortg_no = $last_mortgage->mortgno + 1;
                         }
-                        $mortgage->mortgno = $mortgno;
-                        $mortgage->name = $demMortgage->name;
-                        $mortgage->nature = $demMortgage->nature;
-                        $mortgage->member = $demMortgage->member;
+
+                        $mortgage->mortno = $mortg_no;
+                        $mortgage->name = $dem_mortgage->name;
+                        $mortgage->nature = $dem_mortgage->nature;
+                        $mortgage->member = $dem_mortgage->member;
                         $mortgage->loan = $loan->idloan;
-                        $mortgage->amount = $demMortgage->amount;
+                        $mortgage->amount = $dem_mortgage->amount;
                         $mortgage->save();
 
-                        $demMortgage->delete();
-                    }
-                }
-            }
-            if ($demLoan->guarantee === 'F&M') {
-                $demcoMakers = DemComaker::getComakers($idloan);
-                if ($demcoMakers->count() !== 0) {
-                    foreach ($demcoMakers as $demcoMaker) {
-                        $coMaker = new Comaker();
-                        $coMaker->loan = $loan->idloan;
-                        $coMaker->member = $demcoMaker->member;
-                        $coMaker->account = $demcoMaker->account;
-                        $coMaker->guaramt = $demcoMaker->guaramt;
-                        $coMaker->save();
-
-                        $demcoMaker->delete();
-                    }
-                }
-                $mortgno = 1;
-                $demMortgages = DemMortgage::getMortgages($idloan);
-                if ($demMortgages->count() !== 0) {
-                    foreach ($demMortgages as $demMortgage) {
-                        $last = Mortgage::getLast($loan->idloan);
-                        $mortgage = new Mortgage();
-                        if ($last !== null) {
-                            $mortgno = $last->mortgno + 1;
-                        }
-                        $mortgage->mortgno = $mortgno;
-                        $mortgage->name = $demMortgage->name;
-                        $mortgage->nature = $demMortgage->nature;
-                        $mortgage->member = $demMortgage->member;
-                        $mortgage->loan = $loan->idloan;
-                        $mortgage->amount = $demMortgage->amount;
-                        $mortgage->save();
-
-                        $demMortgage->delete();
+                        $dem_mortgage->delete();
                     }
                 }
             }
 
-            foreach ($nos as $key => $no) {
-                if (!empty($no) || ($no !== '0')) {
-                    $install = new Installment();
-                    $install->loan = $loan->idloan;
-                    $install->installno = $no;
-                    $install->capital = $capitals[$key];
-                    $install->amort = $amortAmts[$key];
-                    $install->interest = $intAmts[$key];
-                    $install->annuity = $annAmts[$key];
-                    $install->tax = $taxAmts[$key];
-                    $install->total = $totAmts[$key];
-                    $install->instdate = getsDate(str_replace('/', '-', $dates[$key]));
-                    $install->save();
+            if ((int)count($installs) > 0) {
+                foreach ($installs as $key => $install) {
+                    $installment = new Installment();
+
+                    $installment->loan = $loan->idloan;
+                    $installment->installno = $install;
+                    $installment->capital = (int)trimOver($capitals[$key], ' ');
+                    $installment->amort = (int)trimOver($amo_amts[$key], ' ');
+                    $installment->interest = (int)trimOver($int_amts[$key], ' ');
+                    $installment->annuity = (int)trimOver($ann_amts[$key], ' ');
+                    $installment->tax = (int)trimOver($tax_amts[$key], ' ');
+                    $installment->total = (int)trimOver($tot_amts[$key], ' ');
+                    $installment->instdate = dbDate($dates[$key]);
+                    // $installment->instdate = getsDate(str_replace('/', '-', $dates[$key]));
+                    $installment->save();
                 }
             }
 
@@ -174,11 +177,12 @@ class LoanApprovalController extends Controller
              */
             $writing = new Writing();
             $writing->writnumb = $writnumb;
-            $writing->account = $loanType->loanacc;
-            $writing->operation = $opera1->idoper;
-            $writing->debitamt = $amount;
-            $writing->accdate = $accdate->idaccdate;
-            $writing->employee = $emp->idemp;
+            $writing->account = $loan_type->loanacc;
+            $writing->operation = Request::input('menu_level_operation');
+            $writing->debitamt = (int)trimOver(Request::input('amount'), ' ');
+            $writing->accdate = $accdate->accdate;
+            $writing->employee = $emp->iduser;
+            $writing->cash = $cash;
             $writing->network = $emp->network;
             $writing->zone = $emp->zone;
             $writing->institution = $emp->institution;
@@ -187,53 +191,40 @@ class LoanApprovalController extends Controller
 
             $writing = new Writing();
             $writing->writnumb = $writnumb;
-            $writing->account = $loanType->transacc;
-            $writing->aux = $demLoan->member;
-            $writing->operation = $opera2->idoper;
-            $writing->creditamt = $amount;
-            $writing->accdate = $accdate->idaccdate;
-            $writing->employee = $emp->idemp;
+            $writing->account = $loan_type->trans_acc;
+            $writing->mem_aux = $dem_loan->member;
+            $writing->operation = Request::input('menu_level_operation');
+            $writing->creditamt = (int)trimOver(Request::input('amount'), ' ');
+            $writing->accdate = $accdate->accdate;
+            $writing->employee = $emp->iduser;
+            $writing->cash = $cash;
             $writing->network = $emp->network;
             $writing->zone = $emp->zone;
             $writing->institution = $emp->institution;
             $writing->branch = $emp->branch;
             $writing->save();
 
-            $memBal = Balance::getMemAcc($demLoan->member, $loanType->transacc);
+            $memBal = MemBalance::getMemAcc($dem_loan->member, $loan_type->trans_acc);
             if ($memBal !== null) {
-                $memBal->available += $amount;
+                $memBal->available += (int)trimOver(Request::input('amount'), ' ');
                 $memBal->update((array)$memBal);
             } else {
-                $balance = new Balance();
-                $balance->member = $demLoan->member;
-                $balance->account = $loanType->transacc;
-                $balance->operation = $opera2->idoper;
-                $balance->available = $amount;
+                $balance = new MemBalance();
+                $balance->member = $dem_loan->member;
+                $balance->account = $loan_type->trans_acc;
+                // $balance->operation = $opera2->idoper;
+                $balance->available = (int)trimOver(Request::input('amount'), ' ');
                 $balance->save();
             }
 
-            $demLoan->delete();
+            $dem_loan->delete();
 
             DB::commit();
-            return Redirect::back()->with('success', trans('alertSuccess.lappsave'));
+            return Redirect::back()->with('success', trans('alertSuccess.loan_approval_save'));
         } catch (Exception $ex) {
             dd($ex);
             DB::rollBack();
-            return Redirect::back()->with('danger', trans('alertDanger.lappsave'));
+            return Redirect::back()->with('danger', trans('alertDanger.loan_approval_save'));
         }
-    }
-
-    public function index()
-    {
-        if (dateOpen()) {
-            $loans = DemLoan::getDemLoans();
-            $accounts = Account::getAccounts();
-
-            return view('omega.pages.loan_approval', [
-                'loans' => $loans,
-                'accounts' => $accounts
-            ]);
-        }
-        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
 }

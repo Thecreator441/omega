@@ -38,4 +38,5 @@ return [
     'ocout' => 'Transaction non éffectué',
 
     'oldpasserror' => 'L\'ancien mot de passe est invalide',
+    'no_cash_init' => 'Aucune caisse n\'a ete initialiser pour la fermeture',
 ];

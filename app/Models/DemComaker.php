@@ -13,20 +13,14 @@ class DemComaker extends Model
     protected $fillable = ['dem_comakers'];
 
     /**
-     * @param int $demloan
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public static function getComakers(int $demloan)
-    {
-        return self::query()->where(['demloan' => $demloan, 'status' => 'Al'])->get();
-    }
-
-    /**
      * @param array|null $where
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public static function getDemComakers(array $where = null)
-    {
-        return self::query()->where($where)->where('status', 'Al')->get();
+    {   
+        return self::query()->select('dem_comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
+            ->join('members AS M', 'dem_comakers.member', '=', 'M.idmember')
+            ->join('accounts AS A', 'dem_comakers.account', '=', 'A.idaccount')
+            ->where($where)->get();
     }
 }

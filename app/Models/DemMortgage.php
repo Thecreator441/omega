@@ -12,39 +12,26 @@ class DemMortgage extends Model
 
     protected $fillable = ['dem_mortgages'];
 
-    private $iddemmortgage;
-
-    private $demmortgno;
-
-    private $name;
-
-    private $nature;
-
-    private $member;
-
-    private $loan;
-
-    private $amount;
-
-    private $act_amount;
-
-    private $status;
-
-    private $created_at;
-
-    private $updated_at;
-
-    public static function getLast(int $loan)
-    {
-        return self::query()->where('loan', $loan)->orderBy('demmortgno', 'DESC')->first();
-    }
-
+    
     /**
      * @param int $demloan
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getMortgages(int $demloan)
+    public static function getDemMortgages(array $where)
     {
-        return self::query()->where(['loan' => $demloan, 'status' => 'Al'])->get();
+        return self::query()->select('dem_mortgages.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname')
+        ->join('members AS M', 'dem_mortgages.member', '=', 'M.idmember')
+        ->where($where)->get();
+    }
+    
+    /**
+     * @param int $loan
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getLast(int $loan)
+    {
+        return self::query()->select('dem_mortgages.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname')
+        ->join('members AS M', 'dem_mortgages.member', '=', 'M.idmember')
+        ->where('demloan', $loan)->orderByDesc('demmortgno')->first();
     }
 }

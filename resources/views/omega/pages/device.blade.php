@@ -36,12 +36,12 @@ if ($emp->lang == 'fr') {
 
                     @if ($emp->level === 'P')
                         <div class="row">
-                            <div class="col-md-8 col-sm-8 col-xs-12">
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-12">
                                 <div class="row">
-                                    <div class="col-md-6 col-sm-6 col-xs-6">
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                         <div class="form-group has-error">
-                                            <label for="network" class="col-md-4 control-label">@lang('label.network')</label>
-                                            <div class="col-md-8">
+                                            <label for="network" class="col-xl-4 col-lg-4 col-md-4 control-label">@lang('label.network')</label>
+                                            <div class="col-xl-8 col-lg-8 col-md-8">
                                                 <select class="form-control select2" id="network" name="network">
                                                     <option value=""></option>
                                                     @foreach($networks as $network)

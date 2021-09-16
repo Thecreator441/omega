@@ -126,23 +126,24 @@ if ($emp->lang == 'fr') {
         <div class="box-body">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="col-md-12">
+                    <div class="table-responsive">
                         <table id="admin-data-table" class="table table-bordered table-striped table-hover table-responsive-xl">
                             <thead>
                             <tr>
+                                {{-- <th>#</th> --}}
                                 <th>{{$title}}</th>
                                 <th>@lang('label.code')</th>
                                 <th>@lang('label.iso')</th>
                                 <th>@lang('label.iso3')</th>
                                 <th>@lang('label.phonecode')</th>
                                 <th>@lang('label.currency')</th>
-                                <th>#</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach($countries as $country)
                                 <tr>
+                                    {{-- <td class="text-center">{{$country->idcountry}}</td> --}}
                                     <td>@if($emp->lang == 'fr') {{ $country->labelfr }} @else {{ $country->labeleng }} @endif</td>
                                     <td class="text-center">{{$country->code}}</td>
                                     <td class="text-center">{{$country->iso}}</td>
@@ -153,7 +154,6 @@ if ($emp->lang == 'fr') {
                                             {{$currency->symbol}} ({{$currency->format}})
                                         @endif
                                     @endforeach</td>
-                                    <td class="text-center">{{$country->idcountry}}</td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-info bg-aqua btn-sm fa fa-edit" onclick="edit('{{$country->idcountry}}')"></button>
                                         <button type="button" class="btn bg-red btn-sm delete fa fa-trash" onclick="remove('{{$country->idcountry}}')"></button>

@@ -13,96 +13,94 @@ class DemLoan extends Model
 
     protected $fillable = ['dem_loans'];
 
-    private $iddemloan;
-
-    private $demloanno;
-
-    private $member;
-
-    private $memacc;
-
-    private $transacc;
-
-    private $amount;
-
-    private $intrate;
-
-    private $nbrinst;
-
-    private $demdate;
-
-    private $appdate;
-
-    private $amortype;
-
-    private $periodicity;
-
-    private $remamt;
-
-    private $annuity;
-
-    private $year;
-
-    private $vat;
-
-    private $insrdate1;
-
-    private $loanpur;
-
-    private $loantype;
-
-    private $employee;
-
-    private $loanstat;
-
-    private $isforce;
-
-    private $isforceby;
-
-    private $institution;
-
-    private $branch;
-
-    private $updated_at;
-
-    private $created_at;
-
     /**
-     * @param int $id
+     * @param int $iddemloan
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getLoan(int $id)
+    public static function getDemLoan(int $iddemloan)
     {
-        return self::query()->where('iddemloan', $id)->first();
+        $dem_loan = self::query()->select('dem_loans.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS m_surname', 'E.empmat', 'E.name AS e_name', 'E.surname AS e_surname',
+            'LT.loan_type_code', 'LT.labelfr AS lt_labelfr', 'LT.labeleng AS lt_labeleng', 'LP.labelfr AS lp_labelfr', 'LP.labeleng AS lp_labeleng')
+            ->join('members AS M', 'dem_loans.member', '=', 'idmember')
+            ->join('employees AS E', 'dem_loans.employee', '=', 'idemp')
+            ->join('loan_types AS LT', 'dem_loans.loantype', '=', 'idltype')
+            ->join('loan_purs AS LP', 'dem_loans.loanpur', '=', 'idloanpur')
+            ->where('iddemloan', $iddemloan)->first();
+
+        if ($dem_loan->guarantee === 'F' || $dem_loan->guarantee === 'F&M') {
+            $dem_loan->comakers = DemComaker::getDemComakers(['demloan' => $dem_loan->iddemloan]);
+        }
+
+        if ($dem_loan->guarantee === 'M' || $dem_loan->guarantee === 'F&M') {
+            $dem_loan->mortgages = DemMortgage::getDemMortgages(['demloan' => $dem_loan->iddemloan]);
+        }
+
+        return $dem_loan;
     }
 
     /**
      * @param array|null $where
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getLoans(array $where = null)
+    public static function getDemLoanBy(array $where = null)
     {
         $emp = Session::get('employee');
 
         if ($where !== null) {
-            return self::query()->where($where)->where(static function ($query) use ($emp) {
-                if ($emp->level === 'B') {
-                    $query->where('branch', $emp->branch);
-                }
-                if ($emp->level === 'I') {
-                    $query->where('institution', $emp->institutions);
-                }
-            })->distinct('idloan')->get();
+            $dem_loan = self::query()->select('dem_loans.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS m_surname', 'E.empmat', 'E.name AS e_name', 'E.surname AS e_surname',
+                'LT.loan_type_code', 'LT.labelfr AS lt_labelfr', 'LT.labeleng AS lt_labeleng', 'LP.labelfr AS lp_labelfr', 'LP.labeleng AS lp_labeleng')
+                ->join('members AS M', 'dem_loans.member', '=', 'M.idmember')
+                ->join('employees AS E', 'dem_loans.employee', '=', 'E.idemp')
+                ->join('loan_types AS LT', 'dem_loans.loantype', '=', 'LT.idltype')
+                ->join('loan_purs AS LP', 'dem_loans.loanpur', '=', 'LP.idloanpur')
+                ->where($where)->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'B') {
+                        $query->where('dem_loans.branch', $emp->branch);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('dem_loans.institution', $emp->institution);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('dem_loans.zone', $emp->zone);
+                    }
+                    if ($emp->level === 'N') {
+                        $query->where('dem_loans.network', $emp->network);
+                    }
+                })->first();
+        } else {
+            $dem_loan = self::query()->select('dem_loans.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS m_surname', 'E.empmat', 'E.name AS e_name', 'E.surname AS e_surname',
+                'LT.loan_type_code', 'LT.labelfr AS lt_labelfr', 'LT.labeleng AS lt_labeleng', 'LP.labelfr AS lp_labelfr', 'LP.labeleng AS lp_labeleng')
+                ->join('members AS M', 'dem_loans.member', '=', 'M.idmember')
+                ->join('employees AS E', 'dem_loans.employee', '=', 'E.idemp')
+                ->join('loan_types AS LT', 'dem_loans.loantype', '=', 'LT.idltype')
+                ->join('loan_purs AS LP', 'dem_loans.loanpur', '=', 'LP.idloanpur')
+                ->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'B') {
+                        $query->where('dem_loans.branch', $emp->branch);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('dem_loans.institution', $emp->institution);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('dem_loans.zone', $emp->zone);
+                    }
+                    if ($emp->level === 'N') {
+                        $query->where('dem_loans.network', $emp->network);
+                    }
+                })->first();
         }
 
-        return self::query()->where(static function ($query) use ($emp) {
-            if ($emp->level === 'B') {
-                $query->where('branch', $emp->branch);
+        if ($dem_loan !== null) {
+            if ($dem_loan->guarantee === 'F' || $dem_loan->guarantee === 'F&M') {
+                $dem_loan->comakers = DemComaker::getDemComakers(['demloan' => $dem_loan->iddemloan]);
             }
-            if ($emp->level === 'I') {
-                $query->where('institution', $emp->institutions);
+    
+            if ($dem_loan->guarantee === 'M' || $dem_loan->guarantee === 'F&M') {
+                $dem_loan->mortgages = DemMortgage::getDemMortgages(['demloan' => $dem_loan->iddemloan]);
             }
-        })->distinct('idloan')->get();
+        }
+
+        return $dem_loan;
     }
 
     /**
@@ -112,8 +110,76 @@ class DemLoan extends Model
     public static function getDemLoans(array $where = null)
     {
         $emp = Session::get('employee');
+        $dem_loans = [];
+
         if ($where !== null) {
-            return self::query()->where('status', 'Al')->where($where)->where(static function ($query) use ($emp) {
+            $dem_loans = self::query()->select('dem_loans.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS m_surname', 'E.empmat', 'E.name AS e_name', 'E.surname AS e_surname',
+                'LT.loan_type_code', 'LT.labelfr AS lt_labelfr', 'LT.labeleng AS lt_labeleng', 'LP.labelfr AS lp_labelfr', 'LP.labeleng AS lp_labeleng')
+                ->join('members AS M', 'dem_loans.member', '=', 'M.idmember')
+                ->join('employees AS E', 'dem_loans.employee', '=', 'E.idemp')
+                ->join('loan_types AS LT', 'dem_loans.loantype', '=', 'LT.idltype')
+                ->join('loan_purs AS LP', 'dem_loans.loanpur', '=', 'LP.idloanpur')
+                ->where($where)->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'B') {
+                        $query->where('dem_loans.branch', $emp->branch);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('dem_loans.institution', $emp->institution);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('dem_loans.zone', $emp->zone);
+                    }
+                    if ($emp->level === 'N') {
+                        $query->where('dem_loans.network', $emp->network);
+                    }
+                })->get();
+        } else {
+            $dem_loans = self::query()->select('dem_loans.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS m_surname', 'E.empmat', 'E.name AS e_name', 'E.surname AS e_surname',
+                'LT.loan_type_code', 'LT.labelfr AS lt_labelfr', 'LT.labeleng AS lt_labeleng', 'LP.labelfr AS lp_labelfr', 'LP.labeleng AS lp_labeleng')
+                ->join('members AS M', 'dem_loans.member', '=', 'M.idmember')
+                ->join('employees AS E', 'dem_loans.employee', '=', 'E.idemp')
+                ->join('loan_types AS LT', 'dem_loans.loantype', '=', 'LT.idltype')
+                ->join('loan_purs AS LP', 'dem_loans.loanpur', '=', 'LP.idloanpur')
+                ->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'B') {
+                        $query->where('dem_loans.branch', $emp->branch);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('dem_loans.institution', $emp->institution);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('dem_loans.zone', $emp->zone);
+                    }
+                    if ($emp->level === 'N') {
+                        $query->where('dem_loans.network', $emp->network);
+                    }
+                })->get();
+        }
+
+        if ((int)$dem_loans->count() > 0) {
+            foreach ($dem_loans as $dem_loan) {
+                if ($dem_loan->guarantee === 'F' || $dem_loan->guarantee === 'F&M') {
+                    $dem_loan->comakers = DemComaker::getDemComakers(['demloan' => $dem_loan->iddemloan]);
+                }
+        
+                if ($dem_loan->guarantee === 'M' || $dem_loan->guarantee === 'F&M') {
+                    $dem_loan->mortgages = DemMortgage::getDemMortgages(['demloan' => $dem_loan->iddemloan]);
+                }
+            }
+        }
+
+        return $dem_loans;
+    }
+
+    /**
+     * @param array|null $where
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getDemLoansCond(array $where = null)
+    {
+        $emp = Session::get('employee');
+        if ($where !== null) {
+            return self::query()->where('status', 'A')->where($where)->where(static function ($query) use ($emp) {
                 if ($emp->level === 'B') {
                     $query->where('branch', $emp->branch);
                     if ($emp->code === 5) {
@@ -129,7 +195,7 @@ class DemLoan extends Model
             })->orderBy('demloanno')->get();
         }
 
-        return self::query()->where('status', 'Al')->where(static function ($query) use ($emp) {
+        return self::query()->where('status', 'A')->where(static function ($query) use ($emp) {
             if ($emp->level === 'B') {
                 $query->where('branch', $emp->branch);
                 if ($emp->code === 5) {
@@ -151,7 +217,7 @@ class DemLoan extends Model
     public static function getAllDemLoans()
     {
         $emp = Session::get('employee');
-        return self::query()->where('status', 'Al')->where(static function ($query) use ($emp) {
+        return self::query()->where('status', 'A')->where(static function ($query) use ($emp) {
             if ($emp->level === 'B') {
                 $query->where('branch', $emp->branch);
             }
@@ -266,6 +332,37 @@ class DemLoan extends Model
     {
         $emp = Session::get('employee');
 
-        return self::query()->where('branch', $emp->branch)->orderByDesc('demloanno')->first();
+        $dem_loan = self::query()->select('dem_loans.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS m_surname', 'E.empmat', 'E.name AS e_name', 'E.surname AS e_surname',
+            'LT.loan_type_code', 'LT.labelfr AS lt_labelfr', 'LT.labeleng AS lt_labeleng', 'LP.labelfr AS lp_labelfr', 'LP.labeleng AS lp_labeleng')
+            ->join('members AS M', 'dem_loans.member', '=', 'M.idmember')
+            ->join('employees AS E', 'dem_loans.employee', '=', 'E.idemp')
+            ->join('loan_types AS LT', 'dem_loans.loantype', '=', 'LT.idltype')
+            ->join('loan_purs AS LP', 'dem_loans.loanpur', '=', 'LP.idloanpur')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('dem_loans.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('dem_loans.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('dem_loans.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('dem_loans.network', $emp->network);
+                }
+            })->orderByDesc('demloanno')->first();
+
+        if ($dem_loan !== null) {
+            if ($dem_loan->guarantee === 'F' || $dem_loan->guarantee === 'F&M') {
+                $dem_loan->comakers = DemComaker::getDemComakers(['demloan' => $dem_loan->iddemloan]);
+            }
+    
+            if ($dem_loan->guarantee === 'M' || $dem_loan->guarantee === 'F&M') {
+                $dem_loan->mortgages = DemMortgage::getDemMortgages(['demloan' => $dem_loan->iddemloan]);
+            }
+        }
+
+        return $dem_loan;
     }
 }

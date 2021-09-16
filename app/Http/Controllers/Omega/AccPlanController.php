@@ -17,20 +17,12 @@ class AccPlanController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
+        $acctypes = AccType::getAccTypes();
+        $accounts = Account::getAccounts();
+        $acc_plans = AccPlan::getAccPlans();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $acctypes = AccType::getAccTypes();
-            $accounts = Account::getAccounts();
-            $acc_plans = AccPlan::getAccPlans();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            return view('omega.pages.acc_plan', compact('menu', 'acctypes', 'accounts', 'acc_plans'));
-        }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return view('omega.pages.acc_plan', compact('menu', 'acctypes', 'accounts', 'acc_plans'));
     }
 
     public function store()

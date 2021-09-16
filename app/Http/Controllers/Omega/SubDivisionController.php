@@ -16,33 +16,25 @@ class SubDivisionController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
+        $subdivisions = SubDiv::getSubDivs();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+        foreach ($subdivisions as $subdivision) {
+            $division = Division::getDivision($subdivision->division);
+            $region = Region::getRegion($division->region);
+            $country = Country::getCountry($region->country);
+
+            $subdivision->division = $division->label;
+            $subdivision->reg_fr = $region->labelfr;
+            $subdivision->reg_en = $region->labeleng;
+            $subdivision->cou_fr = $country->labelfr;
+            $subdivision->cou_en = $country->labeleng;
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $countries = Country::getCountries();
-            $regions = Region::getRegions();
-            $divisions = Division::getDivisions();
-            $subdivisions = SubDiv::getSubDivs();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            foreach ($subdivisions as $subdivision) {
-                $division = Division::getDivision($subdivision->division);
-                $region = Region::getRegion($division->region);
-                $country = Country::getCountry($region->country);
-    
-                $subdivision->division = $division->label;
-                $subdivision->reg_fr = $region->labelfr;
-                $subdivision->reg_en = $region->labeleng;
-                $subdivision->cou_fr = $country->labelfr;
-                $subdivision->cou_en = $country->labeleng;
-            }
-
-            return view('omega.pages.subdivision', compact('menu', 'countries', 'regions', 'divisions', 'subdivisions'));
-        }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return view('omega.pages.subdivision', compact('menu', 'countries', 'regions', 'divisions', 'subdivisions'));
     }
 
     public function store()

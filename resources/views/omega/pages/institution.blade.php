@@ -318,7 +318,7 @@ if ($emp->lang == 'fr') {
         <div class="box-body">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="col-md-12">
+                    <div class="table-responsive">
                         <table id="admin-data-table" class="table table-striped table-bordered table-hover table-responsive-xl">
                             <thead>
                             <tr>

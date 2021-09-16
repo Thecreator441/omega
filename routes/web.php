@@ -1232,8 +1232,8 @@ Route::get('getLoanSimulationPreview', static function () {
 
     $amount = (int)trimOver(Request::input('amount'), ' ');
     $inst_no = (int)trimOver(Request::input('numb_inst'), ' ');
-    $int_rate = (float)Request::input('int_rate') / (float)100;
-    $tax_rate = (float)Request::input('tax_rate') / (float)100;
+    $int_rate = (float)Request::input('int_rate') / 100;
+    $tax_rate = (float)Request::input('tax_rate') / 100;
     $period = Request::input('period');
 
     $simulations = [];
@@ -1260,15 +1260,15 @@ Route::get('getLoanSimulationPreview', static function () {
 
             if ($i > 1) {
                 $new_capital = $capital - $amort_amt;
-                $amo = ($new_capital * $int_rate) / (pow((1 + $int_rate), $inst_no - 1) - 1);
+                $amort = ($new_capital * $int_rate) / (pow((1 + $int_rate), $inst_no - 1) - 1);
 
                 for ($j = 1; $j < $i - 1 ; $j++) {
-                    $new_capital -= $amo;
-                    $amo = ($new_capital * $int_rate) / (pow((1 + $int_rate), ($inst_no - ($j + 1))) - 1);
+                    $new_capital -= $amort;
+                    $amort = ($new_capital * $int_rate) / (pow((1 + $int_rate), ($inst_no - ($j + 1))) - 1);
                 }
 
                 $capital = $new_capital;
-                $amort_amt = $amo;
+                $amort_amt = $amort;
             }
         }
 
@@ -1299,33 +1299,33 @@ Route::get('getLoanSimulationPreview', static function () {
             }
         }
 
-        $int_amt = $capital * $int_rate;
-        $ann_amt = $amort_amt + $int_amt;
-        $tax_amt = $int_amt * $tax_rate;
-        $tot_amt = $ann_amt + $tax_amt;
+        $int_amt = round($capital * $int_rate);
+        $ann_amt = round($amort_amt + $int_amt);
+        $tax_amt = round($int_amt * $tax_rate);
+        $tot_amt = round($ann_amt + $tax_amt);
 
         $date = $date->format('d/m/Y');
 
-        $tot_amort_amt += $amort_amt;
-        $tot_int_amt += $int_amt;
-        $tot_ann_amt += $ann_amt;
-        $tot_tax_amt += $tax_amt;
-        $tot_tot_amt += $tot_amt;
+        $tot_amort_amt += round($amort_amt);
+        $tot_int_amt += round($int_amt);
+        $tot_ann_amt += round($ann_amt);
+        $tot_tax_amt += round($tax_amt);
+        $tot_tot_amt += round($tot_amt);
 
         $simulations[] = [
-            'intallment' => $i,
-            'capital' => money($capital),
-            'amort_amt' => money($amort_amt),
-            'int_amt' => money($int_amt),
-            'ann_amt' => money($ann_amt),
-            'tax_amt' => money($tax_amt),
-            'tot_amt' => money($tot_amt),
+            'installment' => $i,
+            'capital' => money(round($capital)),
+            'amort_amt' => money(round($amort_amt)),
+            'int_amt' => money(round($int_amt)),
+            'ann_amt' => money(round($ann_amt)),
+            'tax_amt' => money(round($tax_amt)),
+            'tot_amt' => money(round($tot_amt)),
             'date' => $date
         ];
     }
 
     $simulations[] = [
-        'intallment' => null,
+        'installment' => null,
         'capital' => 0,
         'amort_amt' => 0,
         'int_amt' => 0,
@@ -1337,6 +1337,14 @@ Route::get('getLoanSimulationPreview', static function () {
 
     return ['data' => $simulations];
 });
+
+// Get Aplied Loan
+Route::get('getAppliedLoan', static function () {
+    $dem_loans = DemLoan::getDemLoan(Request::input('dem_loan'));
+
+    return ['data' => $dem_loans];
+});
+
 
 // Get Member Savings Balance
 Route::get('getMemberSavingsBalance', static function () {
@@ -1793,5 +1801,10 @@ Route::get('getMemSituation', static function () {
 
 //  Get Journals
 Route::get('getJournals', static function () {
-    return Writing::getJournals(Request::input('state'), Request::input('user'));
+    return Writing::getJournals(Request::input('network'), Request::input('zone'), Request::input('institution'), Request::input('branch'), Request::input('user'), Request::input('state'), Request::input('lang'));
+});
+
+//  Get Journals
+Route::get('getValidJournals', static function () {
+    return ValWriting::getValidJournals(Request::input('network'), Request::input('zone'), Request::input('institution'), Request::input('branch'), Request::input('user'), Request::input('state'), Request::input('from'), Request::input('to'), Request::input('lang'));
 });

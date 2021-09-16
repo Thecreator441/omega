@@ -17,36 +17,28 @@ class TownController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
+        $subdivisions = SubDiv::getSubDivs();
+        $towns = Town::getTowns();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+        foreach ($towns as $town) {
+            $subdivision = SubDiv::getSubDiv($town->subdivision);
+            $division = Division::getDivision($subdivision->division);
+            $region = Region::getRegion($division->region);
+            $country = Country::getCountry($region->country);
+
+            $town->subdivision = $subdivision->label;
+            $town->division = $division->label;
+            $town->reg_fr = $region->labelfr;
+            $town->reg_en = $region->labeleng;
+            $town->cou_fr = $country->labelfr;
+            $town->cou_en = $country->labeleng;
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $countries = Country::getCountries();
-            $regions = Region::getRegions();
-            $divisions = Division::getDivisions();
-            $subdivisions = SubDiv::getSubDivs();
-            $towns = Town::getTowns();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            foreach ($towns as $town) {
-                $subdivision = SubDiv::getSubDiv($town->subdivision);
-                $division = Division::getDivision($subdivision->division);
-                $region = Region::getRegion($division->region);
-                $country = Country::getCountry($region->country);
-    
-                $town->subdivision = $subdivision->label;
-                $town->division = $division->label;
-                $town->reg_fr = $region->labelfr;
-                $town->reg_en = $region->labeleng;
-                $town->cou_fr = $country->labelfr;
-                $town->cou_en = $country->labeleng;
-            }
-
-            return view('omega.pages.town', compact('menu', 'countries', 'regions', 'divisions', 'subdivisions', 'towns'));
-        }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return view('omega.pages.town', compact('menu', 'countries', 'regions', 'divisions', 'subdivisions', 'towns'));
     }
 
     public function store()

@@ -17,8 +17,11 @@ class Comaker extends Model
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public static function getComakers(array $where = null)
-    {
-        return self::query()->where($where)->where('status', 'Ar')->get();
+    {   
+        return self::query()->select('dem_comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
+            ->join('members AS M', 'dem_comakers.member', '=', 'M.idmember')
+            ->join('accounts AS A', 'dem_comakers.account', '=', 'A.idaccount')
+            ->where($where)->get();
     }
 
     /**
@@ -27,7 +30,10 @@ class Comaker extends Model
      */
     public static function getComakersDesc(array $where = null)
     {
-        return self::query()->where($where)->where('status', 'Ar')->orderByDesc('idcomaker')->get();
+        return self::query()->select('dem_comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
+            ->join('members AS M', 'dem_comakers.member', '=', 'M.idmember')
+            ->join('accounts AS A', 'dem_comakers.account', '=', 'A.idaccount')
+            ->where($where)->orderByDesc('idcomaker')->get();
     }
 
     /**
@@ -36,7 +42,10 @@ class Comaker extends Model
      */
     public static function getComakersSum(array $where = null)
     {
-        return self::query()->where($where)->where('status', 'Ar')->sum('guaramt');
+        return self::query()->select('dem_comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
+            ->join('members AS M', 'dem_comakers.member', '=', 'M.idmember')
+            ->join('accounts AS A', 'dem_comakers.account', '=', 'A.idaccount')
+            ->where($where)->sum('guaramt');
     }
 
     /**
@@ -45,7 +54,10 @@ class Comaker extends Model
      */
     public static function getComakersPaidSum(array $where = null)
     {
-        return self::query()->where($where)->where('status', 'Ar')->sum('paidguar');
+        return self::query()->select('dem_comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
+            ->join('members AS M', 'dem_comakers.member', '=', 'M.idmember')
+            ->join('accounts AS A', 'dem_comakers.account', '=', 'A.idaccount')
+            ->where($where)->sum('paidguar');
     }
 
     /**

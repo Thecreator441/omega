@@ -25,52 +25,52 @@ if ($emp->lang == 'fr') {
         <form action="{{ route('loantype/store') }}" method="post" role="form" id="loan_typeForm" class="needs-validation">
             {{ csrf_field() }}
 
-            <div class="fillform">
+            <div class="row fillform">
                 <input type="hidden" id="idloan_type" name="idloan_type" value="">
 
                 <div class="row">
-                    <div class="col-md-2 col=xs-12">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col=xs-12">
                         <div class="form-group has-error">
-                            <label for="loan_type_code" class="col-md-4 col-xs-3 control-label">@lang('label.code')<span class="text-red text-bold">*</span></label>
-                            <div class="col-md-8 col-xs-9">
+                            <label for="loan_type_code" class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-3 control-label">@lang('label.code')<span class="text-red text-bold">*</span></label>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-9">
                                 <input type="text" name="loan_type_code" id="loan_type_code" class="form-control text-right code_" value="{{ (int)$loan_types->count() + 1 }}" readonly required>
                                 <div class="help-block">@lang('placeholder.code')</div>
                             </div>
                         </div>
                     </div>
                     @if($emp->lang == 'fr')
-                        <div class="col-md-5 col-xs-12">
+                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-12">
                             <div class="form-group has-error">
-                                <label for="labelfr" class="col-md-2 control-label">@lang('label.loan_type_fr')<span class="text-red text-bold">*</span></label>
-                                <div class="col-md-10">
+                                <label for="labelfr" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-3 control-label">@lang('label.loan_type_fr')<span class="text-red text-bold">*</span></label>
+                                <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-xs-9">
                                     <input type="text" class="form-control" name="labelfr" id="labelfr" required>
                                     <div class="help-block">@lang('placeholder.loan_type_fr')</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-5 col-xs-12">
+                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-12">
                             <div class="form-group has-error">
-                                <label for="labeleng" class="col-md-2 control-label">@lang('label.loan_type_eng')<span class="text-red text-bold">*</span></label>
-                                <div class="col-md-10">
+                                <label for="labeleng" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-3 control-label">@lang('label.loan_type_eng')<span class="text-red text-bold">*</span></label>
+                                <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-xs-9">
                                     <input type="text" class="form-control" name="labeleng" id="labeleng" required>
                                     <div class="help-block">@lang('placeholder.loan_type_eng')</div>
                                 </div>
                             </div>
                         </div>
                     @else
-                        <div class="col-md-5 col-xs-12">
+                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-12">
                             <div class="form-group has-error">
-                                <label for="labeleng" class="col-md-2 control-label">@lang('label.loan_type_eng')<span class="text-red text-bold">*</span></label>
-                                <div class="col-md-10">
+                                <label for="labeleng" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-3 control-label">@lang('label.loan_type_eng')<span class="text-red text-bold">*</span></label>
+                                <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-xs-9">
                                     <input type="text" class="form-control" name="labeleng" id="labeleng" required>
                                     <div class="help-block">@lang('placeholder.loan_type_eng')</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-5 col-xs-12">
+                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-12">
                             <div class="form-group has-error">
-                                <label for="labelfr" class="col-md-2 control-label">@lang('label.loan_type_fr')<span class="text-red text-bold">*</span></label>
-                                <div class="col-md-10">
+                                <label for="labelfr" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-3 control-label">@lang('label.loan_type_fr')<span class="text-red text-bold">*</span></label>
+                                <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-xs-9">
                                     <input type="text" class="form-control" name="labelfr" id="labelfr" required>
                                     <div class="help-block">@lang('placeholder.loan_type_fr')</div>
                                 </div>
@@ -80,10 +80,10 @@ if ($emp->lang == 'fr') {
                 </div>
 
                 <div class="row">
-                    <div class="col-md-3 col-xs-12">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-12">
                         <div class="form-group has-info">
-                            <label for="loan_per" class="col-md-4 col-xs-3 control-label">@lang('label.loan_per')</label>
-                            <div class="col-md-8 col-xs-9">
+                            <label for="loan_per" class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-3 control-label">@lang('label.loan_per')</label>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-9">
                                 <select id="loan_per" name="loan_per" class="form-control select2">
                                     <option value="Al" selected>@lang('label.al_period')</option>
                                     <option value="D">@lang('label.daily')</option>
@@ -98,28 +98,28 @@ if ($emp->lang == 'fr') {
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-xs-6">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-6">
                         <div class="form-group has-info">
-                            <label for="max_dur" class="col-md-6 control-label">@lang('label.max_dur')</label>
-                            <div class="col-md-6">
+                            <label for="max_dur" class="col-xl-4 col-lg-4 col-md-4 col-sm-4 control-label">@lang('label.max_dur')</label>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
                                 <input type="text" name="max_dur" id="max_dur" class="form-control digit text-right">
                                 <div class="help-block">@lang('placeholder.max_dur')</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-xs-6">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-6">
                         <div class="form-group has-info">
-                            <label for="max_amt" class="col-md-5 control-label">@lang('label.max_amt')</label>
-                            <div class="col-md-7">
+                            <label for="max_amt" class="col-xl-4 col-lg-4 col-md-4 col-sm-4 control-label">@lang('label.max_amt')</label>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
                                 <input type="text" name="max_amt" id="max_amt" class="form-control amount text-right text-bold">
                                 <div class="help-block">@lang('placeholder.max_amt')</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-xs-6">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-12">
                         <div class="form-group has-info">
-                            <label for="inst_pen_day_space" class="col-md-8 control-label">@lang('label.inst_pen_day_space')</label>
-                            <div class="col-md-4">
+                            <label for="inst_pen_day_space" class="col-xl-4 col-lg-4 col-md-4 col-sm-4 control-label">@lang('label.inst_pen_day_space')</label>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
                                 <input type="text" name="inst_pen_day_space" id="inst_pen_day_space" class="form-control digit text-right">
                                 <div class="help-block">@lang('placeholder.inst_pen_day_space')</div>
                             </div>
@@ -128,24 +128,10 @@ if ($emp->lang == 'fr') {
                 </div>
 
                 <div class="row">
-                    <div class="col-md-7 col-xs-12">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-12">
                         <div class="form-group has-error">
-                            <label for="int_paid_acc" class="col-md-4 control-label">@lang('label.int_paid_acc')<span class="text-red text-bold">*</span></label>
-                            <div class="col-md-8">
-                                <select name="int_paid_acc" id="int_paid_acc" class="select2" required>
-                                    <option value=""></option>
-                                    @foreach ($accplans as $accplan)
-                                        <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>
-                                    @endforeach
-                                </select>
-                                <div class="help-block">@lang('placeholder.int_paid_acc')</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-5 col-xs-6">
-                        <div class="form-group has-error">
-                            <label for="loan_acc" class="col-md-4 control-label">@lang('label.loan_acc')<span class="text-red text-bold">*</span></label>
-                            <div class="col-md-8">
+                            <label for="loan_acc" class="col-xl-3 col-lg-3 col-md-4 col-sm-4 control-label">@lang('label.loan_acc')<span class="text-red text-bold">*</span></label>
+                            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-8">
                                 <select name="loan_acc" id="loan_acc" class="select2" required>
                                     <option value=""></option>
                                     @foreach ($accplans as $accplan)
@@ -158,200 +144,222 @@ if ($emp->lang == 'fr') {
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="box-header with-border">
-                    <div class="row">
-                        <div class="row">
-                            <div class="col-md-4 col-xs-12">
-                                <div class="form-group col-md-12">
-                                    <label for="">@lang('label.seicomaker')</label>
-                                </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                        <div class="form-group has-error">
+                            <label for="trans_acc" class="col-xl-3 col-lg-3 col-md-4 col-sm-4 control-label">@lang('label.trans_acc')<span class="text-red text-bold">*</span></label>
+                            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-8">
+                                <select name="trans_acc" id="trans_acc" class="select2" required>
+                                    <option value=""></option>
+                                    @foreach ($accplans as $accplan)
+                                        @if ($accplan->accabbr === 'Or' || $accplan->accabbr === 'Co')
+                                            <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 4) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <div class="help-block">@lang('placeholder.trans_acc')</div>
                             </div>
-                            <div class="col-md-3 col-xs-6">
-                                <div class="form-group">
-                                    <div class="checkbox">
-                                        <label for="seicomaker_Y">
-                                            <input type="radio" name="seicomaker" value="Y" id="seicomaker_Y" class="seicomaker">&nbsp;&nbsp;
-                                            @lang('label.yes')
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-xs-6">
-                                <div class="form-group">
-                                    <div class="checkbox">
-                                        <label for="seicomaker_N">
-                                            <input type="radio" name="seicomaker" value="N" id="seicomaker_N" class="seicomaker">&nbsp;&nbsp;
-                                            @lang('label.no')
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2"></div>
                         </div>
                     </div>
-                </div>
-
-                <div class="box-header with-border">
-                    <div class="row">
-                        <div class="row">
-                            <div class="col-md-3 col-xs-12">
-                                <div class="form-group col-md-12">
-                                    <label for="">@lang('label.block_acc')</label>
-                                </div>
-                            </div>
-                            <div class="col-md-2 col-xs-6">
-                                <div class="form-group">
-                                    <div class="checkbox">
-                                        <label for="none">
-                                            <input type="radio" name="block_acc" value="N" id="none" class="block_acc">&nbsp;&nbsp;
-                                            @lang('label.none')
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-xs-6">
-                                <div class="form-group">
-                                    <div class="checkbox">
-                                        <label for="mem_acc">
-                                            <input type="radio" name="block_acc" value="M" id="mem_acc" class="block_acc">&nbsp;&nbsp;
-                                            @lang('label.mem_acc')
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-xs-12">
-                                <div class="form-group">
-                                    <div class="checkbox">
-                                        <label for="mem&co">
-                                            <input type="radio" name="block_acc" value="MC" id="mem&co" class="block_acc">&nbsp;&nbsp;
-                                            @lang('label.mem&co')
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-1"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="box-header with-border">
-                    <div class="row">
-                        <div class="row">
-                            <div class="col-md-2 col-xs-12">
-                                <div class="form-group col-md-12">
-                                    <label for="">@lang('label.pay_tax')</label>
-                                </div>
-                            </div>
-                            <div class="col-md-2 col-xs-12">
-                                <div class="form-group">
-                                    <label for="pay_tax_rate" class="col-md-4 control-label">@lang('label.rate')</label>
-                                    <div class="col-md-8">
-                                        <input type="text" name="pay_tax_rate" id="pay_tax_rate" class="rate form-control text-right">
-                                        <div class="help-block">@lang('placeholder.pay_tax_rate')</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-8 col-xs-12">
-                                <div class="form-group">
-                                    <label for="pay_tax_acc" class="col-md-2 control-label">@lang('label.account')</label>
-                                    <div class="col-md-10">
-                                        <select name="pay_tax_acc" id="pay_tax_acc" class="form-control select2">
-                                            <option value=""></option>
-                                            @foreach($accplans as $accplan)
-                                                <option value="{{ $accplan->idaccplan }}">
-                                                    {{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{$accplan->labelfr}} @else {{$accplan->labeleng}} @endif
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="help-block">@lang('placeholder.pay_tax_acc')</div>
-                                    </div>
-                                </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                        <div class="form-group has-error">
+                            <label for="int_paid_acc" class="col-xl-4 col-lg-4 col-md-4 col-sm-4 control-label">@lang('label.int_paid_acc')<span class="text-red text-bold">*</span></label>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
+                                <select name="int_paid_acc" id="int_paid_acc" class="select2" required>
+                                    <option value=""></option>
+                                    @foreach ($accplans as $accplan)
+                                        <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>
+                                    @endforeach
+                                </select>
+                                <div class="help-block">@lang('placeholder.int_paid_acc')</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="box-header with-border">
-                    <div class="row">
-                        <div class="row">
-                            <div class="col-md-2 col-xs-12">
-                                <div class="form-group col-md-12">
-                                    <label for="">@lang('label.use_quod')</label>
-                                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                        <div class="form-group col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <label for="">@lang('label.seicomaker')</label>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                        <div class="form-group col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="checkbox">
+                                <label for="seicomaker_Y">
+                                    <input type="radio" name="seicomaker" value="Y" id="seicomaker_Y" class="seicomaker">&nbsp;&nbsp;
+                                    @lang('label.yes')
+                                </label>
                             </div>
-                            <div class="col-md-2 col-xs-12">
-                                <div class="form-group">
-                                    <label for="use_quod_rate" class="col-md-4 control-label">@lang('label.rate')</label>
-                                    <div class="col-md-8">
-                                        <input type="text" name="use_quod_rate" id="use_quod_rate" class="rate form-control text-right">
-                                        <div class="help-block">@lang('placeholder.use_quod_rate')</div>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                        <div class="form-group col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="checkbox">
+                                <label for="seicomaker_N">
+                                    <input type="radio" name="seicomaker" value="N" id="seicomaker_N" class="seicomaker">&nbsp;&nbsp;
+                                    @lang('label.no')
+                                </label>
                             </div>
-                            <div class="col-md-8 col-xs-12">
-                                <div class="form-group">
-                                    <label for="use_quod_acc" class="col-md-2 control-label">@lang('label.account')</label>
-                                    <div class="col-md-10">
-                                        <select name="use_quod_acc" id="use_quod_acc" class="form-control select2">
-                                            <option value=""></option>
-                                            @foreach($accplans as $accplan)
-                                                <option value="{{ $accplan->idaccplan }}">
-                                                    {{ substrWords($accplan->plan_code, 4) }} : @if($emp->lang == 'fr') {{$accplan->labelfr}} @else {{$accplan->labeleng}} @endif
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="help-block">@lang('placeholder.use_quod_acc')</div>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2"></div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                        <div class="form-group col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <label for="">@lang('label.block_acc')</label>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-4">
+                        <div class="form-group col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="checkbox">
+                                <label for="none">
+                                    <input type="radio" name="block_acc" value="N" id="none" class="block_acc">&nbsp;&nbsp;
+                                    @lang('label.none')
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-8">
+                        <div class="form-group col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="checkbox">
+                                <label for="mem_acc">
+                                    <input type="radio" name="block_acc" value="M" id="mem_acc" class="block_acc">&nbsp;&nbsp;
+                                    @lang('label.mem_acc')
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                        <div class="form-group col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="checkbox">
+                                <label for="mem&co">
+                                    <input type="radio" name="block_acc" value="MC" id="mem&co" class="block_acc">&nbsp;&nbsp;
+                                    @lang('label.mem&co')
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1"></div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        <div class="form-group col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <label for="">@lang('label.pay_tax')</label>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        <div class="form-group">
+                            <label for="pay_tax_rate" class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-3 control-label">@lang('label.rate')</label>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-9">
+                                <input type="text" name="pay_tax_rate" id="pay_tax_rate" class="rate form-control text-right">
+                                <div class="help-block">@lang('placeholder.pay_tax_rate')</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                        <div class="form-group">
+                            <label for="pay_tax_acc" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.account')</label>
+                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                <select name="pay_tax_acc" id="pay_tax_acc" class="form-control select2">
+                                    <option value=""></option>
+                                    @foreach($accplans as $accplan)
+                                        <option value="{{ $accplan->idaccplan }}">
+                                            {{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{$accplan->labelfr}} @else {{$accplan->labeleng}} @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="help-block">@lang('placeholder.pay_tax_acc')</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="box-header">
-                    <div class="row">
-                        <div class="row">
-                            <div class="col-md-2 col-xs-12">
-                                <div class="form-group col-md-12">
-                                    <label for="">@lang('label.pen_req')</label>
-                                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        <div class="form-group col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <label for="">@lang('label.use_quod')</label>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        <div class="form-group">
+                            <label for="use_quod_rate" class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-3 control-label">@lang('label.rate')</label>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-9">
+                                <input type="text" name="use_quod_rate" id="use_quod_rate" class="rate form-control text-right">
+                                <div class="help-block">@lang('placeholder.use_quod_rate')</div>
                             </div>
-                            <div class="col-md-2 col-xs-12">
-                                <div class="form-group">
-                                    <label for="pen_req_tax" class="col-md-4 control-label">@lang('label.tax')</label>
-                                    <div class="col-md-8">
-                                        <input type="text" name="pen_req_tax" id="pen_req_tax" class="rate form-control text-right">
-                                        <div class="help-block">@lang('placeholder.pen_req_tax')</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-8 col-xs-12">
-                                <div class="form-group">
-                                    <label for="pen_req_acc" class="col-md-2 control-label">@lang('label.account')</label>
-                                    <div class="col-md-10">
-                                        <select name="pen_req_acc" id="pen_req_acc" class="form-control select2">
-                                            <option value=""></option>
-                                            @foreach($accplans as $accplan)
-                                                <option value="{{ $accplan->idaccplan }}">
-                                                    {{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{$accplan->labelfr}} @else {{$accplan->labeleng}} @endif
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="help-block">@lang('placeholder.pen_req_acc')</div>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                        <div class="form-group">
+                            <label for="use_quod_acc" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.account')</label>
+                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                <select name="use_quod_acc" id="use_quod_acc" class="form-control select2">
+                                    <option value=""></option>
+                                    @foreach($accplans as $accplan)
+                                        <option value="{{ $accplan->idaccplan }}">
+                                            {{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{$accplan->labelfr}} @else {{$accplan->labeleng}} @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="help-block">@lang('placeholder.use_quod_acc')</div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="col-md-12">
-                        <button type="submit" id="save" class="btn btn-sm bg-blue pull-right fa fa-save btn-raised"></button>
+                <hr>
+
+                <div class="row">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        <div class="form-group col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <label for="">@lang('label.pen_req')</label>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        <div class="form-group">
+                            <label for="pen_req_tax" class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-3 control-label">@lang('label.tax')</label>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-9">
+                                <input type="text" name="pen_req_tax" id="pen_req_tax" class="rate form-control text-right">
+                                <div class="help-block">@lang('placeholder.pen_req_tax')</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                        <div class="form-group">
+                            <label for="pen_req_acc" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.account')</label>
+                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                <select name="pen_req_acc" id="pen_req_acc" class="form-control select2">
+                                    <option value=""></option>
+                                    @foreach($accplans as $accplan)
+                                        <option value="{{ $accplan->idaccplan }}">
+                                            {{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{$accplan->labelfr}} @else {{$accplan->labeleng}} @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="help-block">@lang('placeholder.pen_req_acc')</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <button type="submit" id="save" class="btn btn-sm bg-blue pull-right fa fa-save btn-raised"></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -377,6 +385,7 @@ if ($emp->lang == 'fr') {
                 <th>@lang('label.code')</th>
                 <th>{{ $title }}</th>
                 <th>@lang('label.loan_acc')</th>
+                <th>@lang('label.trans_acc')</th>
                 <th>@lang('label.int_paid_acc')</th>
                 <th>@lang('label.loan_per')</th>
                 <th>@lang('label.max_amt')</th>
@@ -390,6 +399,7 @@ if ($emp->lang == 'fr') {
                     <td class="text-center">{{pad($loan_type->loan_type_code, 3)}}</td>
                     <td>@if($emp->lang == 'fr') {{ $loan_type->labelfr }} @else {{ $loan_type->labeleng }} @endif</td>
                     <td class="text-center">{{ $loan_type->laccnumb }}</td>
+                    <td class="text-center">{{ $loan_type->taccnumb }}</td>
                     <td class="text-center">{{ $loan_type->iaccnumb }}</td>
                     <td>
                         @if ($loan_type->loan_per === 'D')
@@ -475,7 +485,7 @@ if ($emp->lang == 'fr') {
                 success: function (loan_type) {
                     $('#title').text("@if($emp->lang === 'fr') " + loan_type.labelfr + " @else " + loan_type.labeleng + "@endif");
 
-                    $('#idloan_type').val(loan_type.idloan_type);
+                    $('#idloan_type').val(loan_type.idltype);
                     $('#loan_type_code').val(loan_type.loan_type_code);
                     $('#labeleng').val(loan_type.labeleng);
                     $('#labelfr').val(loan_type.labelfr);
@@ -488,10 +498,10 @@ if ($emp->lang == 'fr') {
                         url: "{{ url('getAccount') }}",
                         method: 'get',
                         data: {
-                            id: loan_type.int_paid_acc
+                            id: loan_type.loan_acc
                         },
-                        success: function (int_paid_Acc) {
-                            $('#int_paid_acc').val(int_paid_Acc.idplan).select2();
+                        success: function (loan_Acc) {
+                            $('#loan_acc').val(loan_Acc.idplan).select2();
                         }
                     });
 
@@ -499,10 +509,21 @@ if ($emp->lang == 'fr') {
                         url: "{{ url('getAccount') }}",
                         method: 'get',
                         data: {
-                            id: loan_type.loan_acc
+                            id: loan_type.trans_acc
                         },
-                        success: function (loan_Acc) {
-                            $('#loan_acc').val(loan_Acc.idplan).select2();
+                        success: function (trans_Acc) {
+                            $('#trans_acc').val(trans_Acc.idplan).select2();
+                        }
+                    });
+
+                    $.ajax({
+                        url: "{{ url('getAccount') }}",
+                        method: 'get',
+                        data: {
+                            id: loan_type.int_paid_acc
+                        },
+                        success: function (int_paid_Acc) {
+                            $('#int_paid_acc').val(int_paid_Acc.idplan).select2();
                         }
                     });
 
@@ -588,7 +609,7 @@ if ($emp->lang == 'fr') {
                 success: function (loan_type) {
                     $('#title').text("@lang('label.edit') @if($emp->lang === 'fr') " + loan_type.labelfr + " @else " + loan_type.labeleng + "@endif");
 
-                    $('#idloan_type').val(loan_type.idloan_type);
+                    $('#idloan_type').val(loan_type.idltype);
                     $('#loan_type_code').val(loan_type.loan_type_code);
                     $('#labeleng').val(loan_type.labeleng);
                     $('#labelfr').val(loan_type.labelfr);

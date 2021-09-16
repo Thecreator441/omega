@@ -49,7 +49,7 @@ class CashRegularisationController extends Controller
             $emp = Session::get('employee');
 
             $writnumb = getWritNumb();
-            $totbil = trimOver(Request::input('totbil'), ' ');
+            $totbil = (int)trimOver(Request::input('totbil'), ' ');
             $cashDiff = Cash_Diff::getCashDiff(Request::input('cash_diff'));
             $amount = $cashDiff->amount - $cashDiff->paid_amt;
             $opera = Operation::getByCode(22);
@@ -62,18 +62,18 @@ class CashRegularisationController extends Controller
 
             if ($cashDiff->diff_type === 'E') {
                 if (cashEmpty($cash->idcash)) {
-                    $cash->mon1 -= trimOver(Request::input('B1'), ' ');
-                    $cash->mon2 -= trimOver(Request::input('B2'), ' ');
-                    $cash->mon3 -= trimOver(Request::input('B3'), ' ');
-                    $cash->mon4 -= trimOver(Request::input('B4'), ' ');
-                    $cash->mon5 -= trimOver(Request::input('B5'), ' ');
-                    $cash->mon6 -= trimOver(Request::input('P1'), ' ');
-                    $cash->mon7 -= trimOver(Request::input('P2'), ' ');
-                    $cash->mon8 -= trimOver(Request::input('P3'), ' ');
-                    $cash->mon9 -= trimOver(Request::input('P4'), ' ');
-                    $cash->mon10 -= trimOver(Request::input('P5'), ' ');
-                    $cash->mon11 -= trimOver(Request::input('P6'), ' ');
-                    $cash->mon12 -= trimOver(Request::input('P7'), ' ');
+                    $cash->mon1 -= (int)trimOver(Request::input('B1'), ' ');
+                    $cash->mon2 -= (int)trimOver(Request::input('B2'), ' ');
+                    $cash->mon3 -= (int)trimOver(Request::input('B3'), ' ');
+                    $cash->mon4 -= (int)trimOver(Request::input('B4'), ' ');
+                    $cash->mon5 -= (int)trimOver(Request::input('B5'), ' ');
+                    $cash->mon6 -= (int)trimOver(Request::input('P1'), ' ');
+                    $cash->mon7 -= (int)trimOver(Request::input('P2'), ' ');
+                    $cash->mon8 -= (int)trimOver(Request::input('P3'), ' ');
+                    $cash->mon9 -= (int)trimOver(Request::input('P4'), ' ');
+                    $cash->mon10 -= (int)trimOver(Request::input('P5'), ' ');
+                    $cash->mon11 -= (int)trimOver(Request::input('P6'), ' ');
+                    $cash->mon12 -= (int)trimOver(Request::input('P7'), ' ');
 
                     $cash->update((array)$cash);
 
@@ -117,18 +117,18 @@ class CashRegularisationController extends Controller
             }
 
             if ($cashDiff->diff_type === 'S') {
-                $cash->mon1 += trimOver(Request::input('B1'), ' ');
-                $cash->mon2 += trimOver(Request::input('B2'), ' ');
-                $cash->mon3 += trimOver(Request::input('B3'), ' ');
-                $cash->mon4 += trimOver(Request::input('B4'), ' ');
-                $cash->mon5 += trimOver(Request::input('B5'), ' ');
-                $cash->mon6 += trimOver(Request::input('P1'), ' ');
-                $cash->mon7 += trimOver(Request::input('P2'), ' ');
-                $cash->mon8 += trimOver(Request::input('P3'), ' ');
-                $cash->mon9 += trimOver(Request::input('P4'), ' ');
-                $cash->mon10 += trimOver(Request::input('P5'), ' ');
-                $cash->mon11 += trimOver(Request::input('P6'), ' ');
-                $cash->mon12 += trimOver(Request::input('P7'), ' ');
+                $cash->mon1 += (int)trimOver(Request::input('B1'), ' ');
+                $cash->mon2 += (int)trimOver(Request::input('B2'), ' ');
+                $cash->mon3 += (int)trimOver(Request::input('B3'), ' ');
+                $cash->mon4 += (int)trimOver(Request::input('B4'), ' ');
+                $cash->mon5 += (int)trimOver(Request::input('B5'), ' ');
+                $cash->mon6 += (int)trimOver(Request::input('P1'), ' ');
+                $cash->mon7 += (int)trimOver(Request::input('P2'), ' ');
+                $cash->mon8 += (int)trimOver(Request::input('P3'), ' ');
+                $cash->mon9 += (int)trimOver(Request::input('P4'), ' ');
+                $cash->mon10 += (int)trimOver(Request::input('P5'), ' ');
+                $cash->mon11 += (int)trimOver(Request::input('P6'), ' ');
+                $cash->mon12 += (int)trimOver(Request::input('P7'), ' ');
 
                 $cash->update((array)$cash);
 

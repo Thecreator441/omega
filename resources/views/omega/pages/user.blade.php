@@ -480,27 +480,48 @@ if ($emp->lang == 'fr') {
             </div>
         </div>
         <div class="box-body">
-            <table id="admin-data-table" class="table table-bordered table-striped table-hover table-responsive-xl">
-                <thead>
-                <tr>
-                    <th> @lang('label.username') </th>
-                    <th> @lang('label.@') </th>
-                    <th> @lang('label.privilege') </th>
-                    <th> @lang('label.level') </th>
-                    <th> @lang('label.status') </th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                    @foreach($users as $user)
-                        @switch($emp->level)
-                            @case ('O')
-                                    @if ($user->level === 'O')
+            <div class="table-responsive">
+                <table id="admin-data-table" class="table table-bordered table-striped table-hover table-responsive-xl">
+                    <thead>
+                    <tr>
+                        <th> @lang('label.username') </th>
+                        <th> @lang('label.@') </th>
+                        <th> @lang('label.privilege') </th>
+                        <th> @lang('label.level') </th>
+                        <th> @lang('label.status') </th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($users as $user)
+                            @switch($emp->level)
+                                @case ('O')
+                                        @if ($user->level === 'O')
+                                            <tr>
+                                                <td>{{$user->username}}</td>
+                                                <td>{{$user->email}}</td>
+                                                <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
+                                                <td>@lang('label.organ')</td>
+                                                <td class="text-center">
+                                                    <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
+                                                            onclick="blun('{{$user->iduser}}', '{{$user->login_status}}')"></button>
+                                                    <button type="button" class="btn btn-sm bg-yellow fa fa-refresh" onclick="reset('{{$user->iduser}}')"></button>
+                                                    <button type="button" class="btn btn-sm bg-aqua fa fa-edit" onclick="edit('{{$user->iduser}}')"></button>
+                                                    <button type="button" class="btn btn-sm bg-red fa fa-trash" onclick="remove('{{$user->iduser}}')"></button>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @break
+                                @case ('N')
+                                    @if ($user->level === 'N')
                                         <tr>
                                             <td>{{$user->username}}</td>
                                             <td>{{$user->email}}</td>
                                             <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
-                                            <td>@lang('label.organ')</td>
+                                            <td>@lang('label.network')</td>
                                             <td class="text-center">
                                                 <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
                                             </td>
@@ -514,135 +535,116 @@ if ($emp->lang == 'fr') {
                                         </tr>
                                     @endif
                                 @break
-                            @case ('N')
-                                @if ($user->level === 'N')
+                                @case ('Z')
+                                    @if ($user->level === 'Z')
+                                        <tr>
+                                            <td>{{$user->username}}</td>
+                                            <td>{{$user->email}}</td>
+                                            <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
+                                            <td>@lang('label.zone')</td>
+                                            <td class="text-center">
+                                                <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
+                                                        onclick="blun('{{$user->iduser}}', '{{$user->login_status}}')"></button>
+                                                <button type="button" class="btn btn-sm bg-yellow fa fa-refresh" onclick="reset('{{$user->iduser}}')"></button>
+                                                <button type="button" class="btn btn-sm bg-aqua fa fa-edit" onclick="edit('{{$user->iduser}}')"></button>
+                                                <button type="button" class="btn btn-sm bg-red fa fa-trash" onclick="remove('{{$user->iduser}}')"></button>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @break
+                                @case ('I')
+                                    @if ($user->level === 'I')
+                                        <tr>
+                                            <td>{{$user->username}}</td>
+                                            <td>{{$user->email}}</td>
+                                            <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
+                                            <td>@lang('label.institution')</td>
+                                            <td class="text-center">
+                                                <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
+                                                        onclick="blun('{{$user->iduser}}', '{{$user->login_status}}')"></button>
+                                                <button type="button" class="btn btn-sm bg-yellow fa fa-refresh" onclick="reset('{{$user->iduser}}')"></button>
+                                                <button type="button" class="btn btn-sm bg-aqua fa fa-edit" onclick="edit('{{$user->iduser}}')"></button>
+                                                <button type="button" class="btn btn-sm bg-red fa fa-trash" onclick="remove('{{$user->iduser}}')"></button>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @break
+                                @case ('B')
+                                    @if ($user->level === 'B')
+                                        <tr>
+                                            <td>{{$user->username}}</td>
+                                            <td>{{$user->email}}</td>
+                                            <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
+                                            <td>@lang('label.branch')</td>
+                                            <td class="text-center">
+                                                <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
+                                                        onclick="blun('{{$user->iduser}}', '{{$user->login_status}}')"></button>
+                                                <button type="button" class="btn btn-sm bg-yellow fa fa-refresh" onclick="reset('{{$user->iduser}}')"></button>
+                                                <button type="button" class="btn btn-sm bg-aqua fa fa-edit" onclick="edit('{{$user->iduser}}')"></button>
+                                                <button type="button" class="btn btn-sm bg-red fa fa-trash" onclick="remove('{{$user->iduser}}')"></button>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @break
+                                @default
                                     <tr>
                                         <td>{{$user->username}}</td>
                                         <td>{{$user->email}}</td>
                                         <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
-                                        <td>@lang('label.network')</td>
+                                        <td>
+                                            @if ($user->level === 'O')
+                                                @lang('label.organ')  
+                                            @elseif ($user->level === 'N')
+                                                @lang('label.network')  
+                                            @elseif ($user->level === 'Z')
+                                                @lang('label.zone')
+                                            @elseif ($user->level === 'I')
+                                                @lang('label.institution')
+                                            @elseif ($user->level === 'B')
+                                                @lang('label.branch')
+                                            @else
+                                                @lang('label.platform')
+                                            @endif
+                                        </td>
                                         <td class="text-center">
-                                            <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
+                                            <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.free') @endif</span>
                                         </td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
                                                     onclick="blun('{{$user->iduser}}', '{{$user->login_status}}')"></button>
                                             <button type="button" class="btn btn-sm bg-yellow fa fa-refresh" onclick="reset('{{$user->iduser}}')"></button>
-                                            <button type="button" class="btn btn-sm bg-aqua fa fa-edit" onclick="edit('{{$user->iduser}}')"></button>
-                                            <button type="button" class="btn btn-sm bg-red fa fa-trash" onclick="remove('{{$user->iduser}}')"></button>
+                                            <?php $disabled = ($emp->level !== $user->level) ? "disabled" : null; ?>
+                                            <button type="button" class="btn btn-sm bg-aqua fa fa-edit" onclick="edit('{{$user->iduser}}')" ></button>
+                                            <button type="button" class="btn btn-sm bg-red fa fa-trash" onclick="remove('{{$user->iduser}}')" ></button>
                                         </td>
                                     </tr>
-                                @endif
-                            @break
-                            @case ('Z')
-                                @if ($user->level === 'Z')
-                                    <tr>
-                                        <td>{{$user->username}}</td>
-                                        <td>{{$user->email}}</td>
-                                        <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
-                                        <td>@lang('label.zone')</td>
-                                        <td class="text-center">
-                                            <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
-                                                    onclick="blun('{{$user->iduser}}', '{{$user->login_status}}')"></button>
-                                            <button type="button" class="btn btn-sm bg-yellow fa fa-refresh" onclick="reset('{{$user->iduser}}')"></button>
-                                            <button type="button" class="btn btn-sm bg-aqua fa fa-edit" onclick="edit('{{$user->iduser}}')"></button>
-                                            <button type="button" class="btn btn-sm bg-red fa fa-trash" onclick="remove('{{$user->iduser}}')"></button>
-                                        </td>
-                                    </tr>
-                                @endif
-                            @break
-                            @case ('I')
-                                @if ($user->level === 'I')
-                                    <tr>
-                                        <td>{{$user->username}}</td>
-                                        <td>{{$user->email}}</td>
-                                        <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
-                                        <td>@lang('label.institution')</td>
-                                        <td class="text-center">
-                                            <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
-                                                    onclick="blun('{{$user->iduser}}', '{{$user->login_status}}')"></button>
-                                            <button type="button" class="btn btn-sm bg-yellow fa fa-refresh" onclick="reset('{{$user->iduser}}')"></button>
-                                            <button type="button" class="btn btn-sm bg-aqua fa fa-edit" onclick="edit('{{$user->iduser}}')"></button>
-                                            <button type="button" class="btn btn-sm bg-red fa fa-trash" onclick="remove('{{$user->iduser}}')"></button>
-                                        </td>
-                                    </tr>
-                                @endif
-                            @break
-                            @case ('B')
-                                @if ($user->level === 'B')
-                                    <tr>
-                                        <td>{{$user->username}}</td>
-                                        <td>{{$user->email}}</td>
-                                        <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
-                                        <td>@lang('label.branch')</td>
-                                        <td class="text-center">
-                                            <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
-                                                    onclick="blun('{{$user->iduser}}', '{{$user->login_status}}')"></button>
-                                            <button type="button" class="btn btn-sm bg-yellow fa fa-refresh" onclick="reset('{{$user->iduser}}')"></button>
-                                            <button type="button" class="btn btn-sm bg-aqua fa fa-edit" onclick="edit('{{$user->iduser}}')"></button>
-                                            <button type="button" class="btn btn-sm bg-red fa fa-trash" onclick="remove('{{$user->iduser}}')"></button>
-                                        </td>
-                                    </tr>
-                                @endif
-                            @break
-                            @default
-                                <tr>
-                                    <td>{{$user->username}}</td>
-                                    <td>{{$user->email}}</td>
-                                    <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
-                                    <td>
-                                        @if ($user->level === 'O')
-                                            @lang('label.organ')  
-                                        @elseif ($user->level === 'N')
-                                            @lang('label.network')  
-                                        @elseif ($user->level === 'Z')
-                                            @lang('label.zone')
-                                        @elseif ($user->level === 'I')
-                                            @lang('label.institution')
-                                        @elseif ($user->level === 'B')
-                                            @lang('label.branch')
-                                        @else
-                                            @lang('label.platform')
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.free') @endif</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
-                                                onclick="blun('{{$user->iduser}}', '{{$user->login_status}}')"></button>
-                                        <button type="button" class="btn btn-sm bg-yellow fa fa-refresh" onclick="reset('{{$user->iduser}}')"></button>
-                                        <?php $disabled = ($emp->level !== $user->level) ? "disabled" : null; ?>
-                                        <button type="button" class="btn btn-sm bg-aqua fa fa-edit" onclick="edit('{{$user->iduser}}')" ></button>
-                                        <button type="button" class="btn btn-sm bg-red fa fa-trash" onclick="remove('{{$user->iduser}}')" ></button>
-                                    </td>
-                                </tr>
-                            @break
-                        @endswitch
-                    @endforeach
-                </tbody>
-            </table>
-            <form action="{{route('user/reset')}}" method="post" role="form" id="resForm" style="display: none">
-                {{ csrf_field() }}
-                <input type="hidden" name="userRes" id="userRes" value="">
-            </form>
-            <form action="{{route('user/delete')}}" method="post" role="form" id="delForm" style="display: none">
-                {{ csrf_field() }}
-                <input type="hidden" name="institute" id="institute" value="">
-            </form>
-            <form action="{{route('user/blun')}}" method="post" role="form" id="blunForm" style="display: none">
-                {{ csrf_field() }}
-                <input type="hidden" name="userBlun" id="userBlun" value="">
-            </form>
+                                @break
+                            @endswitch
+                        @endforeach
+                    </tbody>
+                </table>
+                <form action="{{route('user/reset')}}" method="post" role="form" id="resForm" style="display: none">
+                    {{ csrf_field() }}
+                    <input type="hidden" name="userRes" id="userRes" value="">
+                </form>
+                <form action="{{route('user/delete')}}" method="post" role="form" id="delForm" style="display: none">
+                    {{ csrf_field() }}
+                    <input type="hidden" name="institute" id="institute" value="">
+                </form>
+                <form action="{{route('user/blun')}}" method="post" role="form" id="blunForm" style="display: none">
+                    {{ csrf_field() }}
+                    <input type="hidden" name="userBlun" id="userBlun" value="">
+                </form>
+            </div>
         </div>
     </div>
 @stop

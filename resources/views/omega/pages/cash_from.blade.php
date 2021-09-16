@@ -169,7 +169,7 @@ if ($emp->lang == 'fr') {
             var balance = trimOver($("#balance").val(), null);
             var amount = trimOver($(this).val(), null);
 
-            if (balance < amount) {
+            if (parseInt(balance) < parseInt(amount)) {
                 myOSwal("{{ $title }}", '@lang('alertDanger.balance_is_insufficient')', 'error');
             }
         });

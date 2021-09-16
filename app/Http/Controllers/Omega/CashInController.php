@@ -33,8 +33,9 @@ class CashInController extends Controller
     {
         if (dateOpen()) {
             if (cashOpen()) {
+                $emp = Session::get('employee');
+                $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
                 $members = Member::getMembers(['members.memstatus' => 'A']);
-                $cash = Cash::getEmpCashOpen();
                 $moneys = Money::getMoneys();
                 $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
@@ -81,28 +82,26 @@ class CashInController extends Controller
             // $intamts = Request::input('intamts');
             // $loanamts = Request::input('loanamts');
 
-
             $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
-            $cash->mon1 += trimOver(Request::input('B1'), ' ');
-            $cash->mon2 += trimOver(Request::input('B2'), ' ');
-            $cash->mon3 += trimOver(Request::input('B3'), ' ');
-            $cash->mon4 += trimOver(Request::input('B4'), ' ');
-            $cash->mon5 += trimOver(Request::input('B5'), ' ');
-            $cash->mon6 += trimOver(Request::input('P1'), ' ');
-            $cash->mon7 += trimOver(Request::input('P2'), ' ');
-            $cash->mon8 += trimOver(Request::input('P3'), ' ');
-            $cash->mon9 += trimOver(Request::input('P4'), ' ');
-            $cash->mon10 += trimOver(Request::input('P5'), ' ');
-            $cash->mon11 += trimOver(Request::input('P6'), ' ');
-            $cash->mon12 += trimOver(Request::input('P7'), ' ');
+            $cash->mon1 += (int)trimOver(Request::input('B1'), ' ');
+            $cash->mon2 += (int)trimOver(Request::input('B2'), ' ');
+            $cash->mon3 += (int)trimOver(Request::input('B3'), ' ');
+            $cash->mon4 += (int)trimOver(Request::input('B4'), ' ');
+            $cash->mon5 += (int)trimOver(Request::input('B5'), ' ');
+            $cash->mon6 += (int)trimOver(Request::input('P1'), ' ');
+            $cash->mon7 += (int)trimOver(Request::input('P2'), ' ');
+            $cash->mon8 += (int)trimOver(Request::input('P3'), ' ');
+            $cash->mon9 += (int)trimOver(Request::input('P4'), ' ');
+            $cash->mon10 += (int)trimOver(Request::input('P5'), ' ');
+            $cash->mon11 += (int)trimOver(Request::input('P6'), ' ');
+            $cash->mon12 += (int)trimOver(Request::input('P7'), ' ');
             $cash->update((array)$cash);
-
 
             $writing = new Writing();
             $writing->writnumb = $writnumb;
             $writing->account = $cash->cashacc;
             $writing->operation = Request::input('menu_level_operation');
-            $writing->debitamt = trimOver(Request::input('totrans'), ' ');
+            $writing->debitamt = (int)trimOver(Request::input('totrans'), ' ');
             $writing->accdate = $accdate->accdate;
             $writing->employee = $emp->iduser;
             $writing->cash = $cash->idcash;
@@ -111,10 +110,11 @@ class CashInController extends Controller
             $writing->institution = $emp->institution;
             $writing->branch = $emp->branch;
             $writing->represent = $represent;
+            $writing->writ_type = 'I';
             $writing->save();
             
             $cashBal = Account::getAccount($cash->cashacc);
-            $cashBal->available += trimOver(Request::input('totrans'), ' ');
+            $cashBal->available += (int)trimOver(Request::input('totrans'), ' ');
             $cashBal->update((array)$cashBal);
 
             foreach ($accounts as $key => $account) {
@@ -135,8 +135,8 @@ class CashInController extends Controller
                     $writing->institution = $emp->institution;
                     $writing->branch = $emp->branch;
                     $writing->represent = $represent;
+                    $writing->writ_type = 'I';
                     $writing->save();
-
 
                     $memBal = MemBalance::getMemAcc(Request::input('member'), $account);
                     $memBal->available += $amount;
@@ -160,15 +160,15 @@ class CashInController extends Controller
             //             $memLoanAmt = (int)$memLoan->refamt;
             //         }
 
-            //         $totints = trimOver($totints[$key], ' ');
+            //         $totints = (int)trimOver($totints[$key], ' ');
 
             //         if (!empty($intamts[$key]) && $intamts[$key] !== null && $intamts[$key] !== '0') {
-            //             $intAmt = trimOver($intamts[$key], ' ');
+            //             $intAmt = (int)trimOver($intamts[$key], ' ');
 
             //             /**
             //              * Penalty Payment
             //              */
-            //             $pen = trimOver($pens[$key], ' ');
+            //             $pen = (int)trimOver($pens[$key], ' ');
             //             if ((int)$pen !== 0) {
             //                 if ($pen > $intAmt) {
             //                     $pen = $intAmt;
@@ -208,7 +208,7 @@ class CashInController extends Controller
             //                 /**
             //                  * Accrued Payment
             //                  */
-            //                 $accr = trimOver($accrs[$key], ' ');
+            //                 $accr = (int)trimOver($accrs[$key], ' ');
             //                 if ((int)$accr !== 0) {
             //                     if ($accr > $reste) {
             //                         $accr = $reste;
@@ -248,7 +248,7 @@ class CashInController extends Controller
             //                     /**
             //                      * Interest Payment
             //                      */
-            //                     $int = trimOver($ints[$key], ' ');
+            //                     $int = (int)trimOver($ints[$key], ' ');
             //                     if ((int)$int !== 0) {
             //                         if ($int > $reste2) {
             //                             $int = $reste2;
@@ -291,7 +291,7 @@ class CashInController extends Controller
             //         }
 
             //         if (!empty($loanamts[$key]) && $loanamts[$key] !== null && $loanamts[$key] !== '0') {
-            //             $loanAmt = trimOver($loanamts[$key], ' ');
+            //             $loanAmt = (int)trimOver($loanamts[$key], ' ');
 
             //             /**
             //              * Reimbursement of Loan

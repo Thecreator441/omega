@@ -22,20 +22,21 @@ class PrivilegeController extends Controller
             return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $privileges = Privilege::getPrivileges();
-            if ($emp->level !== 'P') {
-                $privileges = Privilege::getPrivileges(['level' => $emp->level]);
-            }
-            $menus_1 = Menu_Level_I::getMenus();
-            $menuss_2 = Menu_Level_II::getMenus();
-            $menuss_3 = Menu_Level_III::getMenus();
-            $menuss_4 = Menu_Level_IV::getMenus();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            return view('omega.pages.privilege', compact('menu', 'privileges', 'menus_1', 'menuss_2', 'menuss_3', 'menuss_4'));
+        $privileges = Privilege::getPrivileges();
+        $menus_1 = Menu_Level_I::getMenus();
+        $menuss_2 = Menu_Level_II::getMenus();
+        $menuss_3 = Menu_Level_III::getMenus();
+        $menuss_4 = Menu_Level_IV::getMenus();
+        if ($emp->level !== 'P') {
+            $privileges = Privilege::getPrivileges(['level' => $emp->level]);
+            $menus_1 = Priv_Menu::getMenus(1, ['privilege' => $emp->privilege]);
+            $menuss_2 = Priv_Menu::getMenus(2, ['privilege' => $emp->privilege]);
+            $menuss_3 = Priv_Menu::getMenus(3, ['privilege' => $emp->privilege]);
+            $menuss_4 = Priv_Menu::getMenus(4, ['privilege' => $emp->privilege]);
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+        return view('omega.pages.privilege', compact('menu', 'privileges', 'menus_1', 'menuss_2', 'menuss_3', 'menuss_4'));
     }
 
     public function store()

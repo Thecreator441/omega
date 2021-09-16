@@ -19,7 +19,13 @@ class Member extends Model
      */
     public static function getMember(int $id)
     {
-        return self::query()->where('idmember', $id)->first();
+        return self::query()->select('members.*', 'C.labelfr AS cfr', 'C.labeleng AS ceng', 'R.labelfr AS rfr', 'R.labeleng AS reng', 'D.label AS dbel', 'S.label AS sbel', 'T.label AS tbel')
+        ->join('countries AS C', 'members.country', '=', 'idcountry')
+        ->join('regions AS R', 'members.region', '=', 'idregi')
+        ->join('divisions AS D', 'members.division', '=', 'iddiv')
+        ->join('sub_divs AS S', 'members.subdivision', '=', 'idsub')
+        ->join('towns AS T', 'members.town', '=', 'idtown')
+        ->where('idmember', $id)->first();
     }
 
     /**
@@ -31,7 +37,13 @@ class Member extends Model
         $emp = Session::get('employee');
         
         if ($where !== null) {
-            return self::query()->where(static function ($query) use ($emp) {
+            return self::query()->select('members.*', 'C.labelfr AS cfr', 'C.labeleng AS ceng', 'R.labelfr AS rfr', 'R.labeleng AS reng', 'D.label AS dbel', 'S.label AS sbel', 'T.label AS tbel')
+            ->join('countries AS C', 'members.country', '=', 'idcountry')
+            ->join('regions AS R', 'members.region', '=', 'idregi')
+            ->join('divisions AS D', 'members.division', '=', 'iddiv')
+            ->join('sub_divs AS S', 'members.subdivision', '=', 'idsub')
+            ->join('towns AS T', 'members.town', '=', 'idtown')
+            ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'B') {
                     $query->where('members.branch', $emp->branch);
                 }
@@ -44,9 +56,16 @@ class Member extends Model
                 if ($emp->level === 'N') {
                     $query->where('members.network', $emp->network);
                 }
-            })->where($where)->orderBy('memnumb')->first();
+            })->where($where)->first();
         }
-        return self::query()->where(static function ($query) use ($emp) {
+
+        return self::query()->select('members.*', 'C.labelfr AS cfr', 'C.labeleng AS ceng', 'R.labelfr AS rfr', 'R.labeleng AS reng', 'D.label AS dbel', 'S.label AS sbel', 'T.label AS tbel')
+        ->join('countries AS C', 'members.country', '=', 'idcountry')
+        ->join('regions AS R', 'members.region', '=', 'idregi')
+        ->join('divisions AS D', 'members.division', '=', 'iddiv')
+        ->join('sub_divs AS S', 'members.subdivision', '=', 'idsub')
+        ->join('towns AS T', 'members.town', '=', 'idtown')
+        ->where(static function ($query) use ($emp) {
             if ($emp->level === 'B') {
                 $query->where('members.branch', $emp->branch);
             }
@@ -59,7 +78,7 @@ class Member extends Model
             if ($emp->level === 'N') {
                 $query->where('members.network', $emp->network);
             }
-        })->orderBy('memnumb')->first();
+        })->first();
     }
 
     /**
@@ -70,7 +89,13 @@ class Member extends Model
         $emp = Session::get('employee');
         
         if ($where !== null) {
-            return self::query()->where(static function ($query) use ($emp) {
+            return self::query()->select('members.*', 'C.labelfr AS cfr', 'C.labeleng AS ceng', 'R.labelfr AS rfr', 'R.labeleng AS reng', 'D.label AS dbel', 'S.label AS sbel', 'T.label AS tbel')
+            ->join('countries AS C', 'members.country', '=', 'idcountry')
+            ->join('regions AS R', 'members.region', '=', 'idregi')
+            ->join('divisions AS D', 'members.division', '=', 'iddiv')
+            ->join('sub_divs AS S', 'members.subdivision', '=', 'idsub')
+            ->join('towns AS T', 'members.town', '=', 'idtown')
+            ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'B') {
                     $query->where('members.branch', $emp->branch);
                 }
@@ -85,7 +110,14 @@ class Member extends Model
                 }
             })->where($where)->orderBy('memnumb')->get();
         }
-        return self::query()->where(static function ($query) use ($emp) {
+
+        return self::query()->select('members.*', 'C.labelfr AS cfr', 'C.labeleng AS ceng', 'R.labelfr AS rfr', 'R.labeleng AS reng', 'D.label AS dbel', 'S.label AS sbel', 'T.label AS tbel')
+        ->join('countries AS C', 'members.country', '=', 'idcountry')
+        ->join('regions AS R', 'members.region', '=', 'idregi')
+        ->join('divisions AS D', 'members.division', '=', 'iddiv')
+        ->join('sub_divs AS S', 'members.subdivision', '=', 'idsub')
+        ->join('towns AS T', 'members.town', '=', 'idtown')
+        ->where(static function ($query) use ($emp) {
             if ($emp->level === 'B') {
                 $query->where('members.branch', $emp->branch);
             }
@@ -108,8 +140,14 @@ class Member extends Model
     {
         $emp = Session::get('employee');
 
-        return self::query()->distinct('idmember')->where('memstatus', 'A')
-            ->where(static function ($query) use ($emp) {
+        return self::query()->select('members.*', 'C.labelfr AS cfr', 'C.labeleng AS ceng', 'R.labelfr AS rfr', 'R.labeleng AS reng', 'D.label AS dbel', 'S.label AS sbel', 'T.label AS tbel')
+        ->join('countries AS C', 'members.country', '=', 'idcountry')
+        ->join('regions AS R', 'members.region', '=', 'idregi')
+        ->join('divisions AS D', 'members.division', '=', 'iddiv')
+        ->join('sub_divs AS S', 'members.subdivision', '=', 'idsub')
+        ->join('towns AS T', 'members.town', '=', 'idtown')
+        ->where('memstatus', 'A')
+        ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'B') {
                     $query->where('branch', $emp->branch);
                 }
@@ -135,12 +173,12 @@ class Member extends Model
 
         if ($where === null) {
             return self::query()->distinct('idmember')
-                ->select('members.*', 'R.labelfr AS rfr', 'R.labeleng AS reng', 'D.label AS dbel', 'S.label AS sbel')
-                ->join('countries AS C', 'members.country', '=', 'idcountry')
-                ->join('regions AS R', 'members.region', '=', 'idregi')
-                ->join('towns AS T', 'members.town', '=', 'idtown')
-                ->join('divisions AS D', 'members.division', '=', 'iddiv')
-                ->join('sub_divs AS S', 'members.subdivision', '=', 'idsub')
+            ->select('members.*', 'C.labelfr AS cfr', 'C.labeleng AS ceng', 'R.labelfr AS rfr', 'R.labeleng AS reng', 'D.label AS dbel', 'S.label AS sbel', 'T.label AS tbel')
+            ->join('countries AS C', 'members.country', '=', 'idcountry')
+            ->join('regions AS R', 'members.region', '=', 'idregi')
+            ->join('divisions AS D', 'members.division', '=', 'iddiv')
+            ->join('sub_divs AS S', 'members.subdivision', '=', 'idsub')
+            ->join('towns AS T', 'members.town', '=', 'idtown')
                 ->where($where)->where(static function ($query) use ($emp) {
                     if ($emp->level === 'B') {
                         $query->where('branch', $emp->branch);
@@ -157,13 +195,14 @@ class Member extends Model
                 })
                 ->orderBy('memnumb')->get();
         }
+
         return self::query()->distinct('idmember')
-            ->select('members.*', 'R.labelfr AS rfr', 'R.labeleng AS reng', 'D.label AS dbel', 'S.label AS sbel')
+            ->select('members.*', 'C.labelfr AS cfr', 'C.labeleng AS ceng', 'R.labelfr AS rfr', 'R.labeleng AS reng', 'D.label AS dbel', 'S.label AS sbel', 'T.label AS tbel')
             ->join('countries AS C', 'members.country', '=', 'idcountry')
             ->join('regions AS R', 'members.region', '=', 'idregi')
-            ->join('towns AS T', 'members.town', '=', 'idtown')
             ->join('divisions AS D', 'members.division', '=', 'iddiv')
             ->join('sub_divs AS S', 'members.subdivision', '=', 'idsub')
+            ->join('towns AS T', 'members.town', '=', 'idtown')
             ->where('memstatus', 'A')->where(static function ($query) use ($emp) {
                 if ($emp->level === 'B') {
                     $query->where('branch', $emp->branch);
