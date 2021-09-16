@@ -24,28 +24,25 @@ class ZoneController extends Controller
             return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $networks = Network::getNetworks();
-            $zones = Zone::getZones();
-            if ($emp->level === 'N') {
-                $zones = Zone::getZones(['network' => $emp->network]);
-            }
-            $countries = Country::getCountries();
-            $regions = Region::getRegions();
-            $divisions = Division::getDivisions();
-            $towns = Town::getTowns();
-            $subdivs = SubDiv::getSubDivs();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            foreach ($zones as $zone) {
-                $network = Network::getNetwork($zone->network);
-    
-                $zone->net = $network->abbr;
-            }
-
-            return view('omega.pages.zone', compact('menu', 'countries', 'regions', 'divisions', 'subdivs', 'towns', 'networks', 'zones'));
+        $networks = Network::getNetworks();
+        $zones = Zone::getZones();
+        if ($emp->level === 'N') {
+            $zones = Zone::getZones(['network' => $emp->network]);
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
+        $towns = Town::getTowns();
+        $subdivs = SubDiv::getSubDivs();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+        foreach ($zones as $zone) {
+            $network = Network::getNetwork($zone->network);
+
+            $zone->net = $network->abbr;
+        }
+
+        return view('omega.pages.zone', compact('menu', 'countries', 'regions', 'divisions', 'subdivs', 'towns', 'networks', 'zones'));
     }
 
     public function store()

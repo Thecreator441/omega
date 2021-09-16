@@ -18,23 +18,15 @@ class NetworkController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
+        $subdivs = SubDiv::getSubDivs();
+        $towns = Town::getTowns();
+        $networks = Network::getNetworks();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $countries = Country::getCountries();
-            $regions = Region::getRegions();
-            $divisions = Division::getDivisions();
-            $subdivs = SubDiv::getSubDivs();
-            $towns = Town::getTowns();
-            $networks = Network::getNetworks();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            return view('omega.pages.network', compact('menu', 'countries', 'regions', 'divisions', 'subdivs', 'towns', 'networks'));
-        }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return view('omega.pages.network', compact('menu', 'countries', 'regions', 'divisions', 'subdivs', 'towns', 'networks'));
     }
 
     public function store()

@@ -125,7 +125,7 @@ if ($emp->lang == 'fr') {
                 <div class="row" id="tableInput2">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="table-responsive">
-                            <table id="billet-data-table3" class="table table-striped table-hover table-condensed table-bordered no-padding">
+                            <table id="loan-data-table" class="table table-striped table-hover table-condensed table-bordered no-padding">
                                 <thead>
                                 <tr>
                                     <th>@lang('label.account')</th>

@@ -87,5 +87,6 @@ return [
     'cashsave' => 'You didn\'t successfully saved the cash',
 
     'oldpasserror' => 'The old password is invalid',
+    'no_cash_init' => 'No cash was initialised for closure',
 
 ];

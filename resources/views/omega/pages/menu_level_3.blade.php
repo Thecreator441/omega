@@ -61,8 +61,17 @@ if ($emp->lang == 'fr') {
                     </div>
 
                     <div class="row">
+                        <div class="col-md-2 col-xs-12">
+                            <div class="form-group has-error">
+                                <label for="level" class="col-md-3 col-xs-5 control-label">@lang('label.level')<span class="text-red text-bold">*</span></label>
+                                <div class="col-md-9 col-xs-7">
+                                    <input type="text" class="form-control text-right" name="level" id="level" required readonly>
+                                    <div class="help-block">@lang('placeholder.level')</div>
+                                </div>
+                            </div>
+                        </div>
                         @if($emp->lang == 'fr')
-                            <div class="col-md-6 col-xs-12">
+                            <div class="col-md-5 col-xs-12">
                                 <div class="form-group has-error">
                                     <label for="labelfr" class="col-md-3 col-xs-5 control-label">@lang('label.menu_level_3_fr')<span class="text-red text-bold">*</span></label>
                                     <div class="col-md-9 col-xs-7">
@@ -71,7 +80,7 @@ if ($emp->lang == 'fr') {
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-xs-12">
+                            <div class="col-md-5 col-xs-12">
                                 <div class="form-group has-error">
                                     <label for="labeleng" class="col-md-3 col-xs-5 control-label">@lang('label.menu_level_3_eng')<span class="text-red text-bold">*</span></label>
                                     <div class="col-md-9 col-xs-7">
@@ -81,7 +90,7 @@ if ($emp->lang == 'fr') {
                                 </div>
                             </div>
                         @else
-                            <div class="col-md-6 col-xs-12">
+                            <div class="col-md-5 col-xs-12">
                                 <div class="form-group has-error">
                                     <label for="labeleng" class="col-md-3 col-xs-5 control-label">@lang('label.menu_level_3_eng')<span class="text-red text-bold">*</span></label>
                                     <div class="col-md-9 col-xs-7">
@@ -90,7 +99,7 @@ if ($emp->lang == 'fr') {
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-xs-12">
+                            <div class="col-md-5 col-xs-12">
                                 <div class="form-group has-error">
                                     <label for="labelfr" class="col-md-3 col-xs-5 control-label">@lang('label.menu_level_3_fr')<span class="text-red text-bold">*</span></label>
                                     <div class="col-md-9 col-xs-7">
@@ -103,15 +112,6 @@ if ($emp->lang == 'fr') {
                     </div>
 
                     <div class="row">
-                        <div class="col-md-4 col-xs-12">
-                            <div class="form-group has-error">
-                                <label for="level" class="col-md-3 col-xs-5 control-label">@lang('label.level')<span class="text-red text-bold">*</span></label>
-                                <div class="col-md-9 col-xs-7">
-                                    <input type="text" class="form-control text-right" name="level" id="level" required readonly>
-                                    <div class="help-block">@lang('placeholder.level')</div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="col-md-4 col-xs-12">
                             <div class="form-group has-info">
                                 <label for="view_icon" class="col-md-3 col-xs-5 control-label">@lang('label.icon')</label>
@@ -127,6 +127,20 @@ if ($emp->lang == 'fr') {
                                 <div class="col-md-9 col-xs-7">
                                     <input type="text" class="form-control" name="view_path" id="view_path">
                                     <div class="help-block">@lang('placeholder.path')</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-xs-12">
+                            <div class="form-group has-info">
+                                <label for="operation" class="col-md-3 control-label">@lang('label.opera')</label>
+                                <div class="col-md-9">
+                                    <select class="form control select2" name="operation" id="operation">
+                                        <option value=""></option>
+                                        @foreach ($operations as $operation)
+                                            <option value="{{ $operation->idoper }}">@if($emp->lang == 'fr') {{ $operation->labelfr }} @else {{ $operation->labeleng }} @endif</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="help-block">@lang('placeholder.operation')</div>
                                 </div>
                             </div>
                         </div>
@@ -160,7 +174,6 @@ if ($emp->lang == 'fr') {
                         <table id="admin-data-table" class="table table-bordered table-striped table-hover table-responsive-xl">
                             <thead>
                             <tr>
-                                <th>@lang('label.icon')</th>
                                 <th>@lang('label.level')</th>
                                 <th>@lang('label.menu_level_3')</th>
                                 <th>@lang('label.menu_level_2')</th>
@@ -171,11 +184,10 @@ if ($emp->lang == 'fr') {
                             <tbody>
                             @foreach($main_menus_3 as $main_menu_3)
                                 <tr>
-                                    <td class="text-center"><i class="{{$main_menu_3->view_icon}}"></i></td>
                                     <td class="text-center">{{$main_menu_3->level}}</i></td>
-                                    <td>@if($emp->lang == 'fr') {{ $main_menu_3->labelfr }} @else {{ $main_menu_3->labeleng }} @endif</td>
-                                    <td>{{$main_menu_3->main_menu_2}}</td>
-                                    <td>{{$main_menu_3->main_menu_1}}</td>
+                                    <td><span><i class="{{$main_menu_3->view_icon}}"></i></span>&nbsp;&nbsp; @if($emp->lang == 'fr') {{ $main_menu_3->labelfr }} @else {{ $main_menu_3->labeleng }} @endif</td>
+                                    <td><span><i class="{{$main_menu_3->main_menu_2_view_icon}}"></i></span>&nbsp;&nbsp; {{$main_menu_3->main_menu_2}}</td>
+                                    <td><span><i class="{{$main_menu_3->main_menu_1_view_icon}}"></i></span>&nbsp;&nbsp; {{$main_menu_3->main_menu_1}}</td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-info bg-aqua btn-sm fa fa-edit" onclick="edit('{{$main_menu_3->idmenus_3}}')"></button>
                                         <button type="button" class="btn bg-red btn-sm delete fa fa-trash" onclick="remove('{{$main_menu_3->idmenus_3}}')"></button>
@@ -257,6 +269,7 @@ if ($emp->lang == 'fr') {
                     $('#level').attr("readonly", false);
                     $('#view_icon').val(main_menu.view_icon);
                     $('#view_path').val(main_menu.view_path);
+                    $('#operation').val(main_menu.operation).select2();
                     
                     $('#save').replaceWith('<button type="submit" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit edit"></button>');
 

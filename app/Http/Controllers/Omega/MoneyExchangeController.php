@@ -16,7 +16,7 @@ class MoneyExchangeController extends Controller
     {
         if (dateOpen()) {
             if (cashOpen()) {
-                $cash = Cash::getEmpCashOpen();
+                $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
                 $moneys = Money::getMoneys();
                 $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
@@ -29,11 +29,11 @@ class MoneyExchangeController extends Controller
 
     public function store()
     {
-        dd(Request::all());        
+        // dd(Request::all());        
         try {
             DB::beginTransaction();
         
-            $cash = Cash::getEmpCashOpen();
+            $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
 
             $cash->mon1 += trimOver(Request::input('B1In'), ' ');
             $cash->mon2 += trimOver(Request::input('B2In'), ' ');

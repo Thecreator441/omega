@@ -7,7 +7,6 @@ use App\Models\DemComaker;
 use App\Models\DemLoan;
 use App\Models\DemMortgage;
 use App\Models\Employee;
-use App\Models\LoanMan;
 use App\Models\LoanPur;
 use App\Models\LoanType;
 use App\Models\Member;
@@ -25,9 +24,10 @@ class LoanApplicationController extends Controller
             $members = Member::getMembers(['members.memstatus' => 'A']);
             $loan_types = LoanType::getLoanTypes();
             $loan_purs = LoanPur::getLoanPurs();
+            $employees = Employee::getEmployees();
             $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-            return view('omega.pages.loan_application', compact('members', 'menu', 'loan_types', 'loan_purs'));
+            return view('omega.pages.loan_application', compact('members', 'menu', 'loan_types', 'loan_purs', 'employees'));
         }
         return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
@@ -37,120 +37,109 @@ class LoanApplicationController extends Controller
         // dd(Request::all());
         try {
             DB::beginTransaction();
+
+            if(!dateOpen()) {
+                return Redirect::back()->with('danger', trans('alertDanger.opdate'));
+            }
+
             $emp = Session::get('employee');
-
-            $loanno = 1;
             $guarantee = Request::input('guarantee');
-            $member = Request::input('member');
-            $comakers = Request::input('coMakers');
-            $accounts = Request::input('coAccs');
-            $amounts = Request::input('coAmts');
-            $mortNames = Request::input('mortNames');
-            $mortNatures = Request::input('mortNatures');
-            $mortAmts = Request::input('mortAmts');
 
-            $loan = DemLoan::getLast();
-            if ($loan !== null) {
-                $loanno = $loan->demloanno + 1;
+            $dem_loan_no = 1;
+            $last_dem_loan = DemLoan::getLast();
+            if ($last_dem_loan !== null) {
+                $dem_loan_no = $last_dem_loan->demloanno + 1;
             }
-            $loanMan = LoanMan::getLoanMan((int)$member);
 
-            $demLoan = new DemLoan();
-            $demLoan->demloanno = $loanno;
-            $demLoan->member = $member;
-            $demLoan->amount = trimOver(Request::input('totrans'), ' ');
-            $demLoan->loantype = Request::input('loanty');
-            $demLoan->loanpur = Request::input('loanpur');
-            $demLoan->vat = Request::input('tax_rate');
-            $demLoan->amortype = Request::input('amorti');
-            $demLoan->periodicity = Request::input('period');
-            $demLoan->grace = Request::input('grace');
-            $demLoan->instdate1 = Request::input('inst1');
-            $demLoan->nbrinst = Request::input('numb_inst');
-            $demLoan->intrate = Request::input('int_rate');
-            $demLoan->guarantee = $guarantee;
-            if ($loanMan->employee === $emp->idemp) {
-                $demLoan->employee = $emp->idemp;
-            } else {
-                $demLoan->employee = $loanMan->employee;
-                $demLoan->isforce = 'Y';
-                $demLoan->isforceby = $emp->idemp;
-            }
-            $demLoan->institution = $emp->institution;
-            $demLoan->branch = $emp->branch;
-            $demLoan->save();
+            $dem_loan = new DemLoan();
 
-            if (($guarantee === 'F') && isset($comakers)) {
-                foreach ($comakers as $key => $demComaker) {
-                    if (!empty($amounts[$key]) || $amounts[$key] !== null) {
-                        $demComaker = new DemComaker();
-                        $demComaker->demloan = $demLoan->iddemloan;
-                        $demComaker->member = $comakers[$key];
-                        $demComaker->account = $accounts[$key];
-                        $demComaker->guaramt = $amounts[$key];
-                        $demComaker->save();
-                    }
-                }
-            }
-            if (($guarantee === 'M') && isset($mortNames)) {
-                $demmortgno = 1;
-                foreach ($mortNames as $key => $morgName) {
-                    if (!empty($mortAmts[$key]) || $mortAmts[$key] !== null) {
-                        $last = DemMortgage::getLast($demLoan->iddemloan);
-                        $demMorg = new DemMortgage();
-                        if ($last !== null) {
-                            $demmortgno = $last->demmortgno + 1;
-                        }
-                        $demMorg->demmortgno = $demmortgno;
-                        $demMorg->name = $morgName;
-                        $demMorg->nature = $mortNatures[$key];
-                        $demMorg->member = $member;
-                        $demMorg->loan = $demLoan->iddemloan;
-                        $demMorg->amount = $mortAmts[$key];
-                        $demMorg->save();
-                    }
-                }
-            }
-            if ($guarantee === 'F&M') {
-                if (isset($comakers)) {
-                    foreach ($comakers as $key => $demComaker) {
-                        if (!empty($amounts[$key]) || $amounts[$key] !== null) {
-                            $demComaker = new DemComaker();
-                            $demComaker->demloan = $demLoan->iddemloan;
-                            $demComaker->member = $comakers[$key];
-                            $demComaker->account = $accounts[$key];
-                            $demComaker->guaramt = $amounts[$key];
-                            $demComaker->save();
+            $dem_loan->demloanno = $dem_loan_no;
+            $dem_loan->member = Request::input('member');
+            $dem_loan->employee = Request::input('employee');
+            $dem_loan->loantype = Request::input('loan_type');
+            $dem_loan->loanpur = Request::input('loan_pur');
+            $dem_loan->amount = trimOver(Request::input('totrans'), ' ');
+            $dem_loan->amortype = Request::input('amorti');
+            $dem_loan->grace = Request::input('grace');
+            $dem_loan->periodicity = Request::input('period');
+            $dem_loan->intrate = Request::input('int_rate');
+            $dem_loan->vat = Request::input('tax_rate');
+            $dem_loan->nbrinst = Request::input('numb_inst');
+            $dem_loan->instdate1 = Request::input('inst1');
+            $dem_loan->guarantee = $guarantee;
+            $dem_loan->network = $emp->network;
+            $dem_loan->zone = $emp->zone;
+            $dem_loan->institution = $emp->institution;
+            $dem_loan->branch = $emp->branch;
+            $dem_loan->save();
+
+            if ($guarantee === 'F' || $guarantee === 'F&M') {
+                $comakers = Request::input('comakers');
+                $comake_accs = Request::input('comake_accs');
+                $comake_amounts = Request::input('comake_amounts');
+
+                if (isset($comakers) && (int)count($comakers) > 0) {
+                    foreach ($comakers as $key => $dem_comaker) {
+                        $comake_amount = (int)$comake_amounts[$key];
+                        
+                        if ($comake_amount > 0) {
+                            $dem_comaker = new DemComaker();
+                            $dem_comaker->demloan = $dem_loan->iddemloan;
+                            $dem_comaker->member = $comakers[$key];
+                            $dem_comaker->account = $comake_accs[$key];
+                            $dem_comaker->guaramt = $comake_amount;
+                            $dem_comaker->network = $emp->network;
+                            $dem_comaker->zone = $emp->zone;
+                            $dem_comaker->institution = $emp->institution;
+                            $dem_comaker->branch = $emp->branch;
+
+                            $dem_comaker->save();
                         }
                     }
                 }
-                if (isset($mortNames)) {
-                    $demmortgno = 1;
-                    foreach ($mortNames as $key => $morgName) {
-                        if (!empty($mortAmts[$key]) || $mortAmts[$key] !== null) {
-                            $last = DemMortgage::getLast($demLoan->iddemloan);
-                            $demMorg = new DemMortgage();
-                            if ($last !== null) {
-                                $demmortgno = $last->demmortgno + 1;
+            }
+
+            if ($guarantee === 'M' || $guarantee === 'F&M') {
+                $mort_names = Request::input('mort_names');
+                $mort_natures = Request::input('mort_natures');
+                $mort_amounts = Request::input('mort_amounts');
+
+                if (isset($mort_names) && (int)count($mort_names) > 0) {
+                    $dem_mortgage_no = 1;
+
+                    foreach ($mort_names as $key => $mort_name) {
+                        $mort_amount = (int)$mort_amounts[$key];
+
+                        if ($mort_amount > 0) {
+                            $last_dem_mortgage = DemMortgage::getLast($dem_loan->iddemloan);
+                            $dem_mortgage = new DemMortgage();
+                            if ($last_dem_mortgage !== null) {
+                                $dem_mortgage_no = $last_dem_mortgage->demmortgno + 1;
                             }
-                            $demMorg->demmortgno = $demmortgno;
-                            $demMorg->name = $morgName;
-                            $demMorg->nature = $mortNatures[$key];
-                            $demMorg->member = $member;
-                            $demMorg->loan = $demLoan->iddemloan;
-                            $demMorg->amount = $mortAmts[$key];
-                            $demMorg->save();
+
+                            $dem_mortgage->demmortgno = $dem_mortgage_no;
+                            $dem_mortgage->name = $mort_name;
+                            $dem_mortgage->nature = $mort_natures[$key];
+                            $dem_mortgage->member = Request::input('member');
+                            $dem_mortgage->loan = $dem_loan->iddemloan;
+                            $dem_mortgage->amount = $mort_amount;
+                            $dem_mortgage->network = $emp->network;
+                            $dem_mortgage->zone = $emp->zone;
+                            $dem_mortgage->institution = $emp->institution;
+                            $dem_mortgage->branch = $emp->branch;
+
+                            $dem_mortgage->save();
                         }
                     }
                 }
             }
 
             DB::commit();
-            return Redirect::back()->with('success', trans('alertSuccess.lappsave'));
+            return Redirect::back()->with('success', trans('alertSuccess.loan_application_save'));
         } catch (\Exception $ex) {
             dd($ex);
             DB::rollBack();
-            return Redirect::back()->with('danger', trans('alertDanger.lappsave'));
+            return Redirect::back()->with('danger', trans('alertDanger.loan_application_save'));
         }
     }
 }

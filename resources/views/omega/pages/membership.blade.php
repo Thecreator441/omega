@@ -201,6 +201,16 @@ if ($emp->lang == 'fr') {
                 }
                 return tabLigne;
             }
+
+            var totAmt = 0;
+            $('.amount').each(function () {
+                var amt = trimOver($(this).val(), null);
+
+                if (parseInt(amt))
+                    totAmt += parseInt(amt);
+            });
+            $('#totrans').val(money(totAmt));
+            $('#totopera').text(toWord(totAmt), '{{$emp->lang}}');
         });
 
         function sum(amount, valueId, sumId) {

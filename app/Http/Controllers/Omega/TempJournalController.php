@@ -18,7 +18,7 @@ class TempJournalController extends Controller
     {
         $emp = Session::get('employee');
 
-        $cash = Cash::getEmpCashOpen();
+        $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
         $writings = Writing::getWritings();
         $debit = Writing::getSumDebit();
         $credit = Writing::getSumCredit();

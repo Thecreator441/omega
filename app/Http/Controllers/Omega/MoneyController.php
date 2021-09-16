@@ -15,19 +15,11 @@ class MoneyController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
-
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $currencies = Currency::getCurrencies();
-            $moneys = Money::getMoneys();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-            
-            return view('omega.pages.money', compact('menu', 'currencies', 'moneys'));
-        }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        $currencies = Currency::getCurrencies();
+        $moneys = Money::getMoneys();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+        
+        return view('omega.pages.money', compact('menu', 'currencies', 'moneys'));
     }
 
     /**
@@ -91,27 +83,27 @@ class MoneyController extends Controller
 //        }
 //    }
 
-    public function store()
-    {
-        $billeting = [
-            'value' => Request::input('value'),
-            'format' => Request::input('format'),
-            'labeleng' => Request::input('labeleng'),
-            'labelfr' => Request::input('labelfr'),
-            'idcurrency' => Request::input('currency')
-        ];
+    // public function store()
+    // {
+    //     $billeting = [
+    //         'value' => Request::input('value'),
+    //         'format' => Request::input('format'),
+    //         'labeleng' => Request::input('labeleng'),
+    //         'labelfr' => Request::input('labelfr'),
+    //         'idcurrency' => Request::input('currency')
+    //     ];
 
-        if (Billeting::insertData($billeting)) {
-            return Redirect::back()->with('success', 'Billeting Successfully Saved');
-        }
-        return Redirect::back()->with('danger', 'Billeting not Saved');
-    }
+    //     if (Billeting::insertData($billeting)) {
+    //         return Redirect::back()->with('success', 'Billeting Successfully Saved');
+    //     }
+    //     return Redirect::back()->with('danger', 'Billeting not Saved');
+    // }
 
-    public function delete()
-    {
-        if (Billeting::deleteData(Request::input('id'))) {
-            return 'success';
-        }
-        return 'danger';
-    }
+    // public function delete()
+    // {
+    //     if (Billeting::deleteData(Request::input('id'))) {
+    //         return 'success';
+    //     }
+    //     return 'danger';
+    // }
 }

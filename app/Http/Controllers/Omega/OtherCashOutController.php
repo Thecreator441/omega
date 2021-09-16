@@ -56,25 +56,25 @@ class OtherCashOutController extends Controller
             $accdate = AccDate::getOpenAccDate();
             $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
 
-            $cash->mon1 -= trimOver(Request::input('B1'), ' ');
-            $cash->mon2 -= trimOver(Request::input('B2'), ' ');
-            $cash->mon3 -= trimOver(Request::input('B3'), ' ');
-            $cash->mon4 -= trimOver(Request::input('B4'), ' ');
-            $cash->mon5 -= trimOver(Request::input('B5'), ' ');
-            $cash->mon6 -= trimOver(Request::input('P1'), ' ');
-            $cash->mon7 -= trimOver(Request::input('P2'), ' ');
-            $cash->mon8 -= trimOver(Request::input('P3'), ' ');
-            $cash->mon9 -= trimOver(Request::input('P4'), ' ');
-            $cash->mon10 -= trimOver(Request::input('P5'), ' ');
-            $cash->mon11 -= trimOver(Request::input('P6'), ' ');
-            $cash->mon12 -= trimOver(Request::input('P7'), ' ');
+            $cash->mon1 -= (int)trimOver(Request::input('B1'), ' ');
+            $cash->mon2 -= (int)trimOver(Request::input('B2'), ' ');
+            $cash->mon3 -= (int)trimOver(Request::input('B3'), ' ');
+            $cash->mon4 -= (int)trimOver(Request::input('B4'), ' ');
+            $cash->mon5 -= (int)trimOver(Request::input('B5'), ' ');
+            $cash->mon6 -= (int)trimOver(Request::input('P1'), ' ');
+            $cash->mon7 -= (int)trimOver(Request::input('P2'), ' ');
+            $cash->mon8 -= (int)trimOver(Request::input('P3'), ' ');
+            $cash->mon9 -= (int)trimOver(Request::input('P4'), ' ');
+            $cash->mon10 -= (int)trimOver(Request::input('P5'), ' ');
+            $cash->mon11 -= (int)trimOver(Request::input('P6'), ' ');
+            $cash->mon12 -= (int)trimOver(Request::input('P7'), ' ');
             $cash->update((array)$cash);
 
             $writing = new Writing();
             $writing->writnumb = $writnumb;
             $writing->account = $cash->cashacc;
             $writing->operation = Request::input('menu_level_operation');
-            $writing->creditamt = trimOver(Request::input('totrans'), ' ');
+            $writing->creditamt = (int)trimOver(Request::input('totrans'), ' ');
             $writing->accdate = $accdate->accdate;
             $writing->employee = $emp->iduser;
             $writing->cash = $cash->idcash;
@@ -82,11 +82,12 @@ class OtherCashOutController extends Controller
             $writing->zone = $emp->zone;
             $writing->institution = $emp->institution;
             $writing->branch = $emp->branch;
+            $writing->writ_type = 'O';
             $writing->represent = Request::input('represent');
             $writing->save();
 
             $cashBal = Account::getAccount($cash->cashacc);
-            $cashBal->available -= trimOver(Request::input('totrans'), ' ');
+            $cashBal->available -= (int)trimOver(Request::input('totrans'), ' ');
             $cashBal->update((array)$cashBal);
 
             foreach ($accounts as $key => $account) {
@@ -105,6 +106,7 @@ class OtherCashOutController extends Controller
                     $writing->zone = $emp->zone;
                     $writing->institution = $emp->institution;
                     $writing->branch = $emp->branch;
+                    $writing->writ_type = 'O';
                     $writing->represent = Request::input('represent');
                     $writing->save();
 

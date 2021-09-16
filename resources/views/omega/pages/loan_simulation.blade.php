@@ -117,7 +117,7 @@ if ($emp->lang == 'fr') {
                         </div>
                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6">
                             <div class="form-group">
-                                <label for="inst1" class="col-xl-2 col-lg-4 col-md-4 col-sm-5 control-label">@lang('label.inst1')</label>
+                                <label for="date" class="col-xl-2 col-lg-4 col-md-4 col-sm-5 control-label">@lang('label.inst1')</label>
                                 <div class="col-xl-10 col-lg-8 col-md-8 col-sm-7">
                                     <input type="date" name="inst1" id="date" class="form-control" readonly>
                                 </div>
@@ -151,6 +151,17 @@ if ($emp->lang == 'fr') {
                                 </thead>
                                 <tbody id="amorDisplay">
                                 </tbody>
+                                <tfoot class="bg-antiquewhite">
+                                    <tr>
+                                        <th colspan="2"></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -239,7 +250,7 @@ if ($emp->lang == 'fr') {
                     datatype: 'json'
                 },
                 columns: [
-                    {data: 'intallment', class: 'text-center'},
+                    {data: 'installment', class: 'text-center'},
                     {data: 'capital', class: 'text-right text-bold'},
                     {data: 'amort_amt', class: 'text-right text-bold'},
                     {data: 'int_amt', class: 'text-right text-bold'},
@@ -248,6 +259,64 @@ if ($emp->lang == 'fr') {
                     {data: 'tot_amt', class: 'text-right text-bold'},
                     {data: 'date', class: 'text-center'}
                 ],
+                footerCallback: function (row, data, start, end, display) {
+                    var api = this.api(), api;
+                    
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function (i) {
+                        var type = typeof i;
+                        
+                        if(type === 'string') {
+                            i = parseInt(trimOver(i, null));
+                        } else if (type === 'number') {
+                            i = parseInt(i);
+                        } else {
+                            i = 0;
+                        }
+                        return i;
+                    };
+                    
+                    var totAmo = api
+                        .column(2, {page: 'all'})
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                    }, 0);
+                        
+                    var totInt = api
+                        .column(3, {page: 'all'})
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                    }, 0);
+                        
+                    var totAnn = api
+                        .column(4, {page: 'all'})
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                    }, 0);
+                            
+                    var totVAT = api
+                        .column(5, {page: 'all'})
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                    }, 0);
+                            
+                    var totTot = api
+                        .column(6, {page: 'all'})
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                    }, 0);
+                    
+                    $(api.column(2).footer()).html('<input type="hidden" value="' + totAmo + '">' + money(totAmo));
+                    $(api.column(3).footer()).html('<input type="hidden" value="' + totInt + '">' + money(totInt));
+                    $(api.column(4).footer()).html('<input type="hidden" value="' + totAnn + '">' + money(totAnn));
+                    $(api.column(5).footer()).html('<input type="hidden" value="' + totVAT + '">' + money(totVAT));
+                    $(api.column(6).footer()).html('<input type="hidden" value="' + totTot + '">' + money(totTot));
+                }
             });
         });
 

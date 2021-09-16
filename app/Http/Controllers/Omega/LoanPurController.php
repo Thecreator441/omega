@@ -14,26 +14,18 @@ class loanpurController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
+        $loanpurs = LoanPur::getLoanPurs();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $loanpurs = LoanPur::getLoanPurs();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            return view('omega.pages.loanpur', compact('menu', 'loanpurs'));
-        }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return view('omega.pages.loanpur', compact('menu', 'loanpurs'));
     }
 
     public function store()
     {
         // dd(Request::input());
-        DB::beginTransaction();
-        $emp = $emp = Session::get('employee');
         try {
+            DB::beginTransaction();
+            $emp = $emp = Session::get('employee');
             $idloanpur = Request::input('idloanpur');
             $loanpur = null;
 

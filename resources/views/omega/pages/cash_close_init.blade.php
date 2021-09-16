@@ -15,15 +15,18 @@ if ($emp->lang == 'fr') {
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title text-bold"> {{ $title }} </h3>
+            <div class="box-tools pull-right">
+                {{ $cashes->appends(request()->query())->links('layouts.includes.pagination') }}
+            </div>
         </div>
         <div class="box-body">
-            <div class="row">
+            {{-- <div class="row">
                 <div class="col-md-12">
                     <div class="col-md-12">
-                        {{ $cashes->appends(['level' => $menu->pLevel, 'menu' => $menu->pMenu])->links('layouts.includes.pagination') }}
+                        {{ $cashes->appends(request()->query())->links('layouts.includes.pagination') }}
                     </div>
                 </div>
-            </div>
+            </div> --}}
             
             <form action="{{ url('cash_close_init/store') }}" method="post" role="form" id="cashclose_initForm">
                 {{csrf_field()}}

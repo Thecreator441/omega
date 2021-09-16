@@ -14,26 +14,18 @@ class RegionController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+        foreach ($regions as $region) {
+            $country = Country::getCountry($region->country);
+
+            $region->cou_fr = $country->labelfr;
+            $region->cou_en = $country->labeleng;
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $countries = Country::getCountries();
-            $regions = Region::getRegions();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            foreach ($regions as $region) {
-                $country = Country::getCountry($region->country);
-    
-                $region->cou_fr = $country->labelfr;
-                $region->cou_en = $country->labeleng;
-            }
-
-            return view('omega.pages.region', compact('menu', 'countries', 'regions'));
-        }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return view('omega.pages.region', compact('menu', 'countries', 'regions'));
     }
 
     public function store()

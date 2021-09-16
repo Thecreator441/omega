@@ -25,25 +25,22 @@ class InstitutionController extends Controller
             return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $networks = Network::getNetworks();
-            $zones = Zone::getZones();
-            $institutions = Institution::getInstitutions();
-            if ($emp->level === 'N') {
-                $institutions = Institution::getinstitutions(['network' => $emp->network]);
-            } elseif ($emp->level === 'Z') {
-                $institutions = Institution::getinstitutions(['zone' => $emp->zone]);
-            }
-            $countries = Country::getCountries();
-            $regions = Region::getRegions();
-            $divisions = Division::getDivisions();
-            $towns = Town::getTowns();
-            $subdivs = SubDiv::getSubDivs();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            return view('omega.pages.institution', compact('menu', 'countries', 'regions', 'divisions', 'subdivs', 'towns', 'networks', 'zones', 'institutions'));
+        $networks = Network::getNetworks();
+        $zones = Zone::getZones();
+        $institutions = Institution::getInstitutions();
+        if ($emp->level === 'N') {
+            $institutions = Institution::getinstitutions(['network' => $emp->network]);
+        } elseif ($emp->level === 'Z') {
+            $institutions = Institution::getinstitutions(['zone' => $emp->zone]);
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
+        $towns = Town::getTowns();
+        $subdivs = SubDiv::getSubDivs();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+        return view('omega.pages.institution', compact('menu', 'countries', 'regions', 'divisions', 'subdivs', 'towns', 'networks', 'zones', 'institutions'));
     }
 
     public function store()

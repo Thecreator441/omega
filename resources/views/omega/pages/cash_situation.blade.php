@@ -16,7 +16,7 @@ if ($emp->lang == 'fr') {
         <div class="box-header with-border">
             <h3 class="box-title text-bold"> {{ $title }} </h3>
             <div class="box-tools pull-right">
-                {{ $cashes->appends(['level' => $menu->pLevel, 'menu' => $menu->pMenu])->links('layouts.includes.pagination') }}
+                {{ $cashes->appends(request()->query())->links('layouts.includes.pagination') }}
             </div>
         </div>
         <div class="box-body">

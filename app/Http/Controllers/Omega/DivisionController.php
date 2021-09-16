@@ -15,30 +15,22 @@ class DivisionController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+        foreach ($divisions as $division) {
+            $region = Region::getRegion($division->region);
+            $country = Country::getCountry($region->country);
+
+            $division->reg_fr = $region->labelfr;
+            $division->reg_en = $region->labeleng;
+            $division->cou_fr = $country->labelfr;
+            $division->cou_en = $country->labeleng;
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $countries = Country::getCountries();
-            $regions = Region::getRegions();
-            $divisions = Division::getDivisions();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            foreach ($divisions as $division) {
-                $region = Region::getRegion($division->region);
-                $country = Country::getCountry($region->country);
-    
-                $division->reg_fr = $region->labelfr;
-                $division->reg_en = $region->labeleng;
-                $division->cou_fr = $country->labelfr;
-                $division->cou_en = $country->labeleng;
-            }
-
-            return view('omega.pages.division', compact('menu', 'countries', 'regions', 'divisions'));
-        }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return view('omega.pages.division', compact('menu', 'countries', 'regions', 'divisions'));
     }
 
     public function store()

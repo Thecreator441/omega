@@ -14,18 +14,10 @@ class OperationController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
+        $operations = Operation::getOperations();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $operations = Operation::getOperations();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            return view('omega.pages.operation', compact('menu', 'operations'));
-        }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return view('omega.pages.operation', compact('menu', 'operations'));
     }
 
     public function store()
@@ -65,7 +57,7 @@ class OperationController extends Controller
             }
             return Redirect::back()->with('success', trans('alertSuccess.opeedit'));
         } catch (\Exception $ex) {
-            dd($ex);
+            // dd($ex);
             DB::rollBack();
             if ($idoper === null) {
                 return Redirect::back()->with('danger', trans('alertDanger.opesave'));

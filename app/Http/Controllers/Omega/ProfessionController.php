@@ -13,18 +13,10 @@ class ProfessionController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
+        $professions = Profession::getProfessions();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $professions = Profession::getProfessions();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            return view('omega.pages.profession', compact('menu', 'professions'));
-        }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return view('omega.pages.profession', compact('menu', 'professions'));
     }
 
     public function store()

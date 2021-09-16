@@ -24,46 +24,43 @@ class DeviceController extends Controller
             return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $networks = Network::getNetworks();
-            $zones = Zone::getZones();
-            $institutions = Institution::getInstitutions();
-            $branches = Branch::getBranches();
-            $devices = Device::getDevices();
-            if ($emp->level === 'N') {
-                $devices = Device::getDevices(['network' => $emp->network, 'zone' => NULL, 'institution' => NULL, 'branch' => NULL]);
-            } elseif ($emp->level === 'Z') {
-                $devices = Device::getDevices(['zone' => $emp->zone, 'institution' => NULL, 'branch' => NULL]);
-            } elseif ($emp->level === 'I') {
-                $devices = Device::getDevices(['institution' => $emp->institution, 'branch' => NULL]);
-            } elseif ($emp->level === 'B') {
-                $devices = Device::getDevices(['branch' => $emp->branch]);
-            }
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            foreach ($devices as $device) {
-                $device->os_name_vers = Crypt::decrypt($device->os_name) . ' ' . Crypt::decrypt($device->os_version);
-                $device->dev_model = Crypt::decrypt($device->dev_model);
-
-                if ($device->dev_type === 'C') {
-                    $device->dev_type = trans('label.computer');
-                } elseif ($device->dev_type === 'T') {
-                    $device->dev_type = trans('label.tablet');
-                } else {
-                    $device->dev_type = trans('label.mobile');
-                }
-            }
-            
-            return view('omega.pages.device', compact(
-                'menu',
-                'networks',
-                'zones',
-                'institutions',
-                'branches',
-                'devices'
-            ));
+        $networks = Network::getNetworks();
+        $zones = Zone::getZones();
+        $institutions = Institution::getInstitutions();
+        $branches = Branch::getBranches();
+        $devices = Device::getDevices();
+        if ($emp->level === 'N') {
+            $devices = Device::getDevices(['network' => $emp->network, 'zone' => NULL, 'institution' => NULL, 'branch' => NULL]);
+        } elseif ($emp->level === 'Z') {
+            $devices = Device::getDevices(['zone' => $emp->zone, 'institution' => NULL, 'branch' => NULL]);
+        } elseif ($emp->level === 'I') {
+            $devices = Device::getDevices(['institution' => $emp->institution, 'branch' => NULL]);
+        } elseif ($emp->level === 'B') {
+            $devices = Device::getDevices(['branch' => $emp->branch]);
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+        foreach ($devices as $device) {
+            $device->os_name_vers = Crypt::decrypt($device->os_name) . ' ' . Crypt::decrypt($device->os_version);
+            $device->dev_model = Crypt::decrypt($device->dev_model);
+
+            if ($device->dev_type === 'C') {
+                $device->dev_type = trans('label.computer');
+            } elseif ($device->dev_type === 'T') {
+                $device->dev_type = trans('label.tablet');
+            } else {
+                $device->dev_type = trans('label.mobile');
+            }
+        }
+        
+        return view('omega.pages.device', compact(
+            'menu',
+            'networks',
+            'zones',
+            'institutions',
+            'branches',
+            'devices'
+        ));
     }
 
     public function store()

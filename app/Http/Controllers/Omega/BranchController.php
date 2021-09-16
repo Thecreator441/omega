@@ -26,29 +26,26 @@ class BranchController extends Controller
             return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $countries = Country::getCountries();
-            $regions = Region::getRegions();
-            $divisions = Division::getDivisions();
-            $towns = Town::getTowns();
-            $subdivs = SubDiv::getSubDivs();
-            $networks = Network::getNetworks();
-            $zones = Zone::getZones();
-            $institutions = Institution::getInstitutions();
-            $branches = Branch::getBranches();
-            if ($emp->level === 'N') {
-                $branches = Branch::getBranches(['network' => $emp->network]);
-            } elseif ($emp->level === 'Z') {
-                $branches = Branch::getBranches(['zone' => $emp->zone]);
-            } elseif ($emp->level === 'I') {
-                $branches = Branch::getBranches(['institution' => $emp->institution]);
-            }
-
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-
-            return view('omega.pages.branch', compact('menu', 'countries', 'regions', 'divisions', 'subdivs', 'towns', 'networks', 'zones', 'institutions', 'branches'));
+        $countries = Country::getCountries();
+        $regions = Region::getRegions();
+        $divisions = Division::getDivisions();
+        $towns = Town::getTowns();
+        $subdivs = SubDiv::getSubDivs();
+        $networks = Network::getNetworks();
+        $zones = Zone::getZones();
+        $institutions = Institution::getInstitutions();
+        $branches = Branch::getBranches();
+        if ($emp->level === 'N') {
+            $branches = Branch::getBranches(['network' => $emp->network]);
+        } elseif ($emp->level === 'Z') {
+            $branches = Branch::getBranches(['zone' => $emp->zone]);
+        } elseif ($emp->level === 'I') {
+            $branches = Branch::getBranches(['institution' => $emp->institution]);
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+        return view('omega.pages.branch', compact('menu', 'countries', 'regions', 'divisions', 'subdivs', 'towns', 'networks', 'zones', 'institutions', 'branches'));
     }
 
     public function store()

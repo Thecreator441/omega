@@ -20,26 +20,21 @@ class CashCloseInitController extends Controller
             return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            if (dateOpen()) {
-                if (cashOpen()) {
-                    $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
-                    $cashes = Cash::getCashesPaginate(['cashes.employee' => $emp->iduser, 'cashes.status' => 'O']);
-                    if ($cash->view_other_tills === 'Y') {
-                        $cashes = Cash::getCashesPaginate(['cashes.status' => 'O']);
-                    }
-                    $moneys = Money::getMoneys();
-                    $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
-                    $menu->pLevel = Request::input("level");
-                    $menu->pMenu = Request::input("menu");
-    
-                    return view('omega.pages.cash_close_init', compact('cashes', 'moneys', 'menu'));
+        if (dateOpen()) {
+            if (cashOpen()) {
+                $cash = Cash::getCashBy(['cashes.employee' => $emp->iduser]);
+                $cashes = Cash::getCashesPaginate(['cashes.employee' => $emp->iduser, 'cashes.status' => 'O']);
+                if ($cash->view_other_tills === 'Y') {
+                    $cashes = Cash::getCashesPaginate(['cashes.status' => 'O']);
                 }
-                return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
+                $moneys = Money::getMoneys();
+                $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+                
+                return view('omega.pages.cash_close_init', compact('cashes', 'moneys', 'menu'));
             }
-            return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+            return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
 
     public function store()
@@ -47,7 +42,7 @@ class CashCloseInitController extends Controller
         DB::beginTransaction();
         try {
             $cash = Cash::getCash(Request::input('idcash'));
-            $cash->status = 'C';
+            $cash->status = 'I';
             $cash->closed_at = getsDate(now());
 
             $cash->update((array)$cash);

@@ -9,8 +9,10 @@ use App\Models\Collect_Mem;
 use App\Models\Collector;
 use App\Models\Member;
 use App\Models\Operation;
+use App\Models\Priv_Menu;
 use App\Models\ValWriting;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
 class TransactionController extends Controller
@@ -44,6 +46,7 @@ class TransactionController extends Controller
             $operas = Operation::getOperations();
             $members = Member::getMembers();
             $coll_members = Collect_Mem::getMembers();
+            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
             return view('omega.pages.transaction', compact(
                 'writings',
@@ -55,7 +58,8 @@ class TransactionController extends Controller
                 'operas',
                 'members',
                 'collectors',
-                'coll_members'
+                'coll_members',
+                'menu'
             ));
         }
         return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));

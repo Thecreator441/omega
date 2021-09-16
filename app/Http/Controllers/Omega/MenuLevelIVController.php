@@ -7,6 +7,7 @@ use App\Models\Menu_Level_I;
 use App\Models\Menu_Level_II;
 use App\Models\Menu_Level_III;
 use App\Models\Menu_Level_IV;
+use App\Models\Operation;
 use App\Models\Priv_Menu;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -21,26 +22,27 @@ class MenuLevelIVController extends Controller
             return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
         }
 
-        if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
-            $main_menus_1 = Menu_Level_I::getMenus();
-            $main_menus_2 = Menu_Level_II::getMenus();
-            $main_menus_3 = Menu_Level_III::getMenus();
-            $main_menus_4 = Menu_Level_IV::getMenus();
-            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+        $main_menus_1 = Menu_Level_I::getMenus();
+        $main_menus_2 = Menu_Level_II::getMenus();
+        $main_menus_3 = Menu_Level_III::getMenus();
+        $main_menus_4 = Menu_Level_IV::getMenus();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+        $operations = Operation::getOperations();
 
-            foreach ($main_menus_4 as $main_menu_4) {
-                $main_menu_3 = Menu_Level_III::getMenu($main_menu_4->menu_3);
-                $main_menu_2 = Menu_Level_II::getMenu($main_menu_3->menu_2);
-                $main_menu_1 = Menu_Level_I::getMenu($main_menu_2->menu_1);
-                
-                $main_menu_4->main_menu_1 = ($emp->lang === 'fr') ? $main_menu_1->labelfr : $main_menu_1->labeleng;
-                $main_menu_4->main_menu_2 = ($emp->lang === 'fr') ? $main_menu_2->labelfr : $main_menu_2->labeleng;
-                $main_menu_4->main_menu_3 = ($emp->lang === 'fr') ? $main_menu_3->labelfr : $main_menu_3->labeleng;
-            }
-
-            return view('omega.pages.menu_level_4', compact('menu', 'main_menus_1', 'main_menus_2', 'main_menus_3', 'main_menus_4'));
+        foreach ($main_menus_4 as $main_menu_4) {
+            $main_menu_3 = Menu_Level_III::getMenu($main_menu_4->menu_3);
+            $main_menu_2 = Menu_Level_II::getMenu($main_menu_3->menu_2);
+            $main_menu_1 = Menu_Level_I::getMenu($main_menu_2->menu_1);
+            
+            $main_menu_4->main_menu_1_view_icon = $main_menu_1->view_icon;
+            $main_menu_4->main_menu_1 = ($emp->lang === 'fr') ? $main_menu_1->labelfr : $main_menu_1->labeleng;
+            $main_menu_4->main_menu_2_view_icon = $main_menu_2->view_icon;
+            $main_menu_4->main_menu_2 = ($emp->lang === 'fr') ? $main_menu_2->labelfr : $main_menu_2->labeleng;
+            $main_menu_4->main_menu_3_view_icon = $main_menu_3->view_icon;
+            $main_menu_4->main_menu_3 = ($emp->lang === 'fr') ? $main_menu_3->labelfr : $main_menu_3->labeleng;
         }
-        return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+
+        return view('omega.pages.menu_level_4', compact('menu', 'main_menus_1', 'main_menus_2', 'main_menus_3', 'main_menus_4', 'operations'));
     }
 
     public function store()

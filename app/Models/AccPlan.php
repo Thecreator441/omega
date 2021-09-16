@@ -56,6 +56,7 @@ class AccPlan extends Model
                 ->orWhere($where)
                 ->orderBy('plan_code')->get();
         }
+
         return self::query()->select('acc_plans.*', 'At.labelfr AS Atfr', 'At.labeleng AS Ateng', 'At.accabbr')
             ->join('acc_types AS At', 'acc_type', '=', 'At.idacctype')
             ->where('acc_plans.network', $emp->network)
@@ -74,6 +75,7 @@ class AccPlan extends Model
             return self::query()->where($where)->where('network', $emp->network)
                 ->orderBy('code')->get();
         }
+        
         return self::query()->where('network', $emp->network)
             ->orderBy('code')->get();
     }
