@@ -234,6 +234,7 @@ class UserController extends Controller
                 $user->email = Request::input('email');
                 $user->password = Hash::make('user');
                 $user->privilege = $privilege->idpriv;
+                $user->view_other_users = Request::input('view_other_users');
                 if ($privilege->level !== 'P') {
                     $user->employee = $emplo->idemp;
                     $user->network = Request::input('network');
@@ -252,6 +253,7 @@ class UserController extends Controller
                 $user->username = Request::input('username');
                 $user->email = Request::input('email');
                 $user->privilege = $privilege->idpriv;
+                $user->view_other_users = Request::input('view_other_users');
                 if ($privilege->level !== 'P') {
                     $user->employee = $emplo->idemp;
                     $user->network = Request::input('network');

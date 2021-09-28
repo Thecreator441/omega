@@ -37,8 +37,8 @@ if ($emp->lang == 'fr') {
                         </div>
                         <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12">
                             <div class="form-group">
-                                <label for="member" class="col-xl-1 col-lg-3 col-md-2 col-sm-2 control-label">@lang('label.member')<span class="text-red text-bold">*</span></label>
-                                <div class="col-xl-11 col-lg-9 col-md-10 col-sm-10">
+                                <label for="member" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.member')<span class="text-red text-bold">*</span></label>
+                                <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10">
                                     <select class="form-control select2" name="member" id="member" required disabled>
                                         <option value=""></option>
                                         @foreach($members as $member)
@@ -72,7 +72,7 @@ if ($emp->lang == 'fr') {
                                     <select class="form-control select2" name="employee" id="employee" required disabled>
                                         <option value=""></option>
                                         @foreach($employees as $employee)
-                                            <option value="{{$employee->idemp}}">{{pad($employee->empmat, 6)}} : {{ $employee->name }} {{ $employee->surname }}</option>
+                                            <option value="{{$employee->iduser}}">{{pad($employee->empmat, 6)}} : {{ $employee->name }} {{ $employee->surname }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -540,193 +540,7 @@ if ($emp->lang == 'fr') {
                             }
                         }
                         
-                        $('#loan-data-table').DataTable({
-                            destroy: true,
-                            paging: false,
-                            info: false,
-                            searching: false,
-                            responsive: true,
-                            ordering: false,
-                            FixedHeader: true,
-                            dom: 'lBfrtip',
-                            buttons: [
-                                {
-                                    extend: 'copy',
-                                    text: '',
-                                    className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
-                                    titleAttr: '@lang('label.copy')',
-                                    footer: true
-                                },
-                                {
-                                    extend: 'excel',
-                                    text: '',
-                                    className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
-                                    titleAttr: '@lang('label.excel')',
-                                    footer: true
-                                },
-                                {
-                                    extend: 'pdf',
-                                    text: '',
-                                    className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
-                                    titleAttr: '@lang('label.pdf')',
-                                    footer: true
-                                },
-                                {
-                                    extend: 'print',
-                                    text: '',
-                                    className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
-                                    titleAttr: '@lang('label.print')',
-                                    footer: true
-                                }
-                            ],
-                            dom:
-                                "<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>>" +
-                                "<'row'<'col-sm-12'tr>>" +
-                                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                            processing: true,
-                            serverSide: false,
-                            language: {
-                                url: "{{ asset("plugins/datatables/lang/$emp->lang.json") }}",
-                            },
-                            serverMethod: 'GET',
-                            ajax: {
-                                url: "{{ url('getLoanSimulationPreview') }}",
-                                data: {
-                                    amount: dem_loan.amount,
-                                    numb_inst: parseInt(dem_loan.nbrinst),
-                                    int_rate: dem_loan.intrate,
-                                    tax_rate: dem_loan.vat,
-                                    period: dem_loan.periodicity,
-                                    date: $('#date').val(),
-                                    amorti: dem_loan.amortype
-                                },
-                                datatype: 'json'
-                            },
-                            columns: [
-                                {data: 'installment', class: 'text-center',
-                                    render: function(data, type, row) {
-                                        if (row.installment !== null) {
-                                            return '<input type="hidden" name="installs[]" value="' + row.installment + '">' + row.installment;
-                                        }
-                                        return '';
-                                    }
-                                },
-                                {data: 'capital', class: 'text-right text-bold', 
-                                    render: function(data, type, row) {
-                                        if (parseInt(row.capital) !== 0) {
-                                            return '<input type="hidden" name="capitals[]" value="' + row.capital + '">' + row.capital;
-                                        }
-                                        return row.capital;
-                                    }
-                                },
-                                {data: 'amort_amt', class: 'text-right text-bold', 
-                                    render: function(data, type, row) {
-                                        if (parseInt(row.amort_amt) !== 0) {
-                                            return '<input type="hidden" name="amo_amts[]" value="' + row.amort_amt + '">' + row.amort_amt;
-                                        }
-                                        return row.amort_amt;
-                                    }
-                                },
-                                {data: 'int_amt', class: 'text-right text-bold', 
-                                    render: function(data, type, row) {
-                                        if (parseInt(row.int_amt) !== 0) {
-                                            return '<input type="hidden" name="int_amts[]" value="' + row.int_amt + '">' + row.int_amt;
-                                        }
-                                        return row.int_amt;
-                                    }
-                                },
-                                {data: 'ann_amt', class: 'text-right text-bold', 
-                                    render: function(data, type, row) {
-                                        if (parseInt(row.ann_amt) !== 0) {
-                                            return '<input type="hidden" name="ann_amts[]" value="' + row.ann_amt + '">' + row.ann_amt;
-                                        }
-                                        return row.ann_amt;
-                                    }
-                                },
-                                {data: 'tax_amt', class: 'text-right text-bold', 
-                                    render: function(data, type, row) {
-                                        if (parseInt(row.tax_amt) !== 0) {
-                                            return '<input type="hidden" name="tax_amts[]" value="' + row.tax_amt + '">' + row.tax_amt;
-                                        }
-                                        return row.tax_amt;
-                                    }
-                                },
-                                {data: 'tot_amt', class: 'text-right text-bold', 
-                                    render: function(data, type, row) {
-                                        if (parseInt(row.tot_amt) !== 0) {
-                                            return '<input type="hidden" name="tot_amts[]" value="' + row.tot_amt + '">' + row.tot_amt;
-                                        }
-                                        return row.tot_amt;
-                                    }
-                                },
-                                {data: 'date', class: 'text-center',
-                                    render: function(data, type, row) {
-                                        if (row.date !== null) {
-                                            return '<input type="hidden" name="dates[]" value="' + row.date + '">' + row.date;
-                                        }
-                                        return '';
-                                    }
-                                }
-                            ],
-                            footerCallback: function (row, data, start, end, display) {
-                                var api = this.api(), api;
-                                
-                                // Remove the formatting to get integer data for summation
-                                var intVal = function (i) {
-                                    var type = typeof i;
-                                    
-                                    if(type === 'string') {
-                                        i = parseInt(trimOver(i, null));
-                                    } else if (type === 'number') {
-                                        i = parseInt(i);
-                                    } else {
-                                        i = 0;
-                                    }
-                                    return i;
-                                };
-                                
-                                var totAmo = api
-                                    .column(2, {page: 'all'})
-                                    .data()
-                                    .reduce(function (a, b) {
-                                        return intVal(a) + intVal(b);
-                                }, 0);
-                                    
-                                var totInt = api
-                                    .column(3, {page: 'all'})
-                                    .data()
-                                    .reduce(function (a, b) {
-                                        return intVal(a) + intVal(b);
-                                }, 0);
-                                    
-                                var totAnn = api
-                                    .column(4, {page: 'all'})
-                                    .data()
-                                    .reduce(function (a, b) {
-                                        return intVal(a) + intVal(b);
-                                }, 0);
-                                        
-                                var totVAT = api
-                                    .column(5, {page: 'all'})
-                                    .data()
-                                    .reduce(function (a, b) {
-                                        return intVal(a) + intVal(b);
-                                }, 0);
-                                        
-                                var totTot = api
-                                    .column(6, {page: 'all'})
-                                    .data()
-                                    .reduce(function (a, b) {
-                                        return intVal(a) + intVal(b);
-                                }, 0);
-
-                                $(api.column(2).footer()).html(money(totAmo));
-                                $(api.column(3).footer()).html(money(totInt));
-                                $(api.column(4).footer()).html(money(totAnn));
-                                $(api.column(5).footer()).html(money(totVAT));
-                                $(api.column(6).footer()).html(money(totTot));
-                            }
-                        });
+                        loanSimulationPreview(dem_loan.amount, dem_loan.nbrinst, dem_loan.intrate, dem_loan.vat, dem_loan.periodicity, dem_loan.amortype);
 
                         sumAmount();
                     }
@@ -761,6 +575,10 @@ if ($emp->lang == 'fr') {
         }
 
         $(document).on('click', '#preview', function () {
+            loanSimulationPreview($('#amount').val(), $('#numb_inst').val(), $('#int_rate').val(), $('#tax_rate').val(), $('#period').val(), $('#amorti').val());
+        });
+
+        function loanSimulationPreview (amount, nbrinst, intrate, vat, periodicity, amortype) {
             $('#loan-data-table').DataTable({
                 destroy: true,
                 paging: false,
@@ -813,55 +631,79 @@ if ($emp->lang == 'fr') {
                 ajax: {
                     url: "{{ url('getLoanSimulationPreview') }}",
                     data: {
-                        amount: $('#amount').val(),
-                        numb_inst: $('#numb_inst').val(),
-                        int_rate: $('#int_rate').val(),
-                        tax_rate: $('#tax_rate').val(),
-                        period: $('#period').val(),
+                        amount: amount,
+                        numb_inst: parseInt(nbrinst),
+                        int_rate: intrate,
+                        tax_rate: vat,
+                        period: periodicity,
                         date: $('#date').val(),
-                        amorti: $('#amorti').val()
+                        amorti: amortype
                     },
                     datatype: 'json'
                 },
                 columns: [
                     {data: 'installment', class: 'text-center',
                         render: function(data, type, row) {
-                            return '<input type="hidden" name="installs[]" value="' + parseInt(trimOver(row.installment, null)) + '">' + row.installment;
+                            if (row.installment !== null) {
+                                return '<input type="hidden" name="installs[]" value="' + row.installment + '">' + row.installment;
+                            }
+                            return '';
                         }
                     },
                     {data: 'capital', class: 'text-right text-bold', 
                         render: function(data, type, row) {
-                            return '<input type="hidden" name="capitals[]" value="' + parseInt(trimOver(row.capital, null)) + '">' + row.capital;
+                            if (parseInt(row.capital) !== 0) {
+                                return '<input type="hidden" name="capitals[]" value="' + row.capital + '">' + row.capital;
+                            }
+                            return row.capital;
                         }
                     },
                     {data: 'amort_amt', class: 'text-right text-bold', 
                         render: function(data, type, row) {
-                            return '<input type="hidden" name="amo_amts[]" value="' + parseInt(trimOver(row.amort_amt, null)) + '">' + row.amort_amt;
+                            if (parseInt(row.amort_amt) !== 0) {
+                                return '<input type="hidden" name="amo_amts[]" value="' + row.amort_amt + '">' + row.amort_amt;
+                            }
+                            return row.amort_amt;
                         }
                     },
                     {data: 'int_amt', class: 'text-right text-bold', 
                         render: function(data, type, row) {
-                            return '<input type="hidden" name="int_amts[]" value="' + parseInt(trimOver(row.int_amt, null)) + '">' + row.int_amt;
+                            if (parseInt(row.int_amt) !== 0) {
+                                return '<input type="hidden" name="int_amts[]" value="' + row.int_amt + '">' + row.int_amt;
+                            }
+                            return row.int_amt;
                         }
                     },
                     {data: 'ann_amt', class: 'text-right text-bold', 
                         render: function(data, type, row) {
-                            return '<input type="hidden" name="ann_amts[]" value="' + parseInt(trimOver(row.ann_amt, null)) + '">' + row.ann_amt;
+                            if (parseInt(row.ann_amt) !== 0) {
+                                return '<input type="hidden" name="ann_amts[]" value="' + row.ann_amt + '">' + row.ann_amt;
+                            }
+                            return row.ann_amt;
                         }
                     },
                     {data: 'tax_amt', class: 'text-right text-bold', 
                         render: function(data, type, row) {
-                            return '<input type="hidden" name="tax_amts[]" value="' + parseInt(trimOver(row.tax_amt, null)) + '">' + row.tax_amt;
+                            if (parseInt(row.tax_amt) !== 0) {
+                                return '<input type="hidden" name="tax_amts[]" value="' + row.tax_amt + '">' + row.tax_amt;
+                            }
+                            return row.tax_amt;
                         }
                     },
                     {data: 'tot_amt', class: 'text-right text-bold', 
                         render: function(data, type, row) {
-                            return '<input type="hidden" name="tot_amts[]" value="' + parseInt(trimOver(row.tot_amt, null)) + '">' + row.tot_amt;
+                            if (parseInt(row.tot_amt) !== 0) {
+                                return '<input type="hidden" name="tot_amts[]" value="' + row.tot_amt + '">' + row.tot_amt;
+                            }
+                            return row.tot_amt;
                         }
                     },
                     {data: 'date', class: 'text-center',
                         render: function(data, type, row) {
-                            return '<input type="hidden" name="dates[]" value="' + row.date + '">' + row.date;
+                            if (row.date !== null) {
+                                return '<input type="hidden" name="dates[]" value="' + row.date + '">' + row.date;
+                            }
+                            return '';
                         }
                     }
                 ],
@@ -924,7 +766,7 @@ if ($emp->lang == 'fr') {
                     $(api.column(6).footer()).html(money(totTot));
                 }
             });
-        });
+        }
 
         function submitForm() {
             $('#loan-data-table').DataTable().destroy();

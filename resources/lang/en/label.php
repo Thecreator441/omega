@@ -106,6 +106,7 @@ return [
 	'loan_per' => 'Loan Period',
 	'max_dur' => 'Max Duration',
 	'max_amt' => 'Max Amount',
+    'rejloan' => 'Rejected Loans',
 	'inst_pen_day_space' => 'Installment Day Diff & Pen',
     'int_paid_acc' => 'Interest Paid Account',
 	'loan_accc' => 'Loan Account Chart',
@@ -540,6 +541,8 @@ return [
     'professioneng' => 'Profession(Eng)',
     'professionfr' => 'Profession(Fr)',
     'new_loan_type' => 'New Loan Type',
+    'view_other_users' => 'View Other Users',
+    'all_members' => 'All Members',
 
 
 

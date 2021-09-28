@@ -13,6 +13,108 @@ class ValWriting extends Model
 
     protected $fillable = ['val_writings'];
 
+    public static function getWriting(int $idvalwrit)
+    {
+        return self::query()->select('val_writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'U.employee AS user_emp', 'U.collector AS col_emp', 'C.cashcode')
+            ->join('accounts AS A', 'val_writings.account', '=', 'A.idaccount')
+            ->join('users AS U', 'val_writings.employee', '=', 'U.iduser')
+            ->join('cashes AS C', 'val_writings.cash', '=', 'C.idcash')
+            ->where('idvalwrit', $idvalwrit)->first();
+    }
+
+    public static function getWritingBy(array $where)
+    {
+        $emp = Session::get('employee');
+
+        return self::query()->select('val_writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'U.employee AS user_emp', 'U.collector AS col_emp', 'C.cashcode')
+            ->join('accounts AS A', 'val_writings.account', '=', 'A.idaccount')
+            ->join('cashes AS C', 'val_writings.cash', '=', 'C.idcash')
+            ->join('users AS U', 'val_writings.employee', '=', 'U.iduser')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('val_writings.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('val_writings.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('val_writings.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('val_writings.network', $emp->network);
+                }
+            })->where($where)->orderBy('writnumb')->first();
+    }
+
+    public static function getWritings(array $where = null)
+    {
+        $emp = Session::get('employee');
+
+        if ($where !== null) {
+            return self::query()->select('val_writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'U.employee AS user_emp', 'U.collector AS col_emp', 'C.cashcode')
+                ->join('accounts AS A', 'val_writings.account', '=', 'A.idaccount')
+                ->join('cashes AS C', 'val_writings.cash', '=', 'C.idcash')
+                ->join('users AS U', 'val_writings.employee', '=', 'U.iduser')
+                ->where(static function ($query) use ($emp) {
+                    if ($emp->level === 'B') {
+                        $query->where('val_writings.branch', $emp->branch);
+                    }
+                    if ($emp->level === 'I') {
+                        $query->where('val_writings.institution', $emp->institution);
+                    }
+                    if ($emp->level === 'Z') {
+                        $query->where('val_writings.zone', $emp->zone);
+                    }
+                    if ($emp->level === 'N') {
+                        $query->where('val_writings.network', $emp->network);
+                    }
+                })->where($where)->orderBy('writnumb')->get();
+        }
+
+        return self::query()->select('val_writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'U.employee AS user_emp', 'U.collector AS col_emp', 'C.cashcode')
+            ->join('accounts AS A', 'val_writings.account', '=', 'A.idaccount')
+            ->join('cashes AS C', 'val_writings.cash', '=', 'C.idcash')
+            ->join('users AS U', 'val_writings.employee', '=', 'U.iduser')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('val_writings.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('val_writings.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('val_writings.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('val_writings.network', $emp->network);
+                }
+            })->orderBy('writnumb')->get();
+    }
+
+    public static function getWritingsBy(array $where)
+    {
+        $emp = Session::get('employee');
+
+        return self::query()->select('val_writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'U.employee AS user_emp', 'U.collector AS col_emp', 'C.cashcode')
+            ->join('accounts AS A', 'val_writings.account', '=', 'A.idaccount')
+            ->join('cashes AS C', 'val_writings.cash', '=', 'C.idcash')
+            ->join('users AS U', 'val_writings.employee', '=', 'U.iduser')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('val_writings.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('val_writings.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('val_writings.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('val_writings.network', $emp->network);
+                }
+            })->where($where)->orderBy('writnumb')->get();
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
@@ -253,7 +355,7 @@ class ValWriting extends Model
         $param = Inst_Param::getInstParam($emp->institution);
 
         if ($branch === null && $month === null) {
-            return self::query()->select('val_writings.*', 'C.code', 'C.name', 'C.surname')->distinct('idwrit')
+            return self::query()->select('val_writings.*', 'C.code', 'C.name', 'C.surname')->distinct('idvalwrit')
                 ->join('users AS U', 'val_writings.employee', '=', 'U.iduser')
                 ->join('collectors AS C', 'U.collector', '=', 'C.idcoll')
                 ->where('account', $param->revenue_acc)
@@ -275,7 +377,7 @@ class ValWriting extends Model
         }
 
         if ($branch !== null && $month === null) {
-            return self::query()->select('val_writings.*', 'C.code', 'C.name', 'C.surname')->distinct('idwrit')
+            return self::query()->select('val_writings.*', 'C.code', 'C.name', 'C.surname')->distinct('idvalwrit')
                 ->join('users AS U', 'val_writings.employee', '=', 'U.iduser')
                 ->join('collectors AS C', 'U.collector', '=', 'C.idcoll')
                 ->where('account', $param->revenue_acc)
@@ -297,7 +399,7 @@ class ValWriting extends Model
         }
 
         if ($branch === null && $month !== null) {
-            return self::query()->select('val_writings.*', 'C.code', 'C.name', 'C.surname')->distinct('idwrit')
+            return self::query()->select('val_writings.*', 'C.code', 'C.name', 'C.surname')->distinct('idvalwrit')
                 ->join('users AS U', 'val_writings.employee', '=', 'U.iduser')
                 ->join('collectors AS C', 'U.collector', '=', 'C.idcoll')
                 ->where('account', $param->revenue_acc)
@@ -318,7 +420,7 @@ class ValWriting extends Model
                 })->orderBy('writnumb')->get();
         }
 
-        return self::query()->select('val_writings.*', 'C.code', 'C.name', 'C.surname')->distinct('idwrit')
+        return self::query()->select('val_writings.*', 'C.code', 'C.name', 'C.surname')->distinct('idvalwrit')
             ->join('users AS U', 'val_writings.employee', '=', 'U.iduser')
             ->join('collectors AS C', 'U.collector', '=', 'C.idcoll')
             ->where('account', $param->revenue_acc)

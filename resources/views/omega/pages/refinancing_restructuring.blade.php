@@ -1,4 +1,5 @@
-<?php $emp = Session::get('employee');
+<?php 
+$emp = Session::get('employee');
 
 $title = $menu->labeleng;
 if ($emp->lang == 'fr') {
@@ -17,16 +18,29 @@ if ($emp->lang == 'fr') {
             <h3 class="box-title text-bold"> {{ $title }} </h3>
         </div>
         <div class="box-body">
-            <form action="{{ url('loan_application/store') }}" method="POST" role="form" id="loanApplForm" class="needs-validation">
-                {{ csrf_field() }}
-
+            <form action="{{ url('refinancing_restructuring/store') }}" method="POST" role="form" id="loanApprForm" class="needs-validation">
+                {{csrf_field()}}
+                
                 <div class="row">
                     <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
                             <div class="form-group">
-                                <label for="member" class="col-xl-1 col-lg-3 col-md-2 col-sm-2 control-label">@lang('label.member')<span class="text-red text-bold">*</span></label>
-                                <div class="col-xl-11 col-lg-9 col-md-10 col-sm-10">
-                                    <select class="form-control select2" name="member" id="member" required>
+                                <label for="loan" class="col-xl-2 col-lg-4 col-md-4 col-sm-2 col-xs-4 control-label">@lang('label.loan_no')<span class="text-red text-bold">*</span></label>
+                                <div class="col-xl-10 col-lg-8 col-md-8 col-sm-10 col-xs-8">
+                                    <select class="form-control select2" name="loan" id="loan" required>
+                                        <option value="null"></option>
+                                        @foreach ($loans as $loan)
+                                            <option value="{{$loan->idloan}}">{{pad($loan->loanno, 6)}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <label for="member" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.member')<span class="text-red text-bold">*</span></label>
+                                <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10">
+                                    <select class="form-control select2" name="member" id="member" required disabled>
                                         <option value=""></option>
                                         @foreach($members as $member)
                                             <option value="{{$member->idmember}}">{{pad($member->memnumb, 6)}} : {{ $member->name }} {{ $member->surname }}</option>
@@ -35,21 +49,25 @@ if ($emp->lang == 'fr') {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
                             <div class="form-group">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <input type="text" name="amount" id="amount" placeholder="@lang('label.loan_amt')" class="form-control text-bold text-right" required>
+                                <label for="amount" class="col-xl-2 col-lg-4 col-md-4 col-sm-2 col-xs-4 control-label">@lang('label.amount')</label>
+                                <div class="col-xl-10 col-lg-8 col-md-8 col-sm-10 col-xs-8">
+                                    <input type="text" name="amount" id="amount" class="form-control text-bold text-right">
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12">
                             <div class="form-group">
-                                <label for="employee" class="col-xl-1 col-lg-3 col-md-2 col-sm-2 control-label">@lang('label.loan_off')<span class="text-red text-bold">*</span></label>
-                                <div class="col-xl-11 col-lg-9 col-md-10 col-sm-10">
-                                    <select class="form-control select2" name="employee" id="employee" required>
+                                <label for="employee" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.loan_off')<span class="text-red text-bold">*</span></label>
+                                <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10">
+                                    <select class="form-control select2" name="employee" id="employee" required disabled>
                                         <option value=""></option>
                                         @foreach($employees as $employee)
-                                            <option value="{{$employee->iduser}}">{{pad($employee->empmat, 6)}} : {{ $employee->name }} {{ $employee->surname }}</option>
+                                            <option value="{{$employee->idemp}}">{{pad($employee->empmat, 6)}} : {{ $employee->name }} {{ $employee->surname }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -89,7 +107,7 @@ if ($emp->lang == 'fr') {
                             <div class="form-group">
                                 <label for="amorti" class="col-xl-2 col-lg-4 col-md-4 col-sm-2 col-xs-4 control-label">@lang('label.amort')</label>
                                 <div class="col-xl-10 col-lg-8 col-md-8 col-sm-10 col-xs-8">
-                                    <select name="amorti" id="amorti" class="form-control select2">
+                                    <select name="amorti" id="amorti" class="form-control select2" required>
                                         <option value="C" selected>@lang('label.constamort')</option>
                                         <option value="V">@lang('label.varamort')</option>
                                     </select>
@@ -103,7 +121,7 @@ if ($emp->lang == 'fr') {
                             <div class="form-group">
                                 <label for="grace" class="col-xl-2 col-lg-4 col-md-4 col-sm-4 control-label">@lang('label.grace')</label>
                                 <div class="col-xl-10 col-lg-8 col-md-8 col-sm-8">
-                                    <select name="grace" id="grace" class="form-control select2">
+                                    <select name="grace" id="grace" class="form-control select2" required>
                                         <option value="D">@lang('label.day1')</option>
                                         <option value="W">@lang('label.week1')</option>
                                         <option value="B">@lang('label.mon1/2')</option>
@@ -119,7 +137,7 @@ if ($emp->lang == 'fr') {
                             <div class="form-group">
                                 <label for="period" class="col-xl-2 col-lg-4 col-md-4 col-sm-4 control-label">@lang('label.periodicity')</label>
                                 <div class="col-xl-10 col-lg-8 col-md-8 col-sm-8">
-                                    <select name="period" id="period" class="form-control select2">
+                                    <select name="period" id="period" class="form-control select2" required>
                                         <option value="D">@lang('label.daily')</option>
                                         <option value="W">@lang('label.weekly')</option>
                                         <option value="B">@lang('label.bimens')</option>
@@ -135,7 +153,7 @@ if ($emp->lang == 'fr') {
                             <div class="form-group">
                                 <label for="int_rate" class="col-xl-2 col-lg-4 col-md-4 col-xs-6 control-label">@lang('label.monintrate')</label>
                                 <div class="col-xl-10 col-lg-8 col-md-8 col-xs-6">
-                                    <input type="text" name="int_rate" id="int_rate" class="form-control text-right">
+                                    <input type="text" name="int_rate" id="int_rate" class="form-control text-right" required>
                                 </div>
                             </div>
                         </div>
@@ -146,7 +164,7 @@ if ($emp->lang == 'fr') {
                             <div class="form-group">
                                 <label for="tax_rate" class="col-xl-2 col-lg-4 col-md-4 col-sm-4 control-label">@lang('label.taxrate')</label>
                                 <div class="col-xl-10 col-lg-8 col-md-8 col-sm-8">
-                                    <input type="text" name="tax_rate" id="tax_rate" class="form-control text-right">
+                                    <input type="text" name="tax_rate" id="tax_rate" class="form-control text-right" required>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +172,7 @@ if ($emp->lang == 'fr') {
                             <div class="form-group">
                                 <label for="numb_inst" class="col-xl-2 col-lg-4 col-md-4 col-sm-4 control-label">@lang('label.noinstal')</label>
                                 <div class="col-xl-10 col-lg-8 col-md-8 col-sm-8">
-                                    <input type="text" name="numb_inst" id="numb_inst" class="form-control text-right">
+                                    <input type="text" name="numb_inst" id="numb_inst" class="form-control text-right" required>
                                 </div>
                             </div>
                         </div>
@@ -195,7 +213,7 @@ if ($emp->lang == 'fr') {
                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-12">
                                 <div class="form-group">
                                     <div class="radio">
-                                        <label for="fin&morg"><input type="radio" name="guarantee" id="fin&morg" value="F&M">@lang('label.fin&morg')</label>
+                                        <label for="fin&morg"><input type="radio" name="guarantee" id="fin_morg" value="F&M">@lang('label.fin&morg')</label>
                                     </div>
                                 </div>
                             </div>
@@ -236,7 +254,7 @@ if ($emp->lang == 'fr') {
                                         <div class="form-group">
                                             <label for="comake_savings" class="col-xl-2 col-lg-4 col-md-4 col-sm-5 control-label">@lang('label.balance')</label>
                                             <div class="col-xl-10 col-lg-8 col-md-8 col-sm-7">
-                                                <input type="text" id="comake_savings" class="form-control text-bold text-right" readonly>
+                                                <input type="text" id="comake_savings" class="form-control text-bold text-right" >
                                             </div>
                                         </div>
                                     </div>
@@ -353,7 +371,7 @@ if ($emp->lang == 'fr') {
 
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="table-responsive">
-                            <table class="table loan-data-table table-striped table-hover table-condensed table-bordered no-padding">
+                            <table id="loan-data-table" class="table table-striped table-hover table-condensed table-bordered no-padding">
                                 <thead>
                                     <tr class="text-center text-bold">
                                         <th>@lang('label.install')</th>
@@ -371,7 +389,7 @@ if ($emp->lang == 'fr') {
                                 <tfoot class="bg-antiquewhite">
                                     <tr>
                                         <th colspan="2"></th>
-                                        <th></th>
+                                        <th id="totAmount"></th>
                                         <th></th>
                                         <th></th>
                                         <th></th>
@@ -392,7 +410,7 @@ if ($emp->lang == 'fr') {
                                 <tr class="text-bold text-blue bg-antiquewhite text-left">
                                     <td>@lang('label.totrans')</td>
                                     <td style="width: 15%"><input type="text" style="text-align: left" name="totrans"
-                                                                  id="totrans" readonly></td>
+                                                                  id="totrans"></td>
                                     <td>@lang('label.diff')</td>
                                     <td id="diff" class="text-right" style="width: 15%"></td>
                                 </tr>
@@ -413,207 +431,117 @@ if ($emp->lang == 'fr') {
     <script>
         $(document).ready(function () {
             $('#date').val(installment_date($('#grace').val()));
-
-            $('#finance').hide();
-            $('#mortgage').hide();
-
-            if ($('#comakers tr').length === 0) {
-                $('#com_minus').attr('disabled', true);
-            }
-
-            if ($('#mortgages tr').length === 0) {
-                $('#mort_minus').attr('disabled', true);
-            }
         });
 
-        $('#member').change(function () {
-            if (!isNaN($(this).val())) {
-                $('#fin').prop('checked', true);
-                $('#finance').show();
-
-                $('#comake').val($(this).val()).trigger('change');
-            }
-        });
-
-        $('#comake').change(function () {
-            if (!isNaN($(this).val())) {
-                $.ajax({
-                    url: "{{ url('getMemCashOutBals') }}",
-                    method: 'get',
-                    data: {
-                        member: $(this).val()
-                    },
-                    success: function (accounts) {
-                        let option = "<option value=''></option>";
-                        $.each(accounts.data, function (i, account) {
-                            option += "<option " +
-                                "value=" + account.account + ">" + account.accnumb + " : @if($emp->lang == 'fr') " + account.acclabelfr + " @else " + account.acclabeleng + " @endif</option>";
-                        });
-                        $('#account').html(option);
-                    }
-                });
-            } else {
-                $('#account').html("<option value=''></option>");
-            }
-        });
-
-        $('#account').change(function () {
-            if (!isNaN($(this).val())) {
-                $.ajax({
-                    url: "{{ url('getMemCashOutBals') }}",
-                    method: 'get',
-                    data: {
-                        member: $('#comake').val(),
-                        acctype: 'Or'
-                    },
-                    success: function (balances) {
-                        let savings = 0;
-                        $.each(balances.data, function (i, balance) {
-                            if (parseInt(balance.account) === parseInt($('#account').val())) {
-                                savings += (parseInt(balance.available) - parseInt(balance.block_amt));
-                            }
-                        });
-
-                        $('#comake_savings').val(money(savings));
-                    }
-                });
-            } else {
-                $('#comake_savings').val('');
-            }
-        });
-
-        $('#amount, #comake_amount, #mort_amount').on('input', function () {
+        $('#amount').on('input', function () {
             $(this).val(money($(this).val()));
+
+            sumAmount();
         });
 
-        $('#comake_amount').on('input', function () {
-            var comake_savings = parseInt(trimOver($('#comake_savings').val(), null));
-            var comake_amount = parseInt(trimOver($('#comake_amount').val(), null));
+        $('#loan').change(function () {
+            if ($(this).val() !== 'null') {
+                $.ajax({
+                    url: "{{ url('getLoan') }}",
+                    method: 'get',
+                    data: {
+                        loan: $(this).val()
+                    },
+                    success: function (response) {
+                        var loan = response.data;
 
-            if (comake_savings > comake_amount) {
-                $("#comake_amountOld").val(comake_amount);
-                $('#comake_amount').val(money(comake_amount));
-            } else {
-                $("#comake_amount").val(money(trimOver($("#comake_amountOld").val(), null)));
-        
-                myOSwal("{{ $title }}", "@lang('sidebar.small_account_balance')", 'error');
-                $('#comake_amount').focusin();
-            }
-        });
+                        $('#member').val(loan.member).select2();
+                        $('#amount').val(money(parseInt(loan.amount)));
+                        $('#employee').val(loan.employee).select2();
+                        $('#loan_type').val(loan.loantype).select2();
+                        $('#loan_pur').val(loan.loanpur).select2();
+                        $('#amorti').val(loan.amortype).select2();
+                        $('#grace').val(loan.grace).select2();
+                        $('#period').val(loan.periodicity).select2();
+                        $('#int_rate').val(loan.intrate);
+                        $('#tax_rate').val(loan.vat);
+                        $('#numb_inst').val(parseInt(loan.nbrinst));
+                        {{-- $('#date').val(loan.instdate1); --}}
 
-        $('#grace').change(function () {
-            $('#date').val(installment_date($(this).val()));
-        });
+                        var guarantee = loan.guarantee
 
-        $('input[type="radio"]').click(function () {
-            $(this).each(function () {
-                if ($(this).is(':checked')) {
-                    if ($(this).val() === 'F') {
-                        $('#finance').show();
-                        $('#mortgage').hide();
-                        $('#mortgages').empty();
-                        sumAmount();
-                    } else if ($(this).val() === 'M') {
-                        $('#finance').hide();
-                        $('#mortgage').show();
-                        sumAmount();
-                    } else if ($(this).val() === 'F&M') {
-                        $('#finance').show();
-                        $('#mortgage').show();
-                        sumAmount();
-                    } else {
-                        $('#mortgages').empty();
-                        $('#comakers').empty();
-                        $('#finance').hide();
-                        $('#mortgage').hide();
+                        if (guarantee === 'F') {
+                            $('#fin').prop('checked', true);
+                            $('#morg').prop('checked', false);
+                            $('#fin_morg').prop('checked', false);
+                            $('#finance').show();
+                            $('#mortgage').hide();
+                        }
+                        if (guarantee === 'M') {
+                            $('#fin').prop('checked', false);
+                            $('#morg').prop('checked', true);
+                            $('#fin_morg').prop('checked', false);
+                            $('#finance').hide();
+                            $('#mortgage').show();
+                        }
+                        if (guarantee === 'F&M') {
+                            $('#fin').prop('checked', false);
+                            $('#morg').prop('checked', false);
+                            $('#fin_morg').prop('checked', true);
+                            $('#finance').show();
+                            $('#mortgage').show();
+                        }
+
+                        if (guarantee === 'F' || guarantee === 'F&M') {
+                            var comakers = loan.comakers;
+
+                            if (parseInt(comakers.length) > 0) {
+                                var comake_line;
+                                $.each(comakers, function (i, comaker) {
+                                    comake_line += '<tr>' +
+                                                '<td class="text-center" style="width: 5%"><input type="checkbox" class="check"></td>' +
+                                                '<td>' + comaker.M_name + ' ' + comaker.M_surname + '</td>' +
+                                                '<td class="text-center">' + comaker.accnumb + '</td>' +
+                                                '<td class="text-right text-bold">' + money(parseInt(comaker.guaramt)) + '</td>' +
+                                                '<td class="text-right text-bold amounts">' + money(parseInt(comaker.guaramt)) + '</td>' +
+                                            '</tr>';
+                                });
+
+                                $('#comakers').html(comake_line);
+                            }
+                        }
+                        if (guarantee === 'M' || guarantee === 'F&M') {
+                            var mortgages = loan.mortgages;
+
+                            if (parseInt(mortgages.length) > 0) {
+                                var mortgage_line;
+                                $.each(mortgages, function (i, mortgage) {
+                                    var nature = "@lang('label.others')";
+                                    if (mortgage.nature === "B") {
+                                        nature = "@lang('label.immeuble')";
+                                    } else if (mortgage.nature === "C") {
+                                        nature = "@lang('label.coporal')";
+                                    } else if (mortgage.nature === "D") {
+                                        nature = "@lang('label.meuble')";
+                                    } else if (mortgage.nature === "M") {
+                                        nature = "@lang('label.material')";
+                                    }
+
+                                    mortgage_line += '<tr>' +
+                                                '<td class="text-center" style="width: 5%"><input type="checkbox" class="check2"></td>' +
+                                                '<td>' + mortgage.name + '</td>' +
+                                                '<td>' + nature + '</td>' +
+                                                '<td class="text-right text-bold amounts">' + money(parseInt(mortgage.amount)) + '</td>' +
+                                            '</tr>'
+                                });
+
+                                $('#mortgages').html(mortgage_line);
+                            }
+                        }
+
+                        loanSimulationPreview(loan.amount, loan.nbrinst, loan.intrate, loan.vat, loan.periodicity, loan.amortype);
+                        
                         sumAmount();
                     }
-                }
-            })
+                });
+            }
         });
-
-        $('#com_plus').click(function () {
-            var comake_key = $('#comake').select2('data')[0]['id'];
-            var comake_value = $('#comake').select2('data')[0]['text'];
-
-            var account_key = $('#account').select2('data')[0]['id'];
-            var account_value = $('#account').select2('data')[0]['text'].split(':');
-
-            var line = $('<tr>' +
-                '<td class="text-center" style="width: 5%"><input type="checkbox" class="check"></td>' +
-                '<td><input type="hidden" name="comakers[]" value="' + comake_key + '">' + comake_value + '</td>' +
-                '<td class="text-center"><input type="hidden" name="comake_accs[]" value="' + account_key + '">' + account_value[0] + '</td>' +
-                '<td class="text-right text-bold">' + $('#comake_savings').val() + '</td>' +
-                '<td class="text-right text-bold amounts"><input type="hidden" name="comake_amounts[]" value="' + trimOver($('#comake_amount').val(), null) + '">' + $('#comake_amount').val() + '</td>' +
-                '</tr>');
-
-            billet_data_table.row.add(line[0]).draw();
-
-            $('#comake_savings').val('');
-            $('#comake_amount').val('');
-
-            sumAmount();
-
-            $('#com_minus').prop('disabled', false);
-            $('#comake').val('').select2();
-            $('#account').html("<option value=''></option>");
-            $('#comake_savings').val('');
-        });
-
-        $('#mort_plus').click(function () {
-            var nature_Id = $('#mort_nature').select2('data')[0]['id'];
-            var nature_Text = $('#mort_nature').select2('data')[0]['text'];
-
-            var line = $('<tr>' +
-                            '<td class="text-center" style="width: 5%"><input type="checkbox" class="check2"></td>' +
-                            '<td><input type="hidden" name="mort_names[]" value="' + $('#mort_name').val() + '">' + $('#mort_name').val() + '</td>' +
-                            '<td><input type="hidden" name="mort_natures[]" value="' + nature_Id + '">' + nature_Text + '</td>' +
-                            '<td class="text-right text-bold amounts"><input type="hidden" name="mort_amounts[]" value="' + trimOver($('#mort_amount').val(), null) + '">' + $('#mort_amount').val() + '</td>' +
-                        '</tr>');
-
-            billet_data_table2.row.add(line[0]).draw();
-
-            $('#mort_minus').prop('disabled', false);
-
-            $('#mort_name').val('');
-            $('#mort_amount').val('');
-            $('#mort_nature').val('').select2();
-
-            sumAmount();
-        });
-
-        $('#com_minus').hover(function () {
-            if ($('#comakers tr').length === 1)
-                $(this).attr('disabled', true);
-        });
-
-        $('#com_minus').click(function () {
-            $('.check').each(function () {
-                if ($(this).is(':checked'))
-                    billet_data_table.row($(this).parents('tr')).remove().draw();
-
-                $('#check').attr('checked', false);
-            });
-
-            sumAmount();
-        });
-
-        $('#mort_minus').hover(function () {
-            if ($('#mortgages tr').length === 0)
-                $(this).attr('disabled', true);
-        });
-
-        $('#mort_minus').click(function () {
-            $('.check2').each(function () {
-                if ($(this).is(':checked'))
-                    billet_data_table2.row($(this).parents('tr')).remove().draw();
-
-                $('#check2').attr('checked', false);
-            });
-
-            sumAmount();
-        });
-
+        
         function sumAmount() {
             var sumAmt = 0;
 
@@ -641,6 +569,10 @@ if ($emp->lang == 'fr') {
         }
 
         $(document).on('click', '#preview', function () {
+            loanSimulationPreview($('#amount').val(), $('#numb_inst').val(), $('#int_rate').val(), $('#tax_rate').val(), $('#period').val(), $('#amorti').val());
+        });
+
+        function loanSimulationPreview (amount, nbrinst, intrate, vat, periodicity, amortype) {
             $('#loan-data-table').DataTable({
                 destroy: true,
                 paging: false,
@@ -693,25 +625,81 @@ if ($emp->lang == 'fr') {
                 ajax: {
                     url: "{{ url('getLoanSimulationPreview') }}",
                     data: {
-                        amount: $('#amount').val(),
-                        numb_inst: $('#numb_inst').val(),
-                        int_rate: $('#int_rate').val(),
-                        tax_rate: $('#tax_rate').val(),
-                        period: $('#period').val(),
+                        amount: amount,
+                        numb_inst: parseInt(nbrinst),
+                        int_rate: intrate,
+                        tax_rate: vat,
+                        period: periodicity,
                         date: $('#date').val(),
-                        amorti: $('#amorti').val()
+                        amorti: amortype
                     },
                     datatype: 'json'
                 },
                 columns: [
-                    {data: 'installment', class: 'text-center'},
-                    {data: 'capital', class: 'text-right text-bold'},
-                    {data: 'amort_amt', class: 'text-right text-bold'},
-                    {data: 'int_amt', class: 'text-right text-bold'},
-                    {data: 'ann_amt', class: 'text-right text-bold'},
-                    {data: 'tax_amt', class: 'text-right text-bold'},
-                    {data: 'tot_amt', class: 'text-right text-bold'},
-                    {data: 'date', class: 'text-center'}
+                    {data: 'installment', class: 'text-center',
+                        render: function(data, type, row) {
+                            if (row.installment !== null) {
+                                return '<input type="hidden" name="installs[]" value="' + row.installment + '">' + row.installment;
+                            }
+                            return '';
+                        }
+                    },
+                    {data: 'capital', class: 'text-right text-bold', 
+                        render: function(data, type, row) {
+                            if (parseInt(row.capital) !== 0) {
+                                return '<input type="hidden" name="capitals[]" value="' + row.capital + '">' + row.capital;
+                            }
+                            return row.capital;
+                        }
+                    },
+                    {data: 'amort_amt', class: 'text-right text-bold', 
+                        render: function(data, type, row) {
+                            if (parseInt(row.amort_amt) !== 0) {
+                                return '<input type="hidden" name="amo_amts[]" value="' + row.amort_amt + '">' + row.amort_amt;
+                            }
+                            return row.amort_amt;
+                        }
+                    },
+                    {data: 'int_amt', class: 'text-right text-bold', 
+                        render: function(data, type, row) {
+                            if (parseInt(row.int_amt) !== 0) {
+                                return '<input type="hidden" name="int_amts[]" value="' + row.int_amt + '">' + row.int_amt;
+                            }
+                            return row.int_amt;
+                        }
+                    },
+                    {data: 'ann_amt', class: 'text-right text-bold', 
+                        render: function(data, type, row) {
+                            if (parseInt(row.ann_amt) !== 0) {
+                                return '<input type="hidden" name="ann_amts[]" value="' + row.ann_amt + '">' + row.ann_amt;
+                            }
+                            return row.ann_amt;
+                        }
+                    },
+                    {data: 'tax_amt', class: 'text-right text-bold', 
+                        render: function(data, type, row) {
+                            if (parseInt(row.tax_amt) !== 0) {
+                                return '<input type="hidden" name="tax_amts[]" value="' + row.tax_amt + '">' + row.tax_amt;
+                            }
+                            return row.tax_amt;
+                        }
+                    },
+                    {data: 'tot_amt', class: 'text-right text-bold', 
+                        render: function(data, type, row) {
+                            if (parseInt(row.tot_amt) !== 0) {
+                                return '<input type="hidden" name="tot_amts[]" value="' + row.tot_amt + '">' + row.tot_amt;
+                            }
+                            return row.tot_amt;
+                        }
+                    },
+                    {data: 'date', class: 'text-center',
+                        render: function(data, type, row) {
+                            if (row.date !== null) {
+                                return '<input type="hidden" name="dates[]" value="' + row.date + '">' + row.date;
+                            }
+                            return '';
+                        }
+                    }
                 ],
                 footerCallback: function (row, data, start, end, display) {
                     var api = this.api(), api;
@@ -772,18 +760,21 @@ if ($emp->lang == 'fr') {
                     $(api.column(6).footer()).html(money(totTot));
                 }
             });
-        });
+        }
 
         function submitForm() {
+            $('#loan-data-table').DataTable().destroy();
+
             let cust = $('#member').val();
             let diff = parseInt(trimOver($('#diff').text(), null));
             let tot = parseInt(trimOver($('#totrans').val(), null));
             let amt = parseInt(trimOver($('#amount').val(), null));
+            let totAmo = parseInt(trimOver($('#totAmount').text(), null));
 
-            if (diff === 0 && cust !== '' && tot === amt) {
-                mySwal("{{ $title }}", "@lang('confirm.loan_application_text')", "@lang('confirm.no')", "@lang('confirm.yes')", '#loanApplForm');
+            if (cust !== '' && diff === 0 && tot !== 0 && amt !== 0 && totAmo === amt) {
+                mySwal("{{ $title }}", "@lang('confirm.refinancing_restructuring_text')", "@lang('confirm.no')", "@lang('confirm.yes')", '#loanApprForm');
             } else {
-                myOSwal("{{ $title }}", "@lang('confirm.loan_application_error_text')", 'error');
+                myOSwal("{{ $title }}", "@lang('confirm.refinancing_restructuring_error_text')", 'error');
             }
         }
     </script>

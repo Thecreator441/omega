@@ -478,7 +478,6 @@ return [
 
 	'acc_type_fr' => 'Type Compte(Fr)',
     'acc_type_eng' => 'Type Compte(En)',
-    'loan_type' => 'Nouveau Type Prêt',
     'loan_type_fr' => 'Type Prêt(Fr)',
     'loan_type_eng' => 'Type Prêt(En)',
     'loanpur_fr' => 'Bût Prêt(Fr)',
@@ -536,6 +535,8 @@ return [
     'professioneng' => 'Profession(Eng)',
     'professionfr' => 'Profession(Fr)',
     'new_loan_type' => 'Nouveau Type Prêt',
+    'view_other_users' => 'Voir Autre Utilisateurs',
+    'all_members' => 'Tout les Membres',
 
 
 

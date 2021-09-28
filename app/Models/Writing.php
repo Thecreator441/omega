@@ -22,14 +22,39 @@ class Writing extends Model
             ->where('idwrit', $idwrit)->first();
     }
 
+    public static function getWritingBy(array $where)
+    {
+        $emp = Session::get('employee');
+
+        return self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'U.employee AS user_emp', 'U.collector AS col_emp', 'C.cashcode')
+            ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
+            ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
+            ->join('users AS U', 'writings.employee', '=', 'U.iduser')
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('writings.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('writings.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('writings.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('writings.network', $emp->network);
+                }
+            })->where($where)->orderBy('writnumb')->first();
+    }
+
     public static function getWritings(array $where = null)
     {
         $emp = Session::get('employee');
 
         if ($where !== null) {
-            return self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'C.cashcode')
+            return self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'U.employee AS user_emp', 'U.collector AS col_emp', 'C.cashcode')
                 ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
                 ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
+                ->join('users AS U', 'writings.employee', '=', 'U.iduser')
                 ->where(static function ($query) use ($emp) {
                     if ($emp->level === 'B') {
                         $query->where('writings.branch', $emp->branch);
@@ -45,10 +70,11 @@ class Writing extends Model
                     }
                 })->where($where)->orderBy('writnumb')->get();
         }
-        
-        return self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'C.cashcode')
-        ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
-        ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
+
+        return self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'U.employee AS user_emp', 'U.collector AS col_emp', 'C.cashcode')
+            ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
+            ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
+            ->join('users AS U', 'writings.employee', '=', 'U.iduser')
             ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'B') {
                     $query->where('writings.branch', $emp->branch);
@@ -69,9 +95,10 @@ class Writing extends Model
     {
         $emp = Session::get('employee');
 
-        return self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'C.cashcode')
-        ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
-        ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
+        return self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'U.employee AS user_emp', 'U.collector AS col_emp', 'C.cashcode')
+            ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
+            ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
+            ->join('users AS U', 'writings.employee', '=', 'U.iduser')
             ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'B') {
                     $query->where('writings.branch', $emp->branch);
@@ -1048,7 +1075,7 @@ class Writing extends Model
      * @return array
      */
     public static function getJournalsByColl(int $network, int $collector, int $idcollect, string $lang)
-    {        
+    {
         $writings = self::query()->select('writings.*')
             ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
             ->where('writings.employee', $collector)->orderBy('writnumb')->get();
@@ -1633,12 +1660,12 @@ class Writing extends Model
                 ]);
             }
         })->where(static function ($query) use ($network, $zone, $institution, $branch) {
-                $query->orWhere([
-                    'writings.branch' => $branch,
-                    'writings.institution' => $institution,
-                    'writings.zone' => $zone,
-                    'writings.network' => $network
-                ]);
+            $query->orWhere([
+                'writings.branch' => $branch,
+                'writings.institution' => $institution,
+                'writings.zone' => $zone,
+                'writings.network' => $network
+            ]);
         })->orderBy('writnumb')->get();
 
         $sumDebit = self::query()->where(static function ($query) use ($user, $state) {
@@ -1684,7 +1711,7 @@ class Writing extends Model
                 'writings.network' => $network
             ]);
         })->sum('creditamt');
-        
+
         foreach ($writings as $writing) {
             $writing->refs = formWriting($writing->accdate, $writing->network, $writing->zone, $writing->institution, $writing->branch, $writing->writnumb);
 

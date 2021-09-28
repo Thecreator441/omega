@@ -420,9 +420,9 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
     });
 
     //    Refinancing
-    Route::prefix('refinancing')->group(static function () {
-        Route::get('/', 'Omega\RefinancingController@index')->name('refinancing');
-        Route::post('store', 'Omega\RefinancingController@store')->name('refinancing/store');
+    Route::prefix('refinancing_restructuring')->group(static function () {
+        Route::get('/', 'Omega\RefinancingRestructuringController@index')->name('refinancing');
+        Route::post('store', 'Omega\RefinancingRestructuringController@store')->name('refinancing/store');
     });
 
     //    Restructuring
@@ -1616,7 +1616,9 @@ Route::get('getAccChart', static function () {
 
 //      Get Loan
 Route::get('getLoan', static function () {
-    return Loan::getLoan(Request::input('loan'));
+    $loan = Loan::getLoan(Request::input('loan'));
+
+    return ['data' => $loan];
 });
 
 //      Get tLoans()
@@ -1629,9 +1631,14 @@ Route::get('getMemLoans', static function () {
     return Loan::getMemLoans(['member' => Request::input('member')]);
 });
 
-//      Get Loan
+//      Get Filter Loans
 Route::get('getFilterLoans', static function () {
-    return Loan::getFilterLoans(Request::input('loanstat'), Request::input('emp'), Request::input('dateFr'), Request::input('dateTo'));
+    return Loan::getFilterLoans(Request::input('user'), Request::input('loan_status'), Request::input('employee'), Request::input('from'), Request::input('to'));
+});
+
+//      Get Loans Statistics
+Route::get('getLoansStatictics', static function () {
+    return Loan::getLoansStatictics(Request::input('user'), Request::input('filter'), Request::input('member'), Request::input('loan_sign'), Request::input('loan_amt'), Request::input('employee'), Request::input('from'), Request::input('to'));
 });
 
 //      Get Demand Loan
@@ -1641,7 +1648,7 @@ Route::get('getDemLoan', static function () {
 
 //      Get Demand Loan
 Route::get('getFilterDemLoans', static function () {
-    return DemLoan::getFilterLoans(Request::input('loanstat'), Request::input('emp'), Request::input('dateFr'), Request::input('dateTo'));
+    return DemLoan::getFilterDemLoans(Request::input('user'), Request::input('loan_status'), Request::input('employee'), Request::input('from'), Request::input('to'));
 });
 
 //      Get Loan Type
