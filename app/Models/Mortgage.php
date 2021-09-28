@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Session;
 
 class Mortgage extends Model
 {
@@ -20,8 +19,8 @@ class Mortgage extends Model
     public static function getMortgages(array $where)
     {
         return self::query()->select('mortgages.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname')
-        ->join('members AS M', 'mortgages.member', '=', 'M.idmember')
-        ->where($where)->get();
+            ->join('members AS M', 'mortgages.member', '=', 'M.idmember')
+            ->where($where)->get();
     }
     
     /**
@@ -31,7 +30,7 @@ class Mortgage extends Model
     public static function getLast(int $loan)
     {
         return self::query()->select('mortgages.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname')
-        ->join('members AS M', 'mortgages.member', '=', 'M.idmember')
-        ->where('loan', $loan)->orderByDesc('mortno')->first();
+            ->join('members AS M', 'mortgages.member', '=', 'M.idmember')
+            ->where('loan', $loan)->orderByDesc('mortno')->first();
     }
 }

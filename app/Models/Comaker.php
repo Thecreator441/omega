@@ -18,9 +18,9 @@ class Comaker extends Model
      */
     public static function getComakers(array $where = null)
     {   
-        return self::query()->select('dem_comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
-            ->join('members AS M', 'dem_comakers.member', '=', 'M.idmember')
-            ->join('accounts AS A', 'dem_comakers.account', '=', 'A.idaccount')
+        return self::query()->select('comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
+            ->join('members AS M', 'comakers.member', '=', 'M.idmember')
+            ->join('accounts AS A', 'comakers.account', '=', 'A.idaccount')
             ->where($where)->get();
     }
 
@@ -30,9 +30,9 @@ class Comaker extends Model
      */
     public static function getComakersDesc(array $where = null)
     {
-        return self::query()->select('dem_comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
-            ->join('members AS M', 'dem_comakers.member', '=', 'M.idmember')
-            ->join('accounts AS A', 'dem_comakers.account', '=', 'A.idaccount')
+        return self::query()->select('comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
+            ->join('members AS M', 'comakers.member', '=', 'M.idmember')
+            ->join('accounts AS A', 'comakers.account', '=', 'A.idaccount')
             ->where($where)->orderByDesc('idcomaker')->get();
     }
 
@@ -42,9 +42,9 @@ class Comaker extends Model
      */
     public static function getComakersSum(array $where = null)
     {
-        return self::query()->select('dem_comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
-            ->join('members AS M', 'dem_comakers.member', '=', 'M.idmember')
-            ->join('accounts AS A', 'dem_comakers.account', '=', 'A.idaccount')
+        return self::query()->select('comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
+            ->join('members AS M', 'comakers.member', '=', 'M.idmember')
+            ->join('accounts AS A', 'comakers.account', '=', 'A.idaccount')
             ->where($where)->sum('guaramt');
     }
 
@@ -54,9 +54,9 @@ class Comaker extends Model
      */
     public static function getComakersPaidSum(array $where = null)
     {
-        return self::query()->select('dem_comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
-            ->join('members AS M', 'dem_comakers.member', '=', 'M.idmember')
-            ->join('accounts AS A', 'dem_comakers.account', '=', 'A.idaccount')
+        return self::query()->select('comakers.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS M_surname', 'A.accnumb', 'A.labelfr', 'A.labeleng')
+            ->join('members AS M', 'comakers.member', '=', 'M.idmember')
+            ->join('accounts AS A', 'comakers.account', '=', 'A.idaccount')
             ->where($where)->sum('paidguar');
     }
 

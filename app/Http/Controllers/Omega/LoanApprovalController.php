@@ -102,9 +102,9 @@ class LoanApprovalController extends Controller
             $loan->appdate = getsDate(now());
             $loan->demdate = getsDate($dem_loan->created_at);
             $loan->lastdate = $dem_loan->instdate1;
-            if ($dem_loan->employee !== $emp->idemp) {
+            if ($dem_loan->employee !== $emp->iduser) {
                 $loan->isforce = 'Y';
-                $loan->isforceby = $emp->idemp;
+                $loan->isforceby = $emp->iduser;
             }
             $loan->network = $emp->network;
             $loan->zone = $emp->zone;

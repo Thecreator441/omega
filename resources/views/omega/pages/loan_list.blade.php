@@ -1,181 +1,158 @@
-<?php
+<?php 
 $emp = Session::get('employee');
 
-if ($emp->lang == 'fr')
+$title = $menu->labeleng;
+if ($emp->lang == 'fr') {
+    $title = $menu->labelfr;
     App::setLocale('fr');
+}
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', trans('sidebar.list'))
+@section('title', $title)
 
 @section('content')
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title text-bold"> @lang('sidebar.list') </h3>
+            <h3 class="box-title text-bold"> {{ $title }} </h3>
         </div>
-        {{--        <div class="box-header">--}}
-        {{--            <div class="box-tools">--}}
-        {{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
-        {{--            </div>--}}
-        {{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('loan_list/store') }}" method="POST" role="form">
                 {{ csrf_field() }}
-                <div class="box-header with-border">
-                    <div class="row">
-                        <div class="col-md-2"></div>
-                        <div class="col-md-2">
+                <div class="row">
+                    <div class="row text-center">
+                        <div class="col-xl-2 col-lg-2"></div>
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <div class="radio">
-                                    <label for="loanap" class="control-label">
-                                        <input type="radio" name="filter" id="loanap" value="Ar"
-                                               checked>&nbsp;&nbsp;@lang('label.loanap')
+                                    <label for="loan_app" class="control-label">
+                                        <input type="radio" name="filter" id="loan_app" value="A" checked>@lang('label.loan_app')
                                     </label>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <div class="radio">
-                                    <label for="loanal" class="control-label">
-                                        <input type="radio" name="filter" id="loanal"
-                                               value="Al">&nbsp;&nbsp;@lang('label.loanal')
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <div class="radio">
-                                    <label for="rejloan" class="control-label">
-                                        <input type="radio" name="filter" id="rejloan"
-                                               value="R">&nbsp;&nbsp;@lang('label.rejloan')
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <div class="radio">
                                     <label for="cloloan" class="control-label">
-                                        <input type="radio" name="filter" id="cloloan"
-                                               value="C">&nbsp;&nbsp;@lang('label.cloloan')
+                                        <input type="radio" name="filter" id="cloloan" value="C">@lang('label.cloloan')
                                     </label>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2"></div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-12">
                             <div class="form-group">
-                                <label for="date1" class="col-md-2 control-label">@lang('label.period')</label>
-                                <label for="date1"
-                                       class="col-md-1 control-label text-right"> @lang('label.from')</label>
-                                <div class="col-md-4">
-                                    <div class="col-md-12">
-                                        <input type="date" name="date1" id="date1" class="form-control">
-                                    </div>
-                                </div>
-                                <label for="date2"
-                                       class="col-md-1 control-label text-center">@lang('label.to')</label>
-                                <div class="col-md-4">
-                                    <input type="date" name="date2" id="date2" class="form-control">
+                                <div class="radio">
+                                    <label for="loan_dem" class="control-label">
+                                        <input type="radio" name="filter" id="loan_dem" value="D">@lang('label.loan_dem')
+                                    </label>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-12">
                             <div class="form-group">
-                                <label for="loanoff" class="col-md-4 control-label">@lang('label.loanoff')</label>
-                                <div class="col-md-8">
-                                    @if ($emp->privilege == 6)
-                                        <select class="form-control select2" name="loanoff" id="loanoff" disabled>
+                                <div class="radio">
+                                    <label for="rejloan" class="control-label">
+                                        <input type="radio" name="filter" id="rejloan" value="R">@lang('label.rejloan')
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-2"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-7 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <label for="from" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-12 control-label">@lang('label.period')</label>
+                                <label for="from" class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-2 control-label text-right"> @lang('label.from')</label>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                                    <input type="date" name="from" id="from" class="form-control">
+                                </div>
+                                <label for="to" class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-2 control-label text-center">@lang('label.to')</label>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                                    <input type="date" name="to" id="to" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-10 col-xs-12">
+                            <div class="form-group">
+                                <label for="loan_off" class="col-xl-3 col-lg-3 col-md-4 col-sm-3 control-label">@lang('label.loan_off')</label>
+                                <div class="col-xl-9 col-lg-9 col-md-8 col-sm-9">
+                                    @if($emp->view_other_users === 'Y')
+                                        <select class="form-control select2" name="loan_off" id="loan_off">
+                                            <option value=""></option>
                                             @foreach ($employees as $employee)
-                                                @if ($emp->idemp == $employee->idemp)
-                                                    <option
-                                                        value="{{$employee->iduser}}">{{$employee->username}} {{$employee->surname}}</option>
-                                                @endif
+                                                <option value="{{ $employee->iduser }}">{{ $employee->name }} {{ $employee->surname }}</option>
                                             @endforeach
                                         </select>
                                     @else
-                                        <select class="form-control select2" name="loanoff" id="loanoff">
-                                            <option value="0">@lang('label.all')</option>
+                                        <select class="form-control select2" name="loan_off" id="loan_off" disabled>
                                             @foreach ($employees as $employee)
-                                                <option
-                                                    value="{{$employee->iduser}}">{{$employee->username}} {{$employee->surname}}</option>
+                                                @if ($emp->idemp == $employee->idemp)
+                                                    <option value="{{ $employee->iduser }}" selected>{{ $employee->name }} {{ $employee->surname }}</option>    
+                                                @endif
                                             @endforeach
                                         </select>
                                     @endif
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-1">
-                            <div class="form-group">
-                                <button type="button" id="search"
-                                        class="btn btn-sm bg-green pull-right btn-raised fa fa-search">
-                                </button>
+                        <div class="col-xl-1 col-lg-1 col-md-12 col-sm-2 col-xs-12">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <button type="button" id="search" class="search btn btn-sm bg-green pull-right btn-raised fa fa-search"></button>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <hr>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-12">
-                        <table id="admin-data-table"
-                               class="table table-striped table-hover table-condensed table-bordered table-responsive">
-                            <thead>
-                            <tr>
-                                <th style="width: 7%">@lang('label.loanno')</th>
-                                <th style="width: 7%">@lang('label.member')</th>
-                                <th style="width: 30%">@lang('label.name')</th>
-                                <th>@lang('label.loanty')</th>
-                                <th>@lang('label.loanpur')</th>
-                                <th class="cin">@lang('label.amount')</th>
-                                <th style="width: 7%">@lang('label.date')</th>
-                            </tr>
-                            </thead>
-                            <tbody id="listReport">
-                            @foreach ($loans as $loan)
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="table-responsive">
+                            <table id="admin-data-table" class="table table-striped table-hover table-condensed table-bordered">
+                                <thead>
                                 <tr>
-                                    <td>{{pad($loan->loanno, 6)}}</td>
-                                    @foreach ($members as $member)
-                                        @if ($member->idmember == $loan->member)
-                                            <td>{{pad($member->memnumb, 6)}}</td>
-                                            <td>{{$member->name}} {{$member->surname}}</td>
-                                        @endif
-                                    @endforeach
-                                    @foreach ($ltypes as $ltype)
-                                        @if ($ltype->idltype == $loan->loantype)
-                                            <td>{{--{{pad($ltype->lcode, 3)}}
-                                            : --}}@if ($emp->lang == 'fr') {{$ltype->labelfr}} @else {{$ltype->labeleng}} @endif</td>
-                                        @endif
-                                    @endforeach
-                                    @foreach ($lpurs as $lpur)
-                                        @if ($lpur->idloanpur == $loan->loanpur)
-                                            <td>{{--{{pad($lpur->purcode, 3)}}
-                                            : --}}@if ($emp->lang == 'fr') {{$lpur->labelfr}} @else {{$lpur->labeleng}} @endif</td>
-                                        @endif
-                                    @endforeach
-                                    <td class="text-right text-bold">
-                                        @if ($loan->isRef > 1)
-                                            {{money((int)$loan->refamt)}}
-                                        @else
-                                            {{money((int)$loan->amount)}}
-                                        @endif
-                                    </td>
-                                    <td class="text-center">{{changeFormat($loan->appdate)}}</td>
+                                    <th>@lang('label.loan_no')</th>
+                                    <th>@lang('label.member')</th>
+                                    <th>@lang('label.loan_type')</th>
+                                    <th>@lang('label.loan_pur')</th>
+                                    <th>@lang('label.amount')</th>
+                                    <th>@lang('label.date')</th>
                                 </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                @foreach ($loans as $loan)
+                                    <tr>
+                                        <td class="text-center">{{ pad($loan->loanno, 6) }}</td>
+                                        <td>{{ pad($loan->memnumb, 6) }} : {{ $loan->M_name }} {{ $loan->M_surname }}</td>
+                                        <td>@if ($emp->lang == 'fr') {{ $loan->lt_labelfr }} @else {{ $loan->lt_labeleng }} @endif</td>
+                                        <td>@if ($emp->lang == 'fr') {{ $loan->lp_labelfr }} @else {{ $loan->lp_labeleng }} @endif</td>
+                                        <td class="amount text-right text-bold">
+                                            @if ((int)$loan->isRef > 0)
+                                                {{money((int)$loan->refamt)}}
+                                            @else
+                                                {{money((int)$loan->amount)}}
+                                            @endif
+                                        </td>
+                                        <td class="text-center">{{changeFormat($loan->created_at)}}</td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                                <tfoot id="tableInput" class="bg-antiquewhite text-bold">
+                                    <tr>
+                                        <th colspan="4" class="text-center">@lang('label.total')</th>
+                                        <th id="totAmt" class="text-right text-bold"></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                     </div>
-                </div>
-
-                <div class="col-md-12">
-                    <button type="button" id="print" class="btn btn-sm bg-default pull-right btn-raised fa fa-print">
-                    </button>
                 </div>
             </form>
         </div>
@@ -184,13 +161,28 @@ if ($emp->lang == 'fr')
 
 @section('script')
     <script>
+        $(document).ready(function () {
+            sumAmount();
+        });
+
+        function sumAmount() {
+            var sum = 0;
+
+            $('.amount').each(function () {
+                let numb = trimOver($(this).text(), null);
+                if (parseInt(numb))
+                    sum += parseInt(numb);
+            });
+            $('#totAmt').text(money(sum));
+        }
+
         $('input[type="radio"]').click(function () {
             $(this).each(function () {
                 if ($(this).is(':checked')) {
-                    if (($(this).val() === 'Al') || ($(this).val() === 'R')) {
-                        fillLoans("{{ url('getFilterDemLoans') }}", $(this).val());
-                    } else if (($(this).val() === 'Ar') || ($(this).val() === 'C')) {
-                        fillLoans("{{ url('getFilterLoans') }}", $(this).val());
+                    if (($(this).val() === 'D') || ($(this).val() === 'R')) {
+                        fillLoans("{{ url('getFilterDemLoans') }}", $(this).val(), $('#loan_off').val(), $('#from').val(), $('#to').val());
+                    } else if (($(this).val() === 'A') || ($(this).val() === 'C')) {
+                        fillLoans("{{ url('getFilterLoans') }}", $(this).val(), $('#loan_off').val(), $('#from').val(), $('#to').val());
                     }
                 }
             });
@@ -199,77 +191,124 @@ if ($emp->lang == 'fr')
         $('#search').click(function () {
             $('input[type="radio"]').each(function () {
                 if ($(this).is(':checked')) {
-                    if (($(this).val() === 'Al') || ($(this).val() === 'R')) {
-                        fillLoans("{{ url('getFilterDemLoans') }}", $(this).val(), $('#employee').val(), $('#date1').val(), $('#date2').val());
-                    } else if (($(this).val() === 'Ar') || ($(this).val() === 'C')) {
-                        fillLoans("{{ url('getFilterLoans') }}", $(this).val(), $('#employee').val(), $('#date1').val(), $('#date2').val());
+                    if (($(this).val() === 'D') || ($(this).val() === 'R')) {
+                        fillLoans("{{ url('getFilterDemLoans') }}", $(this).val(), $('#loan_off').val(), $('#from').val(), $('#to').val());
+                    } else if (($(this).val() === 'A') || ($(this).val() === 'C')) {
+                        fillLoans("{{ url('getFilterLoans') }}", $(this).val(), $('#loan_off').val(), $('#from').val(), $('#to').val());
                     }
                 }
             });
         });
 
-        function fillLoans(url, stat, emp = null, dateFr = null, dateTo = null) {
-            $.ajax({
-                url: url,
-                method: 'get',
-                data: {
-                    loanstat: stat,
-                    employee: emp,
-                    dateFr: dateFr,
-                    dateTo: dateTo
+        function fillLoans (url, status, emp = null, from = null, to = null) {
+            $('#admin-data-table').DataTable({
+                destroy: true,
+                paging: true,
+                info: true,
+                responsive: true,
+                ordering: true,
+                FixedHeader: true,
+                language: {
+                    url: "{{ asset("plugins/datatables/lang/$emp->lang.json") }}",
                 },
-                success: function (loans) {
-                    let line = '';
-                    $.each(loans, function (i, loan) {
-                        let surname = '';
-                        if (loan.surname !== null) {
-                            surname = loan.surname;
+                dom: 'lBfrtip',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '',
+                        className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
+                        titleAttr: '@lang('label.copy')',
+                    },
+                    {
+                        extend: 'excel',
+                        text: '',
+                        className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
+                        titleAttr: '@lang('label.excel')',
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '',
+                        className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
+                        titleAttr: '@lang('label.pdf')',
+                    },
+                    {
+                        extend: 'print',
+                        text: '',
+                        className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
+                        titleAttr: '@lang('label.print')',
+                    }
+                ],
+                dom:
+                    "<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                processing: true,
+                serverSide: false,
+                serverMethod: 'GET',
+                ajax: {
+                    url: url,
+                    data: {
+                        user: '{{ $emp->iduser }}',
+                        loan_status: status,
+                        employee: emp,
+                        from: from,
+                        to: to
+                    },
+                    datatype: 'json'
+                },
+                columns: [
+                    {data: 'no', class: 'text-center'},
+                    {data: 'mem_infos'},
+                    {data: null,
+                        render: function(data, type, row) {
+                            let type_pret = row.lt_labeleng;
+                            if('{{ $emp->lang }}' === 'fr') {
+                                type_pret = row.lt_labelfr;
+                            }
+                            return type_pret;
                         }
-
-                        let no = loan.loanno;
-                        if (isNaN(loan.loanno)) {
-                            no = loan.demloanno;
+                    },
+                    {data: null,
+                        render: function(data, type, row) {
+                            let but_pret = row.lp_labeleng;
+                            if('{{ $emp->lang }}' === 'fr') {
+                                but_pret = row.lp_labelfr;
+                            }
+                            return but_pret;
                         }
-
-                        let amt = loan.amount;
-                        if (loan.isRef > 1) {
-                            amt = loan.refamt;
+                    },
+                    {data: 'amt', class: 'text-right text-bold amount'},
+                    {data: 'date', class: 'text-center'}
+                ],
+                footerCallback: function (row, data, start, end, display) {
+                    var api = this.api(), api;
+                    
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function (i) {
+                        var type = typeof i;
+                        
+                        if(type === 'string') {
+                            i = parseInt(trimOver(i, null));
+                        } else if (type === 'number') {
+                            i = parseInt(i);
+                        } else {
+                            i = 0;
                         }
+                        return i;
+                    };
+                    
+                    var totAmo = api
+                        .column(4, {page: 'all'})
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                    }, 0);
+                        
+                    $(api.column(4).footer()).html(money(totAmo));
 
-                        line += '<tr>' +
-                            '<td style="width: 7%">' + pad(no, 6) + '</td>' +
-                            '<td style="width: 7%">' + pad(loan.memnumb, 6) + '</td>' +
-                            '<td style="width: 30%">' + loan.name + ' ' + surname + '</td>' +
-                            '<td>@if ($emp->lang == 'fr') ' + loan.Ltfr + '@else ' + loan.Lteng + '@endif</td>' +
-                            '<td>@if ($emp->lang == 'fr') ' + loan.Lpfr + '@else ' + loan.Lpeng + ' @endif</td>' +
-                            '<td class="text-right text-bold cin">' + money(parseInt(amt)) + '</td>' +
-                            '<td style="width: 7%" class="text-center">' + userDate(loan.created_at) + '</td>' +
-                            '</tr>';
-                    });
-                    $('#listReport').html(line);
+                    sumAmount();
                 }
             });
         }
-
-        $('#save').click(function () {
-            swal({
-                    title: '@lang('sidebar.list')',
-                    text: '@lang('confirm.lapp_text')',
-                    type: 'info',
-                    showCancelButton: true,
-                    cancelButtonClass: 'bg-red',
-                    confirmButtonClass: 'bg-green',
-                    confirmButtonText: '@lang('confirm.yes')',
-                    cancelButtonText: '@lang('confirm.no')',
-                    closeOnConfirm: true,
-                    closeOnCancel: true
-                },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        $('#lappForm').submit();
-                    }
-                }
-            );
-        });
     </script>
 @stop

@@ -396,8 +396,21 @@ if ($emp->lang == 'fr') {
                                 </div>
                             </div>
                         </div>
-                      
-                        @if($emp->level === 'P')
+                        <div class="col-md-4 col-sm-4 col-xs-6">
+                            <div class="col-md-12">
+                                <div class="form-group has-info">
+                                    <div class="checkbox">
+                                        <label for="view_other_users">@lang('label.view_other_users')
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="view_other_users" value="Y" id="view_other_users">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if($emp->level === 'P')
+                        <div class="row">
                             <div class="col-md-4 col-sm-4 col-xs-6" id="reseau" style="display: none">
                                 <div class="form-group">
                                     <label for="network" class="col-md-4 control-label">@lang('label.network')</label>
@@ -454,13 +467,13 @@ if ($emp->lang == 'fr') {
                                     </div>
                                 </div>
                             </div>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
 
                     <div class="row">
                         <div class="col-md-12">
                             <div class="col-md-12">
-                                <button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save">
+                                <button type="submit" id="save" class="save btn btn-sm bg-blue pull-right btn-raised fa fa-save">
                                 </button>
                             </div>
                         </div>
@@ -503,7 +516,7 @@ if ($emp->lang == 'fr') {
                                                 <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
                                                 <td>@lang('label.organ')</td>
                                                 <td class="text-center">
-                                                    <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
+                                                    <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.free') @endif</span>
                                                 </td>
                                                 <td class="text-center">
                                                     <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
@@ -523,7 +536,7 @@ if ($emp->lang == 'fr') {
                                             <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
                                             <td>@lang('label.network')</td>
                                             <td class="text-center">
-                                                <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
+                                                <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.free') @endif</span>
                                             </td>
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
@@ -543,7 +556,7 @@ if ($emp->lang == 'fr') {
                                             <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
                                             <td>@lang('label.zone')</td>
                                             <td class="text-center">
-                                                <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
+                                                <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.free') @endif</span>
                                             </td>
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
@@ -563,7 +576,7 @@ if ($emp->lang == 'fr') {
                                             <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
                                             <td>@lang('label.institution')</td>
                                             <td class="text-center">
-                                                <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
+                                                <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.free') @endif</span>
                                             </td>
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
@@ -583,7 +596,7 @@ if ($emp->lang == 'fr') {
                                             <td>@if ($emp->lang === 'fr') {{$user->labelfr}} @else {{$user->labeleng}} @endif</td>
                                             <td>@lang('label.branch')</td>
                                             <td class="text-center">
-                                                <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.freed') @endif</span>
+                                                <span class="badge @if ($user->login_status === 'B') bg-red @else bg-green @endif">@if ($user->login_status === 'B') @lang('label.blocked') @else @lang('label.free') @endif</span>
                                             </td>
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-sm @if ($user->login_status === 'B') bg-green fa fa-check @else bg-red fa fa-close @endif"
@@ -846,7 +859,11 @@ if ($emp->lang == 'fr') {
                         });
                     }
 
-                    $('#save').replaceWith('<button type="submit" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit edit"></button>');
+                    if (user.view_other_users === 'Y') {
+                        $('#view_other_users').prop('checked', true);
+                    }
+
+                    $('.save').replaceWith('<button type="submit" id="edit" class="edit btn btn-sm bg-aqua pull-right btn-raised fa fa-edit edit"></button>');
 
                     $('#form').show();
                 }
@@ -1087,7 +1104,7 @@ if ($emp->lang == 'fr') {
             $('.select2').val('').select2();
             $('#institut').hide();
             $('#agence').hide();
-            $('.edit').replaceWith('<button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>');
+            $('.edit').replaceWith('<button type="submit" id="save" class="save btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>');
         }
     </script>
 @stop

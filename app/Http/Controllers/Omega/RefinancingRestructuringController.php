@@ -4,31 +4,49 @@ namespace App\Http\Controllers\Omega;
 
 use App\Http\Controllers\Controller;
 use App\Models\AccDate;
-use App\Models\Balance;
+use App\Models\MemBalance;
 use App\Models\Cash;
 use App\Models\Comaker;
+use App\Models\Employee;
 use App\Models\Installment;
 use App\Models\Loan;
+use App\Models\LoanPur;
 use App\Models\LoanType;
 use App\Models\Member;
 use App\Models\Mortgage;
 use App\Models\Operation;
+use App\Models\Priv_Menu;
 use App\Models\Writing;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
-class RefinancingController extends Controller
+class RefinancingRestructuringController extends Controller
 {
-    public static function store()
+    public function index()
     {
-//        dd(Request::all());
+        if (dateOpen()) {
+            $members = Member::getMembers(['members.memstatus' => 'A']);
+            $loans = Loan::getLoans(['loans.loanstat' => 'A']);
+            $loan_types = LoanType::getLoanTypes();
+            $loan_purs = LoanPur::getLoanPurs();
+            $employees = Employee::getEmployees();
+            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+            return view('omega.pages.refinancing_restructuring', compact('members', 'menu', 'loan_types', 'loan_purs', 'employees', 'loans'));
+        }
+        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+    }
+
+    public function store()
+    {
+        dd(Request::all());
         DB::beginTransaction();
         $emp = Session::get('employee');
 
         $idloan = Request::input('loan');
-        $amount = trimOver(Request::input('newamt'), ' ');
+        $amount = trimOver(Request::input('amount'), ' ');
         $nbrinst = Request::input('numb_inst');
         $guarantee = Request::input('guarantee');
 
@@ -326,7 +344,7 @@ class RefinancingController extends Controller
             $writing->branch = $emp->branch;
             $writing->save();
 
-            $memBal = Balance::getMemAcc($loan->member, $loanType->transacc);
+            $memBal = MemBalance::getMemAcc($loan->member, $loanType->transacc);
             $memBal->available += $amount - ($capital + $pen + $loan->accramt + $int);
             $memBal->update((array)$memBal);
 
@@ -343,11 +361,11 @@ class RefinancingController extends Controller
             $loan->intrate = Request::input('int_rate');
             ++$loan->isRef;
 
-            if (($guarantee === 'F') && isset($comakers)) {
+            if (($guarantee === 'F' || $guarantee === 'F&M') && isset($comakers)) {
                 $loanComakers = Comaker::getComakers(['loan' => $idloan]);
                 if ($loanComakers->count() < count($comakers)) {
                     foreach ($comakers as $key => $comaker) {
-                        if (array_key_exists($key, $loanComakers)) {
+                        if (array_key_exists($key, (array)$loanComakers)) {
                             if (!empty($comAmts[$key]) && $comAmts[$key] !== null && $comAmts[$key] !== '0') {
                                 $loanComakers[$key]->member = $comakers[$key];
                                 $loanComakers[$key]->account = $comAccs[$key];
@@ -393,12 +411,12 @@ class RefinancingController extends Controller
                     }
                 }
             }
-            if (($guarantee === 'M') && isset($mortNames)) {
+            if (($guarantee === 'M' || $guarantee === 'F&M') && isset($mortNames)) {
                 $loanMortgages = Mortgage::getMortgages($idloan);
                 if ($loanMortgages->count() < count($mortNames)) {
                     $mortgno = 1;
                     foreach ($mortNames as $key => $mortName) {
-                        if (array_key_exists($key, $loanMortgages)) {
+                        if (array_key_exists($key, (array)$loanMortgages)) {
                             if (!empty($mortAmts[$key]) && $mortAmts[$key] !== null && $mortAmts[$key] !== '0') {
                                 $loanMortgages[$key]->name = $mortName;
                                 $loanMortgages[$key]->nature = $mortNatures[$key];
@@ -449,119 +467,11 @@ class RefinancingController extends Controller
                     }
                 }
             }
-            if ($guarantee === 'F&M') {
-                if (isset($comakers)) {
-                    $loanComakers = Comaker::getComakers(['loan' => $idloan]);
-                    if ($loanComakers->count() < count($comakers)) {
-                        foreach ($comakers as $key => $comaker) {
-                            if (array_key_exists($key, $loanComakers)) {
-                                if (!empty($comAmts[$key]) && $comAmts[$key] !== null && $comAmts[$key] !== '0') {
-                                    $loanComakers[$key]->member = $comakers[$key];
-                                    $loanComakers[$key]->account = $comAccs[$key];
-                                    $loanComakers[$key]->guaramt = $comAmts[$key];
-                                    $loanComakers[$key]->paidguar = 0;
-                                    $loanComakers[$key]->update((array)$loanComakers[$key]);
-                                }
-                            } else if ($loanComakers->count() <= $key) {
-                                if (!empty($comAmts[$key]) && $comAmts[$key] !== null && $comAmts[$key] !== '0') {
-                                    $comaker = new Comaker();
-                                    $comaker->loan = $idloan;
-                                    $comaker->member = $comakers[$key];
-                                    $comaker->account = $comAccs[$key];
-                                    $comaker->guaramt = $comAmts[$key];
-                                    $comaker->paidguar = 0;
-                                    $comaker->save();
-                                }
-                            }
-                        }
-                    } else if ($loanComakers->count() > count($comakers)) {
-                        foreach ($loanComakers as $key => $loanComaker) {
-                            if (array_key_exists($key, $comakers)) {
-                                if (!empty($comAmts[$key]) && $comAmts[$key] !== null && $comAmts[$key] !== '0') {
-                                    $loanComaker->member = $comakers[$key];
-                                    $loanComaker->account = $comAccs[$key];
-                                    $loanComaker->gauramt = $comAmts[$key];
-                                    $loanComaker->paidguar = 0;
-                                    $loanComaker->update((array)$loanComaker);
-                                }
-                            } else {
-                                $loanComaker->delete();
-                            }
-                        }
-                    } else if ($loanComakers->count() === count($comakers)) {
-                        foreach ($loanComakers as $key => $loanComaker) {
-                            if (!empty($comAmts[$key]) && $comAmts[$key] !== null && $comAmts[$key] !== '0') {
-                                $loanComaker->member = $comakers[$key];
-                                $loanComaker->account = $comAccs[$key];
-                                $loanComaker->guaramt = $comAmts[$key];
-                                $loanComaker->paidguar = 0;
-                                $loanComaker->update((array)$loanComaker);
-                            }
-                        }
-                    }
-                }
-                if (isset($mortNames)) {
-                    $loanMortgages = Mortgage::getMortgages($idloan);
-                    if ($loanMortgages->count() < count($mortNames)) {
-                        $mortgno = 1;
-                        foreach ($mortNames as $key => $mortName) {
-                            if (array_key_exists($key, $loanMortgages)) {
-                                if (!empty($mortAmts[$key]) && $mortAmts[$key] !== null && $mortAmts[$key] !== '0') {
-                                    $loanMortgages[$key]->name = $mortName;
-                                    $loanMortgages[$key]->nature = $mortNatures[$key];
-                                    $loanMortgages[$key]->member = $loan->member;
-                                    $loanMortgages[$key]->amount = $mortAmts[$key];
-                                    $loanMortgages[$key]->update((array)$loanMortgages[$key]);
-                                }
-                            } else if ($loanMortgages->count() <= $key) {
-                                if (!empty($mortAmts[$key]) && $mortAmts[$key] !== null && $mortAmts[$key] !== '0') {
-                                    $last = Mortgage::getLast($idloan);
-                                    $mortgage = new Mortgage();
-                                    if ($last !== null) {
-                                        $mortgno = $last->mortgno + 1;
-                                    }
-                                    $mortgage->demmortgno = $mortgno;
-                                    $mortgage->name = $mortName;
-                                    $mortgage->nature = $mortNatures[$key];
-                                    $mortgage->member = $loan->member;
-                                    $mortgage->loan = $idloan;
-                                    $mortgage->amount = $mortAmts[$key];
-                                    $mortgage->save();
-                                }
-                            }
-                        }
-                    } else if ($loanMortgages->count() > count($mortNames)) {
-                        foreach ($loanMortgages as $key => $loanMortgage) {
-                            if (array_key_exists($key, $mortNames)) {
-                                if (!empty($mortAmts[$key]) && $mortAmts[$key] !== null && $mortAmts[$key] !== '0') {
-                                    $loanMortgage->name = $mortNames[$key];
-                                    $loanMortgage->nature = $mortNatures[$key];
-                                    $loanMortgage->member = $loan->member;
-                                    $loanMortgage->amount = $mortAmts[$key];
-                                    $loanMortgage->update((array)$loanMortgage);
-                                }
-                            } else {
-                                $loanMortgage->delete();
-                            }
-                        }
-                    } else if ($loanMortgages->count() === count($mortNames)) {
-                        foreach ($loanMortgages as $key => $loanMortgage) {
-                            if (!empty($mortAmts[$key]) && $mortAmts[$key] !== null && $mortAmts[$key] !== '0') {
-                                $loanMortgage->name = $mortNames[$key];
-                                $loanMortgage->nature = $mortNatures[$key];
-                                $loanMortgage->member = $loan->member;
-                                $loanMortgage->amount = $mortAmts[$key];
-                                $loanMortgage->update((array)$loanMortgage);
-                            }
-                        }
-                    }
-                }
-            }
-
+            
             $installs = Installment::getInstalls($idloan);
             if ($installs->count() < $nbrinst) {
                 foreach ($nos as $key => $no) {
-                    if (array_key_exists($key, $installs)) {
+                    if (array_key_exists($key, (array)$installs)) {
                         $installs[$key]->capital = $capitals[$key];
                         $installs[$key]->amort = $amortAmts[$key];
                         $installs[$key]->interest = $intAmts[$key];
@@ -623,19 +533,4 @@ class RefinancingController extends Controller
             return Redirect::back()->with('danger', trans('alertDanger.refsave'));
         }
     }
-
-    public function index()
-    {
-        if (dateOpen()) {
-            $loans = Loan::getLoans(['loanstat' => 'Ar']);
-            $members = Member::getActiveMembers();
-
-            return view('omega.pages.refinancing', [
-                'loans' => $loans,
-                'members' => $members
-            ]);
-        }
-        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
-    }
-
 }

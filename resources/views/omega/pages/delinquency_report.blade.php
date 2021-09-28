@@ -1,35 +1,32 @@
-<?php
+<?php 
 $emp = Session::get('employee');
 
-if ($emp->lang == 'fr')
+$title = $menu->labeleng;
+if ($emp->lang == 'fr') {
+    $title = $menu->labelfr;
     App::setLocale('fr');
+}
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', trans('sidebar.delinq'))
+@section('title', $title)
 
 @section('content')
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title text-bold"> @lang('sidebar.delinq') </h3>
+            <h3 class="box-title text-bold"> {{ $title }} </h3>
         </div>
-        {{--        <div class="box-header">--}}
-        {{--            <div class="box-tools">--}}
-        {{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
-        {{--            </div>--}}
-        {{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('delinquency_report/store') }}" method="POST" role="form">
                 {{ csrf_field() }}
-                <div class="box-header">
+                <div class="row">
                     <div class="col-md-3"></div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <div class="radio">
                                 <label for="summary">
-                                    <input type="radio" name="delinq" id="summary" value="S">
-                                    @lang('label.summary')
+                                    <input type="radio" name="delinq" id="summary" value="S">@lang('label.summary')
                                 </label>
                             </div>
                         </div>
@@ -38,8 +35,7 @@ if ($emp->lang == 'fr')
                         <div class="form-group">
                             <div class="radio">
                                 <label for="par3">
-                                    <input type="radio" name="delinq" id="par3" value="P3">
-                                    @lang('label.par3')
+                                    <input type="radio" name="delinq" id="par3" value="P3">@lang('label.par3')
                                 </label>
                             </div>
                         </div>
@@ -48,8 +44,7 @@ if ($emp->lang == 'fr')
                         <div class="form-group">
                             <div class="radio">
                                 <label for="par6">
-                                    <input type="radio" name="delinq" id="par6" value="P6">
-                                    @lang('label.par6')
+                                    <input type="radio" name="delinq" id="par6" value="P6">@lang('label.par6')
                                 </label>
                             </div>
                         </div>
@@ -57,37 +52,39 @@ if ($emp->lang == 'fr')
                     <div class="col-md-3"></div>
                 </div>
 
-                <div class="box-footer with-border" id="sum_report" style="display: none">
-                    <div class="col-md-12">
-                        <table class="table table-striped table-hover table-condensed table-bordered table-responsive">
-                            <thead>
-                            <tr>
-                                <th rowspan="2">@lang('label.cats')</th>
-                                <th colspan="5">@lang('label.noloanout')</th>
-                                <th class="bg-gray" style="width: 1px"></th>
-                                <th colspan="5">@lang('label.amtloanout')</th>
-                            </tr>
-                            <tr>
-                                <th class="cout">@lang('label.totnumb')</th>
-                                <th>M</th>
-                                <th>F</th>
-                                <th>G</th>
-                                <th>%</th>
-                                <th class="bg-gray" style="width: 1%"></th>
-                                <th class="cout">@lang('label.totamt')</th>
-                                <th>M</th>
-                                <th>F</th>
-                                <th>G</th>
-                                <th>%</th>
-                            </tr>
-                            </thead>
-                            <tbody id="sumReport"></tbody>
-                            <tfoot id="sumReportFooter" class="bg-antiquewhite text-bold"></tfoot>
-                        </table>
+                <div class="row" id="sum_report" style="display: none">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover table-condensed table-bordered">
+                                <thead>
+                                <tr>
+                                    <th rowspan="2">@lang('label.cats')</th>
+                                    <th colspan="5">@lang('label.noloanout')</th>
+                                    <th class="bg-gray" style="width: 1px"></th>
+                                    <th colspan="5">@lang('label.amtloanout')</th>
+                                </tr>
+                                <tr>
+                                    <th class="cout">@lang('label.totnumb')</th>
+                                    <th>M</th>
+                                    <th>F</th>
+                                    <th>G</th>
+                                    <th>%</th>
+                                    <th class="bg-gray" style="width: 1%"></th>
+                                    <th class="cout">@lang('label.totamt')</th>
+                                    <th>M</th>
+                                    <th>F</th>
+                                    <th>G</th>
+                                    <th>%</th>
+                                </tr>
+                                </thead>
+                                <tbody id="sumReport"></tbody>
+                                <tfoot id="sumReportFooter" class="bg-antiquewhite text-bold"></tfoot>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <div class="box-footer with-border" id="par3_report" style="display: none">
+                <div class="row" id="par3_report" style="display: none">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="col-md-6">
@@ -108,10 +105,10 @@ if ($emp->lang == 'fr')
                             </div>
                             <div class="col-md-6">
                                 <table class="table table-striped table-hover table-condensed table-bordered table-responsive">
-                                    <caption class="text-center text-bold h4"><b>@lang('label.loanty')</b></caption>
+                                    <caption class="text-center text-bold h4"><b>@lang('label.loan_type')</b></caption>
                                     <thead>
                                     <tr>
-                                        <th>@lang('label.loanty')</th>
+                                        <th>@lang('label.loan_type')</th>
                                         <th>@lang('label.amount')</th>
                                         <th>M</th>
                                         <th>F</th>
@@ -163,10 +160,10 @@ if ($emp->lang == 'fr')
                             </div>
                             <div class="col-md-6">
                                 <table class="table table-striped table-hover table-condensed table-bordered table-responsive">
-                                    <caption class="text-center text-bold h4"><b>@lang('label.loanty')</b></caption>
+                                    <caption class="text-center text-bold h4"><b>@lang('label.loan_type')</b></caption>
                                     <thead>
                                     <tr>
-                                        <th>@lang('label.loanty')</th>
+                                        <th>@lang('label.loan_type')</th>
                                         <th>@lang('label.amount')</th>
                                         <th>M</th>
                                         <th>F</th>
