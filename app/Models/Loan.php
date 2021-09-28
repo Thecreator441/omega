@@ -299,6 +299,27 @@ class loan extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getLoansMember()
+    {
+        $emp = Session::get('employee');
+
+        return self::query()->select('loans.*', 'M.gender', 'Lt.labelfr', 'Lt.labeleng')
+            ->join('members AS M', 'loans.member', '=', 'M.idmember')
+            ->join('loan_types AS Lt', 'loans.loantype', '=', 'Lt.idltype')
+            ->where('loanstat', 'A')->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('loans.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('loans.institution', $emp->institutions);
+                }
+            })
+            ->orderBy('loanno')->get();
+    }
+
+    /**
      * @param string $status
      * @param string|null $employee
      * @param string|null $from
@@ -423,27 +444,6 @@ class loan extends Model
                     ->whereRaw('isforce = Y OR isforce = N');
             }
         })->orderBy('Loanno')->get();
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public static function getLoansMember()
-    {
-        $emp = Session::get('employee');
-
-        return self::query()->select('loans.*', 'M.gender', 'Lt.labelfr', 'Lt.labeleng')
-            ->join('members AS M', 'loans.member', '=', 'M.idmember')
-            ->join('loan_types AS Lt', 'loans.loantype', '=', 'Lt.idltype')
-            ->where('loanstat', 'A')->where(static function ($query) use ($emp) {
-                if ($emp->level === 'B') {
-                    $query->where('loans.branch', $emp->branch);
-                }
-                if ($emp->level === 'I') {
-                    $query->where('loans.institution', $emp->institutions);
-                }
-            })
-            ->orderBy('loanno')->get();
     }
 
     /**
