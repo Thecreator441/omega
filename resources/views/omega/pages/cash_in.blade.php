@@ -252,28 +252,6 @@ if ($emp->lang == 'fr') {
                             ],
                         });
     
-                        /*$.ajax({
-                            url: "{{ url('getAccBalance') }}",
-                            method: 'get',
-                            data: {
-                                member: member.idmember
-                            },
-                            success: function (memAccs) {
-                                let memAccLine = '';
-                                
-                                $.each(memAccs, function (i, memAcc) {
-                                    if (memAcc.accabbr === 'Or') {
-                                        memAccLine += '<tr>' +
-                                            '<td><input type="hidden" name="accounts[]" value="' + memAcc.account + '">' + memAcc.accnumb + '</td>' +
-                                            '<td><input type="hidden" name="operations[]" value="' + memAcc.operation + '">@if ($emp->lang == 'fr')' + memAcc.acclabelfr + ' @else ' + memAcc.acclabeleng + '@endif</td>' +
-                                            '<td><input type="text" name="amounts[]" class="amount"></td>' +
-                                            '</tr>';
-                                    }
-                                });
-                                $('#mem_acc').html(memAccLine);
-                            }
-                        });*/
-    
                         $('#loanacc > tr').remove();
     
                         $.ajax({
@@ -296,7 +274,7 @@ if ($emp->lang == 'fr') {
                                     let accramt = parseInt(loan.accramt);
     
                                     async function pasteLoans() {
-                                        const loanType = await getData('getLoanType?ltype=' + loan.loantype);
+                                        const loanType = await getData('getLoanType?id=' + loan.loantype);
                                         const installs = await getData('getInstalls?loan=' + loan.idloan);
     
                                         let days = 0;
@@ -371,7 +349,7 @@ if ($emp->lang == 'fr') {
                                             '</tr>';
                                         
                                         table.row.add(loanAccLine).draw();
-                                        {{-- $('#loanacc').html(loanAccLine); --}}
+                                        $('#loanacc').html(loanAccLine);
                                     }
     
                                     pasteLoans();

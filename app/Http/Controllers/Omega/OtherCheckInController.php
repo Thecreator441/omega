@@ -45,6 +45,7 @@ class OtherCheckInController extends Controller
             $check->type = 'I';
             $check->status = 'D';
             $check->sorted = 'N';
+            $check->operation = Request::input('menu_level_operation');
             $check->amount = (int)trimOver(Request::input('totdist'), ' ');
             $check->carrier = Request::input('represent');
             $check->network = $emp->network;

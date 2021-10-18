@@ -267,11 +267,13 @@ class loan extends Model
             $to = dbDate($to);
 
             if ($from !== null && $to === null) {
-                $query->where('loans.created_at', '>=', $from);
-            } else if ($from === null && $to !== null) {
-                $query->where('loans.created_at', '<=', $to);
-            } else if ($from !== null && $to !== null) {
-                $query->whereRaw("loans.created_at >= $from AND loans.created_at <= $to");
+                $query->whereRaw("DATE(loans.created_at) >= '{$from}'");
+            }
+            if ($from === null && $to !== null) {
+                $query->whereRaw("DATE(loans.created_at) <= '{$to}'");
+            }
+            if ($from !== null && $to !== null) {
+                $query->whereRaw("DATE(loans.created_at) BETWEEN '{$from}' AND '{$to}'");
             }
         })->where('loans.loanstat', $status)->get();
 
@@ -360,11 +362,13 @@ class loan extends Model
             $to = dbDate($to);
 
             if ($from !== null && $to === null) {
-                $query->where('loans.created_at', '>=', $from);
-            } else if ($from === null && $to !== null) {
-                $query->where('loans.created_at', '<=', $to);
-            } else if ($from !== null && $to !== null) {
-                $query->whereRaw("loans.created_at >= $from AND loans.created_at <= $to");
+                $query->whereRaw("DATE(loans.created_at) >= '{$from}'");
+            }
+            if ($from === null && $to !== null) {
+                $query->whereRaw("DATE(loans.created_at) <= '{$to}'");
+            }
+            if ($from !== null && $to !== null) {
+                $query->whereRaw("DATE(loans.created_at) BETWEEN '{$from}' AND '{$to}'");
             }
         })->where(static function ($query) use ($member) {
             if((int)$member > 0) {
@@ -612,7 +616,7 @@ class loan extends Model
             return self::query()->select('loans.*', 'Lt.pen_req_tax', 'A.accnumb', 'Lt.loan_acc', 'Lt.labelfr', 'Lt.labeleng')
                 ->join('loan_types AS Lt', 'loans.loantype', '=', 'Lt.idltype')
                 ->join('accounts AS A', 'Lt.loan_acc', '=', 'A.idaccount')
-                ->where('loanstat', 'Ar')->where(static function ($query) use ($emp) {
+                ->where('loanstat', 'A')->where(static function ($query) use ($emp) {
                     if ($emp->level === 'B') {
                         $query->where('loans.branch', $emp->branch);
                     }
@@ -631,7 +635,7 @@ class loan extends Model
         return self::query()->select('loans.*', 'Lt.pen_req_tax', 'A.accnumb', 'Lt.loan_acc', 'Lt.labelfr', 'Lt.labeleng')
             ->join('loan_types AS Lt', 'loans.loantype', '=', 'Lt.idltype')
             ->join('accounts AS A', 'Lt.loan_acc', '=', 'A.idaccount')
-            ->where('loanstat', 'Ar')->where(static function ($query) use ($emp) {
+            ->where('loanstat', 'A')->where(static function ($query) use ($emp) {
                 if ($emp->level === 'B') {
                     $query->where('loans.branch', $emp->branch);
                 }

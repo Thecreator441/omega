@@ -543,6 +543,12 @@ return [
     'new_loan_type' => 'New Loan Type',
     'view_other_users' => 'View Other Users',
     'all_members' => 'All Members',
+    'paid' => 'Paid',
+    'unpaid' => 'Unpaid',
+    'drop' => 'Dropped',
+    'paid_checks' => 'Paid Checks',
+    'unpaid_checks' => 'Unpaid Checks',
+    'drop_checks' => 'Dropped Checks',
 
 
 

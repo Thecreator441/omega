@@ -537,6 +537,12 @@ return [
     'new_loan_type' => 'Nouveau Type Prêt',
     'view_other_users' => 'Voir Autre Utilisateurs',
     'all_members' => 'Tout les Membres',
+    'paid' => 'Payés',
+    'unpaid' => 'Impayés',
+    'drop' => 'Déposés',
+    'paid_checks' => 'Chèques Payés',
+    'unpaid_checks' => 'Chèques Impayés',
+    'drop_checks' => 'Chèques Déposés',
 
 
 

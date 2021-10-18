@@ -1,155 +1,160 @@
-<?php
-$emp = Session::get('employee');
+<?php $emp = Session::get('employee');
 
-if ($emp->lang == 'fr')
+$title = $menu->labeleng;
+if ($emp->lang == 'fr') {
+    $title = $menu->labelfr;
     App::setLocale('fr');
+}
 ?>
+
 @extends('layouts.dashboard')
 
-@section('title', trans('sidebar.report'))
+@section('title', $title)
 
 @section('content')
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title text-bold"> @lang('sidebar.report') </h3>
+            <h3 class="box-title text-bold"> {{ $title }} </h3>
         </div>
-{{--        <div class="box-header">--}}
-{{--            <div class="box-tools">--}}
-{{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
-{{--            </div>--}}
-{{--        </div>--}}
         <div class="box-body">
             <form action="{{ url('check_report/store') }}" method="POST" id="cheRegForm" role="form">
                 {{ csrf_field() }}
-                {{--                <div class="box-header with-border">--}}
-                {{--                    <div class="col-md-7">--}}
-                {{--                        <div class="form-group">--}}
-                {{--                            <label for="member" class="col-md-2 control-label">@lang('label.member')</label>--}}
-                {{--                            <div class="col-md-3">--}}
-                {{--                                <select class="form-control select2" name="member" id="member">--}}
-                {{--                                    <option></option>--}}
-                {{--                                    @foreach($members as $member)--}}
-                {{--                                        <option--}}
-                {{--                                            value="{{$member->idmember}}">{{pad($member->memnumb, 6)}}</option>--}}
-                {{--                                    @endforeach--}}
-                {{--                                </select>--}}
-                {{--                            </div>--}}
-                {{--                            <div class="col-md-7">--}}
-                {{--                                <input type="text" class="form-control" name="mem_name" id="mem_name"--}}
-                {{--                                       disabled>--}}
-                {{--                            </div>--}}
-                {{--                        </div>--}}
-                {{--                    </div>--}}
-                {{--                    <div class="col-md-5">--}}
-                {{--                        <div class="form-group">--}}
-                {{--                            <label for="bank" class="col-md-2 control-label">@lang('label.bank')</label>--}}
-                {{--                            <div class="col-md-10">--}}
-                {{--                                <select class="form-control select2" name="bank" id="bank">--}}
-                {{--                                    <option></option>--}}
-                {{--                                    @foreach($banks as $bank)--}}
-                {{--                                        <option value="{{ $bank->idbank }}">{{pad($bank->bankcode, 6)}}--}}
-                {{--                                            : {{$bank->name}} </option>--}}
-                {{--                                    @endforeach--}}
-                {{--                                </select>--}}
-                {{--                            </div>--}}
-                {{--                        </div>--}}
-                {{--                    </div>--}}
-                {{--                </div>--}}
 
-                {{--                <div class="box-header with-border">--}}
-                {{--                    <div class="col-md-3">--}}
-                {{--                        <div class="form-group">--}}
-                {{--                            <div class="radio">--}}
-                {{--                                <label for="unblocked" class="text-blue">--}}
-                {{--                                    <input type="radio" name="blocked/unblocked" id="unblocked" class="flat-blue"--}}
-                {{--                                           checked>&nbsp;--}}
-                {{--                                    @if($emp->lang == 'fr') Tout les Chèques @else All Checks @endif</label>--}}
-                {{--                            </div>--}}
-                {{--                        </div>--}}
-                {{--                    </div>--}}
-                {{--                    <div class="col-md-3">--}}
-                {{--                        <div class="form-group">--}}
-                {{--                            <label for="unblocked" class="text-green">--}}
-                {{--                                <input type="radio" name="blocked/unblocked" id="unblocked" class="flat-green">&nbsp;--}}
-                {{--                                @if($emp->lang == 'fr') Chèque Payé @else Paid Check @endif--}}
-                {{--                            </label>--}}
-                {{--                        </div>--}}
-                {{--                    </div>--}}
-                {{--                    <div class="col-md-3">--}}
-                {{--                        <div class="form-group">--}}
-                {{--                            <label for="blocked" class="text-yellow">--}}
-                {{--                                <input type="radio" name="blocked/unblocked" id="blocked" class="flat-yellow">&nbsp;--}}
-                {{--                                @if($emp->lang == 'fr') Chèque Impayé @else Unpaid Check @endif</label>--}}
-                {{--                        </div>--}}
-                {{--                    </div>--}}
-                {{--                    <div class="col-md-3">--}}
-                {{--                        <div class="form-group">--}}
-                {{--                            <label for="not_used" class="text-red">--}}
-                {{--                                <input type="radio" name="blocked/unblocked" id="not_used" class="flat-red">&nbsp;--}}
-                {{--                                @if($emp->lang == 'fr') Chèque Déposés @else Drop Check @endif</label>--}}
-                {{--                        </div>--}}
-                {{--                    </div>--}}
-                {{--                </div>--}}
+                <div class="row">
+                    <div class="row text-center">
+                        <div class="col-xl-2 col-lg-2"></div>
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <div class="radio">
+                                    <label for="all" class="control-label">
+                                        <input type="radio" name="filter" id="all" value="A" checked>@lang('label.all')
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <div class="radio">
+                                    <label for="paid" class="control-label">
+                                        <input type="radio" name="filter" id="paid" value="P">@lang('label.paid_checks')
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <div class="radio">
+                                    <label for="unpaid" class="control-label">
+                                        <input type="radio" name="filter" id="unpaid" value="U">@lang('label.unpaid_checks')
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <div class="radio">
+                                    <label for="drop" class="control-label">
+                                        <input type="radio" name="filter" id="drop" value="D">@lang('label.drop_checks')
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-2"></div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="member" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.member')</label>
+                                <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10">
+                                    <select class="form-control select2" name="member" id="member" required>
+                                        <option value=""></option>
+                                        @foreach($members as $member)
+                                            <option value="{{ $member->idmember }}">{{pad($member->memnumb, 6)}} : {{ $member->name }} {{ $member->surname }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="bank"  class="col-xl-1 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.bank')</label>
+                                <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10">
+                                    <select class="form-control select2" name="bank" id="bank">
+                                        <option value=""></option>
+                                        @foreach($banks as $bank)
+                                            <option value="{{ $bank->idbank }}">{{ pad($bank->bankcode, 3) }} : @if($emp->lang === 'eng') {{ $bank->labeleng }} @else {{ $bank->labelfr }} @endif </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="col-md-12">
-                    <table id="bootstrap-data-table"
-                           class="table table-hover table-bordered table-condensed table-responsive table-striped">
-                        <thead>
-                        <tr>
-                            <th>@lang('label.checkno')</th>
-                            <th>@lang('label.bank')</th>
-                            <th>@lang('label.member')</th>
-                            <th>@lang('label.status')</th>
-                            <th>@lang('label.opera')</th>
-                            <th>@lang('label.amount')</th>
-                            <th>@lang('label.date')</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($checks as $check)
-                            <tr>
-                                <td>{{$check->checknumb}}</td>
-                                <td>
-                                    @foreach ($banks as $bank)
-                                        @if ($bank->idbank == $check->bank)
-                                            {{$bank->name}}
-                                        @endif
-                                    @endforeach
-                                </td>
-                                <td>
-                                    @foreach ($members as $member)
-                                        @if ($member->idmember == $check->member)
-                                            {{pad($member->memnumb, 6)}}
-                                        @endif
-                                    @endforeach
-                                </td>
-                                <td>
-                                    @if ($check->status == 'D')
-                                        @if($emp->lang == 'fr') Non Traité @else Not Traited @endif
-                                    @elseif ($check->status == 'P' || $check->status == null)
-                                        @if($emp->lang == 'fr') Payé @else Paid @endif
-                                    @elseif ($check->status == 'U')
-                                        @if($emp->lang == 'fr') Impayé @else Unpaid @endif
-                                    @endif
-                                </td>
-                                <td>
-                                    @foreach ($operas as $opera)
-                                        @if ($opera->idoper == $check->operation)
-                                            @if($emp->lang == 'fr') {{$opera->labelfr}} @else {{$opera->labeleng}} @endif
-                                        @endif
-                                    @endforeach
-                                </td>
-                                <td class="text-right text-bold">{{money((int)$check->amount)}}</td>
-                                <td class="text-center">{{changeFormat($check->updated_at)}}</td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-7 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <label for="from" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-12 control-label">@lang('label.period')</label>
+                                <label for="from" class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-2 control-label text-right"> @lang('label.from')</label>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                                    <input type="date" name="from" id="from" class="form-control">
+                                </div>
+                                <label for="to" class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-2 control-label text-center">@lang('label.to')</label>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                                    <input type="date" name="to" id="to" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-5 col-sm-12 col-xs-12">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <button type="button" id="search" class="search btn btn-sm bg-green pull-right btn-raised fa fa-search"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
                 </div>
 
-                <div class="col-md-12">
-                    <button type="button" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save">
-                    </button>
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="table-responsive">
+                            <table id="admin-data-table" class="table table-striped table-hover table-condensed table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>@lang('label.checkno')</th>
+                                    <th>@lang('label.bank')</th>
+                                    <th>@lang('label.carrier')</th>
+                                    <th>@lang('label.opera')</th>
+                                    <th>@lang('label.amount')</th>
+                                    <th>@lang('label.status')</th>
+                                    <th>@lang('label.date')</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach ($checks as $check)
+                                    <tr>
+                                        <td>{{$check->checknumb}}</td>
+                                        <td>{{$check->bank}}</td>
+                                        <td>{{ $check->carrier }}</td>
+                                        <td>{{ $check->opera }}</td>
+                                        <td class="text-right text-bold amount">{{money((int)$check->amount)}}</td>
+                                        <td>{{ $check->state }}</td>
+                                        <td class="text-center">{{changeFormat($check->created_at)}}</td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                                <tfoot id="tableInput" class="bg-antiquewhite text-bold">
+                                    <tr>
+                                        <th colspan="4" class="text-center">@lang('label.total')</th>
+                                        <th id="totAmt" class="text-right text-bold">{{ money($totalAmt) }}</th>
+                                        <th colspan="2"></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -158,25 +163,132 @@ if ($emp->lang == 'fr')
 
 @section('script')
     <script>
-        $('#save').click(function () {
-            swal({
-                    title: '@lang('confirm.chereg_header')',
-                    text: '@lang('confirm.chereg_text')',
-                    type: 'info',
-                    showCancelButton: true,
-                    cancelButtonClass: 'bg-red',
-                    confirmButtonClass: 'bg-blue',
-                    confirmButtonText: '@lang('confirm.yes')',
-                    cancelButtonText: '@lang('confirm.no')',
-                    closeOnConfirm: true,
-                    closeOnCancel: true
-                },
-                function (isConfirm) {
-                    if (isConfirm) {
-                        $('#cheRegForm').submit();
-                    }
-                }
-            );
+        $(document).ready(function () {
+            sumAmount();
         });
+
+        function sumAmount() {
+            var sum = 0;
+
+            $('.amount').each(function () {
+                let numb = trimOver($(this).text(), null);
+                if (parseInt(numb))
+                    sum += parseInt(numb);
+            });
+            $('#totAmt').text(money(sum));
+        }
+
+        $('input[type="radio"]').click(function () {
+            $(this).each(function () {
+                if ($(this).is(':checked')) {
+                    fillChecks($(this).val(), $('#member').val(), $('#bank').val(), $('#from').val(), $('#to').val());
+                }
+            });
+        });
+
+        $('#search').click(function () {
+            $('input[type="radio"]').each(function () {
+                if ($(this).is(':checked')) {
+                    fillChecks($(this).val(), $('#member').val(), $('#bank').val(), $('#from').val(), $('#to').val());
+                }
+            });
+        });
+
+        function fillChecks(status, member = null, bank = null, from = null, to = null) {
+            $('#admin-data-table').DataTable({
+                destroy: true,
+                paging: true,
+                info: true,
+                responsive: true,
+                ordering: true,
+                FixedHeader: true,
+                language: {
+                    url: "{{ asset("plugins/datatables/lang/$emp->lang.json") }}",
+                },
+                dom: 'lBfrtip',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '',
+                        className: 'buttons-copy btn btn-sm bg-blue btn-raised fa fa-copy',
+                        titleAttr: '@lang('label.copy')',
+                    },
+                    {
+                        extend: 'excel',
+                        text: '',
+                        className: 'buttons-excel btn btn-sm bg-blue btn-raised fa fa-file-excel-o',
+                        titleAttr: '@lang('label.excel')',
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '',
+                        className: 'buttons-pdf btn btn-sm bg-blue btn-raised fa fa-file-pdf-o',
+                        titleAttr: '@lang('label.pdf')',
+                    },
+                    {
+                        extend: 'print',
+                        text: '',
+                        className: 'buttons-print btn btn-sm bg-blue btn-raised fa fa-print',
+                        titleAttr: '@lang('label.print')',
+                    }
+                ],
+                dom:
+                    "<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                processing: true,
+                serverSide: false,
+                serverMethod: 'GET',
+                ajax: {
+                    url: "{{ url('getFilterChecks') }}",
+                    data: {
+                        user: '{{ $emp->iduser }}',
+                        status: status,
+                        member: member,
+                        bank: bank,
+                        from: from,
+                        to: to
+                    },
+                    datatype: 'json'
+                },
+                columns: [
+                    {data: 'checknumb'},
+                    {data: 'bank'},
+                    {data: 'carrier'},
+                    {data: 'opera'},
+                    {data: 'amt', class: 'text-right text-bold amount'},
+                    {data: 'state'},
+                    {data: 'date', class: 'text-center'}
+                ],
+                footerCallback: function (row, data, start, end, display) {
+                    var api = this.api(), api;
+                    
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function (i) {
+                        var type = typeof i;
+                        
+                        if(type === 'string') {
+                            i = parseInt(trimOver(i, null));
+                        } else if (type === 'number') {
+                            i = parseInt(i);
+                        } else {
+                            i = 0;
+                        }
+                        return i;
+                    };
+                    
+                    var totAmo = api
+                        .column(4, {page: 'all'})
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                    }, 0);
+                        
+                    $(api.column(4).footer()).html(money(totAmo));
+
+                    sumAmount();
+                }
+            });
+        }
     </script>
 @stop

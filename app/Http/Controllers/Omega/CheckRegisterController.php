@@ -8,64 +8,86 @@ use App\Models\Check;
 use App\Models\CheckAccAmt;
 use App\Models\Member;
 use App\Models\Operation;
+use App\Models\Priv_Menu;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 class CheckRegisterController extends Controller
 {
     public function index()
     {
         if (dateOpen()) {
-            $checks = Check::getDroppedChecks();
-            $banks = Bank::all();
-            $members = Member::getActiveMembers();
-            $operas = Operation::all();
+            $emp = Session::get('employee');
 
-            return view('omega.pages.check_register', [
-                'checks' => $checks,
-                'banks' => $banks,
-                'members' => $members,
-                'operas' => $operas
-            ]);
+            $checks = Check::getChecks(['checks.status' => 'D', 'checks.type' => 'I', 'checks.sorted' => 'N']);
+            $banks = Bank::getBanks();
+            $members = Member::getMembers(['members.memstatus' => 'A']);
+            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+
+            $totalAmt = 0;
+
+            foreach ($checks as $check) {
+                $bank = $check->b_labeleng;
+                $check->opera = $check->o_labeleng;
+                if ($emp->lang === 'fr') {
+                    $bank = $check->b_labelfr;
+                    $check->opera = $check->o_labelfr;
+                }
+                $check->bank = pad($check->bankcode, 3) . ' : ' . $bank;
+
+                if($check->member !== null) {
+                    foreach ($members as $member) {
+                        if ($member->idmember == $check->member) {
+                            $check->carrier = pad($member->memnumb, 6) . ' : ' . $member->name . ' ' . $member->surname;
+                        }
+                    }
+                }
+
+                if ($check->status === 'D') {
+                    $check->state = 'Dropped';
+                } else if ($check->status === 'P') {
+                    $check->state = 'Paid';
+                } else if ($check->status === 'U') {
+                    $check->state = 'Unpaid';
+                }
+
+                if ($emp->lang === 'fr') {
+                    if ($check->status === 'D') {
+                        $check->state = 'Déposés';
+                    } else if ($check->status === 'P') {
+                        $check->state = 'Payés';
+                    } else if ($check->status === 'U') {
+                        $check->state = 'Impayés';
+                    }
+                }
+
+                $totalAmt += $check->amount;
+
+            }
+
+            return view('omega.pages.check_register', compact('checks', 'banks', 'members', 'menu', 'totalAmt'));
         }
         return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
     }
 
     public function store()
     {
-        DB::beginTransaction();
-        $provisions = Request::input('provisions');
-
+        // dd(Request::all());
         try {
-            $checks = Check::getDroppedChecks();
+            DB::beginTransaction();
+
+            $provisions = Request::input('provisions');
 
             foreach ($provisions as $provision) {
                 $idcheck = (int)filter_var($provision, FILTER_SANITIZE_NUMBER_INT);
                 $status = preg_replace('!\d+!', '', $provision);
 
-                $check_amts = CheckAccAmt::getChecksAcc($idcheck);
-                foreach ($checks as $check) {
-                    if ($check->idcheck === $idcheck) {
-                        if ($status === 'P') {
-                            $check->status = 'P';
-                            $check->update((array)$check);
+                $check = Check::getCheckOnly($idcheck);
 
-                            foreach ($check_amts as $check_amt) {
-                                $check_amt->status = 'P';
-                                $check_amt->update((array)$check_amt);
-                            }
-                        } else if ($status === 'U') {
-                            $check->status = 'U';
-                            $check->update((array)$check);
-
-                            foreach ($check_amts as $check_amt) {
-                                $check_amt->status = 'U';
-                                $check_amt->update((array)$check_amt);
-                            }
-                        }
-                    }
-                }
+                $check->status = $status;
+                $check->update((array)$check);
             }
 
             DB::commit();

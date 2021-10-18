@@ -58,6 +58,7 @@ class CheckInController extends Controller
             $check->type = 'I';
             $check->status = 'D';
             $check->sorted = 'N';
+            $check->operation = Request::input('menu_level_operation');
             $check->amount = (int)trimOver(Request::input('totrans'), ' ');
             $check->carrier = Request::input('represent');
             $check->member = Request::input('member');

@@ -581,6 +581,12 @@ table thead tr th {
     font-weight: bold !important;
 }
 
+table thead tr th, table tbody tr td, table tfoot tr td {
+    /*min-height: 10em !important;*/
+    display: table-cell !important;
+    vertical-align: middle !important;
+}
+
 .member input[type=text], .register input[type=text] {
     width: 100%;
     height: 100%;

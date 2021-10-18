@@ -1626,7 +1626,7 @@ Route::get('getLoansMember', static function () {
     return Loan::getLoansMember();
 });
 
-//      Get Demand Loan
+//      Get Member Demand Loan
 Route::get('getMemLoans', static function () {
     return Loan::getMemLoans(['member' => Request::input('member')]);
 });
@@ -1666,6 +1666,11 @@ Route::get('getLoanPur', static function () {
     return LoanPur::getLoanPur(Request::input('loanpur'));
 });
 
+//      Get Filter Checks
+Route::get('getFilterChecks', static function () {
+    return Check::getFilterChecks(Request::input('user'), Request::input('status'), Request::input('member'), Request::input('bank'), Request::input('from'), Request::input('to'));
+});
+
 //      Get Cash
 Route::get('getCash', static function () {
     return Cash::getCash(Request::input('cash'));
@@ -1684,6 +1689,11 @@ Route::get('getOperation', static function () {
 //      Get Member Account
 Route::get('getMemAcc', static function () {
     return MemBalance::getMemAccBal(Request::input('member'), Request::input('account'));
+});
+
+//      Get Member Account
+Route::get('getAccBalance', static function () {
+    return Account::getAccBalance(Request::input('account'));
 });
 
 //      Get Account Balance
