@@ -1,35 +1,33 @@
-<?php
-$emp = Session::get('employee');
+<?php $emp = Session::get('employee');
 
-if ($emp->lang == 'fr')
+$title = $menu->labeleng;
+if ($emp->lang == 'fr') {
+    $title = $menu->labelfr;
     App::setLocale('fr');
+}
 ?>
 
 @extends('layouts.dashboard')
 
-@section('title', trans('sidebar.other_sort'))
+@section('title', $title)
 
 @section('content')
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title text-bold"> @lang('sidebar.other_sort') </h3>
+            <h3 class="box-title text-bold"> {{ $title }} </h3>
         </div>
-{{--        <div class="box-header">--}}
-{{--            <div class="box-tools">--}}
-{{--                <button type="button" class="btn btn-alert bg-red btn-sm pull-right fa fa-close" id="home"></button>--}}
-{{--            </div>--}}
-{{--        </div>--}}
         <div class="box-body">
-            <form action="{{ url('other_check_sort/store') }}" method="post" role="form" id="checkSortForm">
+            <form action="{{ url('other_check_sort/store') }}" method="post" role="form" id="checkSortForm" class="needs-validation">
                 {{ csrf_field() }}
-                <div class="box-header with-border" id="form">
+
+                <div class="row">
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-6 col-xs-12">
                             <div class="form-group">
-                                <label for="check" class="col-md-3 control-label">@lang('label.checkno')</label>
-                                <div class="col-md-9">
-                                    <select name="check" id="check" class="form-control select2">
-                                        <option></option>
+                                <label for="check" class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-xs-4 control-label">@lang('label.checkno')<span class="text-red text-bold">*</span></label>
+                                <div class="col-xl-10 col-lg-9 col-md-9 col-sm-8 col-xs-8">
+                                    <select name="check" id="check" class="form-control select2" required>
+                                        <option value=""></option>
                                         @foreach ($checks as $check)
                                             <option value="{{$check->idcheck}}">{{$check->checknumb}}</option>
                                         @endforeach
@@ -37,76 +35,78 @@ if ($emp->lang == 'fr')
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="form-group">
-                                <label for="bank" class="col-md-2 control-label">@lang('label.bank')</label>
-                                <div class="col-md-10">
-                                    <input type="text" name="bank" id="bank" class="form-control" disabled>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-6 col-xs-12">
                             <div class="form-group">
-                                <label for="date"
-                                       class="col-md-3 control-label">@lang('label.date')</label>
-                                <div class="col-md-9">
-                                    <input type="text" name="date" id="date" class="form-control" disabled>
+                                <label for="bank" class="col-xl-2 col-lg-3 col-md-3 col-sm-4 control-label">@lang('label.bank')</label>
+                                <div class="col-xl-10 col-lg-9 col-md-9 col-sm-8">
+                                    <select class="form-control select2" name="bank" id="bank" disabled>
+                                        <option value=''></option>
+                                        @foreach($banks as $bank)
+                                            <option value="{{ $bank->idbank }}">{{ pad($bank->bankcode, 3) }} : @if($emp->lang === 'eng') {{ $bank->labeleng }} @else {{ $bank->labelfr }} @endif </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-7">
+                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-6 col-xs-12">
                             <div class="form-group">
-                                <label for="carrier"
-                                       class="col-md-2 control-label">@lang('label.carrier')</label>
-                                <div class="col-md-10">
+                                <label for="carrier" class="col-xl-2 col-lg-3 col-md-3 col-sm-4 control-label">@lang('label.carrier')</label>
+                                <div class="col-xl-10 col-lg-9 col-md-9 col-sm-8">
                                     <input type="text" name="carrier" id="carrier" class="form-control" disabled>
                                 </div>
                             </div>
                         </div>
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-xs-12 pull-right">
+                            <div class="form-group">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <input type="text" name="date" id="date" class="form-control" placeholder="@lang('label.date')" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                </div>
+
+                <div class="row" id="tableInput">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="table-responsive">
+                            <table id="memacc-data-table" class="table table-striped table-hover table-condensed table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>@lang('label.account')</th>
+                                        <th>@lang('label.entitle')</th>
+                                        <th>@lang('label.amount')</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="memacc">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-12">
-                    <table
-                        class="table table-striped table-hover table-condensed table-bordered table-responsive no-padding">
-                        <thead>
-                        <tr class="bg-purples">
-                            <th>@lang('label.account')</th>
-                            <th>@lang('label.entitle')</th>
-                            <th>@lang('label.opera')</th>
-                            <th>@lang('label.amount')</th>
-                        </tr>
-                        </thead>
-                        <tbody class="text-bold" id="mem_acc">
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="col-md-11" id="tableInput">
-                    <table class="table table-responsive">
-                        <thead>
-                        <tr class="text-bold text-blue bg-antiquewhite text-right">
-                            @foreach($accounts as $account)
-                                @if ($cash->cashacc == $account->idaccount)
-                                    <td style="width: 25%">
-                                        @if($emp->lang == 'fr') {{$account->labelfr }} @else {{$account->labeleng }} @endif
-                                    </td>
-                                    <td>{{$account->accnumb }}</td>
-                                @endif
-                            @endforeach
-                            <td>@lang('label.totrans')</td>
-                            <td style="width: 15%">
-                                <input type="text" style="text-align: right" name="totrans" id="totrans" readonly></td>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
-                <div class="col-md-1">
-                    <button type="button" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save">
-                    </button>
+                <div class="row" id="tableInput2">
+                    <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-xs-10">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr class="text-bold text-blue bg-antiquewhite text-right">
+                                        <td>@lang('label.totrans')</td>
+                                        <td>
+                                            <input type="text" style="text-align: left" name="totrans" id="totrans" readonly>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-2 pull-right">
+                        <button type="button" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -115,83 +115,66 @@ if ($emp->lang == 'fr')
 
 @section('script')
     <script>
+        let memacc = $('#memacc-data-table').DataTable({
+            paging: false,
+            info: false,
+            responsive: true,
+            ordering: false,
+            FixedHeader: true,
+            language: {
+                url: "{{ asset("plugins/datatables/lang/$emp->lang.json") }}",
+            },
+            searching: false
+        });
+            
         $('#check').change(function () {
-            $.ajax({
-                url: "{{ url('getOtherToSortChecks') }}",
-                method: 'get',
-                data: {
-                    check: $(this).val(),
-                }, success: function (check) {
-                    $('#bank').val(check.ouracc + ' : ' + check.bname);
-                    $('#carrier').val(check.carrier);
-                    $('#date').val(userDate(check.created_at));
+            if($(this).val() !== '') {
+                $.ajax({
+                    url: "{{ url('getCheck') }}",
+                    method: 'get',
+                    data: {
+                        check: $(this).val(),
+                    }, success: function (check) {
+                        $('#bank').val(check.bank).select2();
+                        $('#carrier').val(check.carrier);
+                        $('#date').val(userDate(check.created_at));
 
-                    $.ajax({
-                        url: "{{ url('getOtherCheckAccs') }}",
-                        method: 'get',
-                        data: {
-                            check: check.idcheck
-                        },
-                        success: function (checkAccs) {
-                            console.log(checkAccs);
-                            let memLine = '';
+                        var checkAccs = check.check_acc_amts;
+
+                        if(checkAccs.length > 0) {
+                            memacc.rows().remove().draw();
+
                             $.each(checkAccs, function (i, checkAcc) {
-                                memLine += "<tr>" +
-                                    "<td><input type='hidden' name='accounts[]' value='" + checkAcc.account + "'>" + checkAcc.accnumb + "</td>" +
-                                    "<td>@if ($emp->lang == 'fr')" + checkAcc.labelfr + " @else " + checkAcc.labeleng + "@endif</td>" +
-                                    "<td><input type='hidden' name='operations[]' value='" + checkAcc.operation + "'>" + checkAcc.operation + "</td>" +
-                                    "<td class='text-right' class='amount'><input type='hidden' name='amounts[]' value='" + parseInt(checkAcc.accamt) + "'>" +
-                                    money(parseInt(checkAcc.accamt)) + "</td>" +
-                                    "</tr>";
-                                $('#mem_acc').html(memLine);
+                                const memLine = $('<tr>' +
+                                        '<td class="text-center"><input type="hidden" name="accounts[]" value="' + checkAcc.account + '">' + checkAcc.accnumb + '</td>' +
+                                        '<td><input type="hidden" name="operations[]" value="' + checkAcc.operation + '">' + checkAcc.acc + '</td>' +
+                                        '<td class="text-right text-bold cout"><input type="hidden" name="amounts[]" class="amount" value="' + parseInt(checkAcc.accamt) + '">' + money(parseInt(checkAcc.accamt)) + '</td>' +
+                                    '</tr>');
+                                
+                                memacc.row.add(memLine[0]).draw();
                             });
+
                             $('#totrans').val(money(check.amount));
-                        }, error: function (errors) {
-                            $.each(errors, function (i, error) {
-                                console.log(error.message);
-                            });
                         }
-                    });
-                }, error: function (errors) {
-                    $.each(errors, function (i, error) {
-                        console.log(error.message);
-                    });
-                }
-            });
+                    }
+                });
+            } else {
+                $('#bank').val('').select2();
+                $('#carrier').val('');
+                $('#date').val('');
+
+                memacc.rows().remove().draw();
+            }
         });
 
         $('#save').click(function () {
-            let tot = parseInt(trimOver($('#totrans').val(), null));
+            let check = $('#check').val();
+            let totbil = parseInt(trimOver($('#totrans').val(), null));
 
-            if (!isNaN(tot) && tot !== 0) {
-                swal({
-                        title: '@lang('sidebar.other_sort')',
-                        text: '@lang('confirm.checksort_text')',
-                        type: 'info',
-                        showCancelButton: true,
-                        cancelButtonClass: 'bg-red',
-                        confirmButtonClass: 'bg-green',
-                        confirmButtonText: '@lang('confirm.yes')',
-                        cancelButtonText: '@lang('confirm.no')',
-                        closeOnConfirm: true,
-                        closeOnCancel: true
-                    },
-                    function (isConfirm) {
-                        if (isConfirm) {
-                            $('#checkSortForm').submit();
-                        }
-                    }
-                )
+            if (check !== '' && !isNaN(totbil) && totbil !== 0) {
+                mySwal("{{ $title }}", '@lang('confirm.check_sort_text')', '@lang('confirm.no')', '@lang('confirm.yes')', '#checkSortForm');
             } else {
-                swal({
-                        title: '@lang('sidebar.other_sort')',
-                        text: '@lang('confirm.checksorterror_text')',
-                        type: 'error',
-                        confirmButtonClass: 'bg-blue',
-                        confirmButtonText: 'OK',
-                        closeOnConfirm: true,
-                    }
-                )
+                myOSwal("{{ $title }}", '@lang('confirm.check_sort_error_text')', 'error');
             }
         });
     </script>

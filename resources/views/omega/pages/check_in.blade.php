@@ -140,18 +140,6 @@ if ($emp->lang == 'fr') {
                                     <th>@lang('label.totint')</th>
                                     <th>@lang('label.intpay')</th>
                                     <th>@lang('label.payment')</th>
-
-                                    {{-- <th style="width: 9%">@lang('label.account')</th>
-                                    <th style="width: 13%">@lang('label.desc')</th>
-                                    <th class="cin">@lang('label.loan_amt')</th>
-                                    <th class="cin">@lang('label.capital')</th>
-                                    <th style="width: 5%">@lang('label.late')</th>
-                                    <th class="cin">@lang('label.interest')</th>
-                                    <th class="cin">@lang('label.finint')</th>
-                                    <th class="cin">@lang('label.accint')</th>
-                                    <th class="cin">@lang('label.totint')</th>
-                                    <th class="cin">@lang('label.intpay')</th>
-                                    <th class="cout">@lang('label.payment')</th> --}}
                                 </tr>
                                 </thead>
                                 <tbody id="loanacc">
@@ -169,8 +157,7 @@ if ($emp->lang == 'fr') {
                                 <thead>
                                 <tr class="text-bold text-blue bg-antiquewhite text-right">
                                     <td>@lang('label.totrans')</td>
-                                    <td style="width: 15%">
-                                        <input type="text" style="text-align: left" name="totrans" id="totrans" readonly></td>
+                                    <td><input type="text" style="text-align: right" class="text-bold" name="totrans" id="totrans" readonly></td>
                                     <td>@lang('label.diff')</td>
                                     <td id="diff" class="text-right" style="width: 15%"></td>
                                 </tr>
@@ -179,7 +166,7 @@ if ($emp->lang == 'fr') {
                         </div>
                     </div>
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-12 col-xs-12">
-                        <button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
+                        <button type="submit" id="save" class="save btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
                     </div>
                 </div>
             </form>
@@ -223,7 +210,7 @@ if ($emp->lang == 'fr') {
                             },
                             serverMethod: 'GET',
                             ajax: {
-                                url: "{{ url('getAccBalance') }}",
+                                url: "{{ url('getMemBals') }}",
                                 data: {
                                     member: member.idmember,
                                     acctype: 'Or'
@@ -232,7 +219,7 @@ if ($emp->lang == 'fr') {
                             },
                             columns: [
                                 {
-                                    data: null, render: function (data, type, row) {
+                                    data: null, class: 'text-center', render: function (data, type, row) {
                                         return '<td><input type="hidden" name="accounts[]" value="' + data.account + '">' + data.accnumb + '</td>';
                                     }
                                 },
@@ -243,114 +230,117 @@ if ($emp->lang == 'fr') {
                                     }
                                 },
                                 {
-                                    data: null, render: function (data, type, row) {
+                                    data: null, class: 'text-center', render: function (data, type, row) {
                                         return '<td><input type="text" name="amounts[]" class="amount"></td>';
                                     }
                                 }
                             ],
                         });
 
-                        /*
                         $('#loanacc > tr').remove();
-
-                        async function memLoans() {
-                            const loans = await getData('getMemLoans?member=' + member.idmember);
-
-                            let loanAccLine = '';
-
-                            $.each(loans, function (i, loan) {
-                                let loanamt = parseInt(loan.amount);
-                                if (parseInt(loan.isRef) > 0) {
-                                    loanamt = parseInt(loan.refamt);
-                                }
-                                let paidamt = parseInt(loan.paidamt);
-                                let remamt = loanamt - paidamt;
-                                let accramt = parseInt(loan.accramt);
-
-                                async function pasteLoans() {
-                                    const loanType = await getData('getLoanType?ltype=' + loan.loantype);
-                                    const installs = await getData('getInstalls?loan=' + loan.idloan);
-
-                                    let days = 0;
-                                    let totPaid = 0;
-                                    let diff = 0;
-
-                                    $.each(installs, function (i, install) {
-                                        const dateInterval = 86400000;
-                                        let date0 = new Date(loan.instdate1);
-                                        let date1 = new Date(loan.lastdate);
-                                        let date2 = new Date(install.instdate);
-                                        let date3 = new Date();
-
-                                        if ((date3.getTime() >= date0.getTime())) {
-                                            totPaid += parseInt(install.amort);
-                                            diff = paidamt - totPaid;
-
-                                            if (date1.getTime() <= date2.getTime()) {
-                                                if (diff > 0) {
-                                                    days = Math.abs(Math.floor((date2.getTime() - date3.getTime()) / dateInterval));
-                                                } else {
-                                                    if (paidamt > 0) {
-                                                        days = Math.abs(Math.floor((date3.getTime() - date1.getTime()) / dateInterval));
+    
+                        $.ajax({
+                            url: "{{ url('getMemLoans') }}",
+                            method: 'get',
+                            data: {
+                                member: member.idmember
+                            },
+                            success: function (loans) {
+                                let loanAccLine = '';
+                                var table = $('#billet-data-table2').DataTable();
+    
+                                $.each(loans, function (i, loan) {
+                                    let loanamt = parseInt(loan.amount);
+                                    if (parseInt(loan.isRef) > 0) {
+                                        loanamt = parseInt(loan.refamt);
+                                    }
+                                    let paidamt = parseInt(loan.paidamt);
+                                    let remamt = loanamt - paidamt;
+                                    let accramt = parseInt(loan.accramt);
+    
+                                    async function pasteLoans() {
+                                        const loanType = await getData('getLoanType?id=' + loan.loantype);
+                                        const installs = await getData('getInstalls?loan=' + loan.idloan);
+    
+                                        let days = 0;
+                                        let totPaid = 0;
+                                        let diff = 0;
+    
+                                        $.each(installs, function (i, install) {
+                                            const dateInterval = 86400000;
+                                            let date0 = new Date(loan.instdate1);
+                                            let date1 = new Date(loan.lastdate);
+                                            let date2 = new Date(install.instdate);
+                                            let date3 = new Date();
+    
+                                            if ((date3.getTime() >= date0.getTime())) {
+                                                totPaid += parseInt(install.amort);
+                                                diff = paidamt - totPaid;
+    
+                                                if (date1.getTime() <= date2.getTime()) {
+                                                    if (diff > 0) {
+                                                        days = Math.abs(Math.floor((date2.getTime() - date3.getTime()) / dateInterval));
                                                     } else {
-                                                        days = Math.abs(Math.floor((date3.getTime() - date0.getTime()) / dateInterval));
+                                                        if (paidamt > 0) {
+                                                            days = Math.abs(Math.floor((date3.getTime() - date1.getTime()) / dateInterval));
+                                                        } else {
+                                                            days = Math.abs(Math.floor((date3.getTime() - date0.getTime()) / dateInterval));
+                                                        }
                                                     }
                                                 }
                                             }
+                                        });
+    
+                                        let inst = Math.round((remamt * loan.intrate) / 100);
+                                        let totints = inst + accramt;
+    
+                                        loanAccLine += '<tr>' +
+                                            '<td style="width: 9%"><input type="hidden" name="loans[]" value="' + loan.idloan + '">' + loan.accnumb + '</td>' +
+                                            '<td style="width: 13%">@if ($emp->lang == 'fr')' + loan.labelfr + ' @else ' + loan.labeleng + '@endif</td>' +
+                                            '<td class="text-right text-bold cin">' + money(loanamt) + '</td>' +
+                                            '<td class="text-right text-bold cin">' + money(remamt) + '</td>';
+    
+                                        if (diff >= 0) {
+                                            loanAccLine += '<td class="text-center" style="width: 5%">-' + days + '</td>' +
+                                                '<td class="text-right text-bold cin">' +
+                                                '<input type="hidden" name="ints[]" value="' + inst + '">' + money(inst) + '</td>' +
+                                                '<td class="text-right text-bold cin">' +
+                                                '<input type="hidden" name="pens[]" value="' + 0 + '">' + money(0) + '</td>' +
+                                                '<td class="text-right text-bold cin">' +
+                                                '<input type="hidden" name="accrs[]" value="' + accramt + '">' + money(accramt) + '</td>' +
+                                                '<td class="text-right text-bold cin">' +
+                                                '<input type="hidden" name="totints[]" value="' + totints + '">' + money(totints) + '</td>';
+                                        } else {
+                                            let pen = Math.round((remamt * days * loanType.pen_req_tax) / 1200);
+                                            totints += pen;
+    
+                                            loanAccLine += '<td class="text-center" style="width: 5%">+' + days + '</td>' +
+                                                '<td class="text-right text-bold cin">' +
+                                                '<input type="hidden" name="ints[]" value="' + inst + '">' + money(inst) + '</td>' +
+                                                '<td class="text-right text-bold cin">' +
+                                                '<input type="hidden" name="pens[]" value="' + pen + '">' + money(pen) + '</td>' +
+                                                '<td class="text-right text-bold cin">' +
+                                                '<input type="hidden" name="accrs[]" value="' + accramt + '">' + money(accramt) + '</td>' +
+                                                '<td class="text-right text-bold cin">' +
+                                                '<input type="hidden" name="totints[]" value="' + totints + '">' + money(totints) + '</td>';
                                         }
-                                    });
-
-                                    let inst = Math.round((remamt * loan.intrate) / 100);
-                                    let totints = inst + accramt;
-
-                                    loanAccLine += '<tr>' +
-                                        '<td style="width: 9%"><input type="hidden" name="loans[]" value="' + loan.idloan + '">' + loan.accnumb + '</td>' +
-                                        '<td style="width: 13%">@if ($emp->lang == 'fr')' + loan.labelfr + ' @else ' + loan.labeleng + '@endif</td>' +
-                                        '<td class="text-right text-bold cin">' + money(loanamt) + '</td>' +
-                                        '<td class="text-right text-bold cin">' + money(remamt) + '</td>';
-
-                                    if (diff >= 0) {
-                                        loanAccLine += '<td class="text-center" style="width: 5%">-' + days + '</td>' +
-                                            '<td class="text-right text-bold cin">' +
-                                            '<input type="hidden" name="ints[]" value="' + inst + '">' + money(inst) + '</td>' +
-                                            '<td class="text-right text-bold cin">' +
-                                            '<input type="hidden" name="pens[]" value="' + 0 + '">' + money(0) + '</td>' +
-                                            '<td class="text-right text-bold cin">' +
-                                            '<input type="hidden" name="accrs[]" value="' + accramt + '">' + money(accramt) + '</td>' +
-                                            '<td class="text-right text-bold cin">' +
-                                            '<input type="hidden" name="totints[]" value="' + totints + '">' + money(totints) + '</td>';
-                                    } else {
-                                        let pen = Math.round((remamt * days * loanType.pentax) / 1200);
-                                        totints += pen;
-
-                                        loanAccLine += '<td class="text-center" style="width: 5%">+' + days + '</td>' +
-                                            '<td class="text-right text-bold cin">' +
-                                            '<input type="hidden" name="ints[]" value="' + inst + '">' + money(inst) + '</td>' +
-                                            '<td class="text-right text-bold cin">' +
-                                            '<input type="hidden" name="pens[]" value="' + pen + '">' + money(pen) + '</td>' +
-                                            '<td class="text-right text-bold cin">' +
-                                            '<input type="hidden" name="accrs[]" value="' + accramt + '">' + money(accramt) + '</td>' +
-                                            '<td class="text-right text-bold cin">' +
-                                            '<input type="hidden" name="totints[]" value="' + totints + '">' + money(totints) + '</td>';
+    
+                                        if (accramt === 0) {
+                                            loanAccLine += '<td class="cin"><input type="text" name="intamts[]" class="amount"></td>';
+                                        } else {
+                                            loanAccLine += '<td class="cin"><input type="text" name="intamts[]" class="amount" required></td>';
+                                        }
+                                        loanAccLine += '<td class="cout"><input type="text" name="loanamts[]" class="amount"></td>' +
+                                            '</tr>';
+                                        
+                                        table.row.add(loanAccLine).draw();
+                                        $('#loanacc').html(loanAccLine);
                                     }
-
-                                    if (accramt === 0) {
-                                        loanAccLine += '<td class="cin"><input type="text" name="intamts[]" class="amount"></td>';
-                                    } else {
-                                        loanAccLine += '<td class="cin"><input type="text" name="intamts[]" class="amount" required></td>';
-                                    }
-                                    loanAccLine += '<td class="cout"><input type="text" name="loanamts[]" class="amount"></td>' +
-                                        '</tr>';
-
-                                    $('#loanacc').html(loanAccLine);
-                                }
-
-                                pasteLoans();
-                            });
-                        }
-
-                        memLoans();
-                        */
+    
+                                    pasteLoans();
+                                });
+                            }
+                        });
                     }
                 });
             } else {

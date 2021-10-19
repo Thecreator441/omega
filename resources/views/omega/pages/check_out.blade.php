@@ -22,10 +22,10 @@ if ($emp->lang == 'fr') {
 
                 <div class="row">
                     <div class="row">
-                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-12">
+                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-12">
                             <div class="form-group">
                                 <label for="member" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.member')<span class="text-red text-bold">*</span></label>
-                                <div class="col-xl-11 col-lg-110col-md-10 col-sm-10">
+                                <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10">
                                     <select class="form-control select2" name="member" id="member" required>
                                         <option value=""></option>
                                         @foreach($members as $member)
@@ -52,6 +52,13 @@ if ($emp->lang == 'fr') {
                                 </div>
                             </div>
                         </div>
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                            <div class="form-group">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <input type="text" class="form-control text-right text-bold" name="bank_bal" id="bank_bal" placeholder="@lang('label.balance')" required disabled>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row">
@@ -65,7 +72,7 @@ if ($emp->lang == 'fr') {
                         </div>
                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-12">
                             <div class="form-group">
-                                <label for="checkamt" class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-xs-2 control-label">@lang('label.amount')<span class="text-red text-bold">*</span></label>
+                                <label for="checkamt" class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-xs-2 control-label">@lang('label.amount')</label>
                                 <div class="col-xl-9 col-lg-9 col-md-8 col-sm-8 col-xs-10">
                                     <input type="text" class="form-control text-right text-bold" name="checkamt" id="checkamt" required>
                                 </div>
@@ -112,8 +119,7 @@ if ($emp->lang == 'fr') {
                                 <thead>
                                 <tr class="text-bold text-blue bg-antiquewhite text-right">
                                     <td>@lang('label.totrans')</td>
-                                    <td style="width: 15%">
-                                        <input type="text" style="text-align: left" name="totrans" id="totrans" readonly></td>
+                                    <td><input type="text" style="text-align: left" name="totrans" id="totrans" readonly></td>
                                     <td>@lang('label.diff')</td>
                                     <td id="diff" class="text-right" style="width: 15%"></td>
                                 </tr>
@@ -207,6 +213,40 @@ if ($emp->lang == 'fr') {
             }
         });
 
+        $('#bank').change(function () {
+            if (!isNaN($(this).val())) {
+                $.ajax({
+                    url: "{{ url('getBank') }}",
+                    method: 'get',
+                    data: {
+                        id: $(this).val()
+                    },
+                    success: function (bank) {
+                        $.ajax({
+                            url: "{{ url('getAccBalance') }}",
+                            method: 'get',
+                            data: {
+                                account: bank.theiracc
+                            },
+                            success: function (bankBal) {
+                                $("#bank_bal").val(money(parseInt(bankBal)));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        $(document).on('input', '#checkamt', function () {
+            $('#checkamt').val(money($('#checkamt').val()));
+            let bank_bal = parseInt(trimOver($('#bank_bal').val(), null));
+
+            if(bank_bal < parseInt(trimOver($('#checkamt').val(), null))) {
+                $('#checkamt').val(money($('#checkamt').val().slice(0, $('#checkamt').val().length -1)));
+                window.alert("Sorry you can't withdraw more what you have");
+            }
+        });
+
         $(document).on('input', '#checkamt, .amount, .fee', function () {
             $(this).val(money($(this).val()));
 
@@ -218,7 +258,7 @@ if ($emp->lang == 'fr') {
                     sumAmt += parseInt(amount);
                 }
             });
-
+            
             $('#totrans').val(money(sumAmt));
 
             let dif = parseInt(trimOver($('#checkamt').val(), null)) - sumAmt;

@@ -24,7 +24,7 @@ if ($emp->lang == 'fr') {
                     <div class="row">
                         <div class="col-md-6">
                             <div class="row">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-12">
                                     <div class="form-group">
                                         <label for="bank" class="col-xl-1 col-lg-2 col-md-2 col-sm-2 col-xs-2 control-label">@lang('label.bank')<span class="text-red text-bold">*</span></label>
                                         <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10 col-xs-10">
@@ -38,6 +38,13 @@ if ($emp->lang == 'fr') {
                                                         @endif</option>
                                                 @endforeach
                                             </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                    <div class="form-group">
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <input type="text" class="form-control text-right text-bold" name="bank_bal" id="bank_bal" placeholder="@lang('label.balance')" required disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -160,6 +167,40 @@ if ($emp->lang == 'fr') {
                 $('#minus').attr('disabled', true);
         });
 
+        $('#bank').change(function () {
+            if (!isNaN($(this).val())) {
+                $.ajax({
+                    url: "{{ url('getBank') }}",
+                    method: 'get',
+                    data: {
+                        id: $(this).val()
+                    },
+                    success: function (bank) {
+                        $.ajax({
+                            url: "{{ url('getAccBalance') }}",
+                            method: 'get',
+                            data: {
+                                account: bank.theiracc
+                            },
+                            success: function (bankBal) {
+                                $("#bank_bal").val(money(parseInt(bankBal)));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        $(document).on('input', '#checkamt', function () {
+            $('#checkamt').val(money($('#checkamt').val()));
+            
+
+            if(bank_bal < parseInt(trimOver($('#checkamt').val(), null))) {
+                $('#checkamt').val(money($('#checkamt').val().slice(0, $('#checkamt').val().length -1)));
+                window.alert("Sorry you can't withdraw more what you have");
+            }
+        });
+
         $('#account').change(function (e) {
             if (!isNaN($(this).val())) {
                 $.ajax({
@@ -180,32 +221,39 @@ if ($emp->lang == 'fr') {
         });
 
         $('#plus').click(function () {
-            let acc = $('#account');
-            let opera = $('#desc');
-            let amount = $('#amount');
+            let bank_bal = parseInt(trimOver($('#bank_bal').val(), null));
+            let tot_bal = parseInt(trimOver($('#totdist').val(), null)) + parseInt(trimOver($('#amount').val(), null))
 
-            let accId = acc.select2('data')[0]['id'];
-            let accText = acc.select2('data')[0]['text'];
+            if(bank_bal < tot_bal) {
+                window.alert("Sorry you can't withdraw more what you have");
+            } else {
+                let acc = $('#account');
+                let opera = $('#desc');
+                let amount = $('#amount');
 
-            var accNumb = accText.split(':')[0];
+                let accId = acc.select2('data')[0]['id'];
+                let accText = acc.select2('data')[0]['text'];
 
-            let line = '<tr>' +
-                '<td style="text-align: center; width: 5%"><input type="checkbox" class="check"></td>' +
-                '<td class="text-center"><input type="hidden" name="accounts[]" value="' + accId + '">' + accNumb + '</td>' +
-                '<td><input type="hidden" name="operations[]" value="' + opera.val() + '">' + opera.val() + '</td>' +
-                '<td class="text-right text-bold amount"><input type="hidden" name="amounts[]" value="' + amount.val() + '">' + money(amount.val()) + '</td>' +
-                '</tr>';
+                var accNumb = accText.split(':')[0];
 
-            $('#billet-data-table').DataTable().destroy()
+                let line = '<tr>' +
+                    '<td style="text-align: center; width: 5%"><input type="checkbox" class="check"></td>' +
+                    '<td class="text-center"><input type="hidden" name="accounts[]" value="' + accId + '">' + accNumb + '</td>' +
+                    '<td><input type="hidden" name="operations[]" value="' + opera.val() + '">' + opera.val() + '</td>' +
+                    '<td class="text-right text-bold amount"><input type="hidden" name="amounts[]" value="' + amount.val() + '">' + money(amount.val()) + '</td>' +
+                    '</tr>';
 
-            $('#cont').append(line);
-            $('#minus').removeAttr('disabled');
+                $('#billet-data-table').DataTable().destroy()
 
-            sumAmount();
+                $('#cont').append(line);
+                $('#minus').removeAttr('disabled');
 
-            acc.val('').select2();
-            opera.val('');
-            amount.val('');
+                sumAmount();
+
+                acc.val('').select2();
+                opera.val('');
+                amount.val('');
+            }
         });
 
         $('#minus').click(function () {
@@ -228,6 +276,7 @@ if ($emp->lang == 'fr') {
                 if (parseInt(numb))
                     sum += parseInt(numb);
             });
+
             $('#totdist').val(money(sum));
         }
 

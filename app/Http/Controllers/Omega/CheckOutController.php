@@ -52,10 +52,10 @@ class CheckOutController extends Controller
             $amounts = Request::input('amounts');
             $fees = Request::input('fees');
 
-            $accdate = AccDate::getOpenAccDate();
             $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
             $bank = Bank::getBank(Request::input('bank'));
-
+            $accdate = AccDate::getOpenAccDate();
+            
             $writing = new Writing();
             $writing->writnumb = $writnumb;
             $writing->account = $bank->theiracc;
@@ -103,6 +103,9 @@ class CheckOutController extends Controller
             $check->checknumb = Request::input('checkno');
             $check->bank = Request::input('bank');
             $check->type = 'O';
+            $check->status = 'P';
+            $check->sorted = 'Y';
+            $check->operation = Request::input('menu_level_operation');
             $check->amount = (int)trimOver(Request::input('totrans'), ' ');
             $check->carrier = Request::input('represent');
             $check->member = Request::input('member');

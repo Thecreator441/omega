@@ -101,6 +101,41 @@ class Account extends Model
     }
 
     /**
+     * @param int $account
+     * @return Builder|Model|object|null
+     */
+    public static function getAccBalance(int $account) 
+    {
+        $acc = self::getAccount($account);
+        $totWritings = Writing::getWritings(['writings.account' => $account]);
+        $totValWritings = ValWriting::getWritings(['val_writings.account' => $account]);
+        
+        foreach ($totValWritings as $totValWriting) {
+            $totWritings->add($totValWriting);
+        }
+        
+        $totCashIn = 0;
+        $totCashOut = 0;
+        foreach ($totWritings as $totWriting) {
+            if ((int)$totWriting->creditamt !== 0) {
+                $totCashIn += (int)$totWriting->creditamt;
+            }
+            if ((int)$totWriting->debitamt !== 0) {
+                $totCashOut += (int)$totWriting->debitamt;
+            }
+        }
+        
+        $amount = abs($totCashIn - $totCashOut);
+        if((int)$amount >= (int)$acc->available) {
+            $amount = abs((int)$acc->available) + (int)$acc->initbal;
+        } else {
+            $amount += (int)$acc->initbal;
+        }
+
+        return $amount;
+    }
+
+    /**
      * @param array $where
      * @return Builder[]|\Illuminate\Database\Eloquent\Collection
      */

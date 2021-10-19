@@ -101,6 +101,9 @@ class OtherCheckOutController extends Controller
             $check->checknumb = Request::input('checkno');
             $check->bank = Request::input('bank');
             $check->type = 'O';
+            $check->status = 'P';
+            $check->sorted = 'Y';
+            $check->operation = Request::input('menu_level_operation');
             $check->amount = (int)trimOver(Request::input('totdist'), ' ');
             $check->carrier = Request::input('represent');
             $check->network = $emp->network;
