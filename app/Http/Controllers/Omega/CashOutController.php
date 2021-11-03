@@ -13,26 +13,24 @@ use App\Models\Operation;
 use App\Models\Priv_Menu;
 use App\Models\Writing;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use PDF;
+use SnappyPDF;
 
 class CashOutController extends Controller
 {
     public function index()
     {
-        if (dateOpen()) {
-            if (cashOpen()) {
-                $members = Member::getMembers(['members.memstatus' => 'A']);
-                $cash = Cash::getEmpCashOpen();
-                $moneys = Money::getMoneys();
-                $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+        $members = Member::getMembers(['members.memstatus' => 'A']);
+        $cash = Cash::getEmpCashOpen();
+        $moneys = Money::getMoneys();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-                return view('omega.pages.cash_out', compact('menu', 'members', 'cash', 'moneys'));
-            }
-            return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
-        }
-        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+        return view('omega.pages.cash_out', compact('menu', 'members', 'cash', 'moneys'));
     }
 
     public function store()
@@ -41,18 +39,12 @@ class CashOutController extends Controller
         try {
             DB::beginTransaction();
             
-            if (!dateOpen()) {
-                return Redirect::back()->with('danger', trans('alertDanger.opdate'));
-                if (!cashOpen()) {
-                    return Redirect::back()->with('danger', trans('alertDanger.opencash'));   
-                }
-            }
-            
             $emp = Session::get('employee');
 
             $writnumb = getWritNumb();
             $accdate = AccDate::getOpenAccDate();
             $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
+            $operation = Operation::getOperation(Request::input('menu_level_operation'));
             
             $accounts = Request::input('accounts');
             $operations = Request::input('operations');
@@ -120,7 +112,21 @@ class CashOutController extends Controller
                 }
             }
 
+            $date = date("d.m.Y");
+            $time = date("H.i.s");
+            $file = "storage/files/printings/{$emp->name}_{$date}_{$time}.pdf";
+            $pdf = PDF::loadView('printings.cash_out', compact('accounts', 'operations', 'amounts', 'fees'));
+            
+            $pdf->save($file);
+
+            if ($emp->lang === 'fr') {
+                Log::info($operation->labelfr);
+            } else {
+                Log::info($operation->labeleng);
+            }
+
             DB::commit();
+            Session::flash('cash_out', $file);
             return Redirect::back()->with('success', trans('alertSuccess.cash_out'));
         } catch (\Exception $ex) {
             dd($ex);

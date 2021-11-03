@@ -63,9 +63,9 @@ if ($emp->lang == 'fr') {
                     <div class="row">
                         <div class="col-md-2 col-xs-12">
                             <div class="form-group has-error">
-                                <label for="level" class="col-md-3 col-xs-5 control-label">@lang('label.level')<span class="text-red text-bold">*</span></label>
+                                <label for="menu_level" class="col-md-3 col-xs-5 control-label">@lang('label.level')<span class="text-red text-bold">*</span></label>
                                 <div class="col-md-9 col-xs-7">
-                                    <input type="text" class="form-control text-right" name="level" id="level" required readonly>
+                                    <input type="text" class="form-control text-right" name="menu_level" id="menu_level" required readonly>
                                     <div class="help-block">@lang('placeholder.level')</div>
                                 </div>
                             </div>
@@ -244,7 +244,7 @@ if ($emp->lang == 'fr') {
                         level: 3
                     },
                     success: function (menus) {
-                        $('#level').val(parseInt(menus.length) + 1);
+                        $('#menu_level').val(parseInt(menus.length) + 1);
                     }
                 });
             }
@@ -260,13 +260,13 @@ if ($emp->lang == 'fr') {
                 },
                 success: function (main_menu) {
                     $('#title').text('@lang('label.edit') @if($emp->lang === 'fr')' + main_menu.labelfr + ' @else ' + main_menu.labeleng + '@endif');
-                    $('#idmain_menu').val(main_menu.idmenu);
+                    $('#idmain_menu').val(main_menu.idmenus_3);
                     $('#labelfr').val(main_menu.labelfr);
                     $('#labeleng').val(main_menu.labeleng);
                     $('#menu_level_1').val(main_menu.ML1_menu_1).select2();
                     $('#menu_level_2').val(main_menu.menu_2).select2();
-                    $('#level').val(main_menu.level);
-                    $('#level').attr("readonly", false);
+                    $('#menu_level').val(main_menu.level);
+                    $('#menu_level').attr("readonly", false);
                     $('#view_icon').val(main_menu.view_icon);
                     $('#view_path').val(main_menu.view_path);
                     $('#operation').val(main_menu.operation).select2();

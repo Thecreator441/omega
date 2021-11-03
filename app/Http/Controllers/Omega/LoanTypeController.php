@@ -19,20 +19,29 @@ class LoanTypeController extends Controller
     {
         $loan_types = LoanType::getLoanTypes();
         $accplans = AccPlan::getAccPlans();
+        $accounts = Account::getAccounts();
         $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-        return view('omega.pages.loantype', compact('menu', 'loan_types', 'accplans'));
+        return view('omega.pages.loantype', compact('menu', 'loan_types', 'accplans', 'accounts'));
     }
 
     public function store()
     {
         // dd(Request::all());
-        DB::beginTransaction();
-        $emp = Session::get('employee');
-
-        $idloan_type = Request::input('idloan_type');
-
         try {
+            DB::beginTransaction();
+            $emp = Session::get('employee');
+
+            $idloan_type = Request::input('idloan_type');
+            $seicomaker = Request::input('seicomaker');
+            $block_acc = Request::input('block_acc');
+            if($seicomaker === null) {
+                $seicomaker = 'N';
+            }
+            if($block_acc === null) {
+                $block_acc = 'N';
+            }
+
             $loan_type = null;
 
             if ($idloan_type === null) {
@@ -48,27 +57,6 @@ class LoanTypeController extends Controller
             $loan_type->max_dur = Request::input('max_dur');
             $loan_type->max_amt = trimOver(Request::input('max_amt'), ' ');
             $loan_type->inst_pen_day_space = trimOver(Request::input('inst_pen_day_space'), ' ');
-
-            $intPaidAcc_Plan = AccPlan::getAccPlan(Request::input('int_paid_acc'));
-            $intPaidAcc_Numb = pad($intPaidAcc_Plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
-            $intPaidAcc = Account::getAccountBy(['accnumb' => $intPaidAcc_Numb]);
-            if ($intPaidAcc === null) {
-                $intPaidAcc = new Account();
-
-                $intPaidAcc->idplan = $intPaidAcc_Plan->idaccplan;
-                $intPaidAcc->accnumb = $intPaidAcc_Numb;
-                $intPaidAcc->labelfr = $intPaidAcc_Plan->labelfr;
-                $intPaidAcc->labeleng = $intPaidAcc_Plan->labeleng;
-                $intPaidAcc->class = $intPaidAcc_Plan->class;
-                $intPaidAcc->acctype = $intPaidAcc_Plan->acc_type;
-                $intPaidAcc->network = $emp->network;
-                $intPaidAcc->zone = $emp->zone;
-                $intPaidAcc->institution = $emp->institution;
-                $intPaidAcc->branch = $emp->branch;
-
-                $intPaidAcc->save();
-            }
-            $loan_type->int_paid_acc = $intPaidAcc->idaccount;
 
             $loanAcc_Plan = AccPlan::getAccPlan(Request::input('loan_acc'));
             $loanAcc_Numb = pad($loanAcc_Plan->plan_code, 6, 'right') . '' . pad(Request::input('loan_type_code'), 3, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
@@ -91,8 +79,71 @@ class LoanTypeController extends Controller
             }
             $loan_type->loan_acc = $loanAcc->idaccount;
 
-            $loan_type->seicomaker = Request::input('seicomaker');
-            $loan_type->block_acc = Request::input('block_acc');
+            $transAcc_Plan = AccPlan::getAccPlan(Request::input('trans_acc'));
+            $transAcc_Numb = pad($transAcc_Plan->plan_code, 6, 'right') . '' . pad(Request::input('loan_type_code'), 3, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
+            $transAcc = Account::getAccountBy(['accnumb' => $transAcc_Numb]);
+            if ($transAcc === null) {
+                $transAcc = new Account();
+
+                $transAcc->idplan = $transAcc_Plan->idaccplan;
+                $transAcc->accnumb = $transAcc_Numb;
+                $transAcc->labelfr = Request::input('labelfr');
+                $transAcc->labeleng = Request::input('labeleng');
+                $transAcc->class = $transAcc_Plan->class;
+                $transAcc->acctype = $transAcc_Plan->acc_type;
+                $transAcc->network = $emp->network;
+                $transAcc->zone = $emp->zone;
+                $transAcc->institution = $emp->institution;
+                $transAcc->branch = $emp->branch;
+
+                $transAcc->save();
+            }
+            $loan_type->trans_acc = $transAcc->idaccount;
+
+            $intPaidAcc_Plan = AccPlan::getAccPlan(Request::input('int_paid_acc'));
+            $intPaidAcc_Numb = pad($intPaidAcc_Plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
+            $intPaidAcc = Account::getAccountBy(['accnumb' => $intPaidAcc_Numb]);
+            if ($intPaidAcc === null) {
+                $intPaidAcc = new Account();
+
+                $intPaidAcc->idplan = $intPaidAcc_Plan->idaccplan;
+                $intPaidAcc->accnumb = $intPaidAcc_Numb;
+                $intPaidAcc->labelfr = $intPaidAcc_Plan->labelfr;
+                $intPaidAcc->labeleng = $intPaidAcc_Plan->labeleng;
+                $intPaidAcc->class = $intPaidAcc_Plan->class;
+                $intPaidAcc->acctype = $intPaidAcc_Plan->acc_type;
+                $intPaidAcc->network = $emp->network;
+                $intPaidAcc->zone = $emp->zone;
+                $intPaidAcc->institution = $emp->institution;
+                $intPaidAcc->branch = $emp->branch;
+
+                $intPaidAcc->save();
+            }
+            $loan_type->int_paid_acc = $intPaidAcc->idaccount;
+
+            $accrPaidAcc_Plan = AccPlan::getAccPlan(Request::input('accr_paid_acc'));
+            $accrPaidAcc_Numb = pad($accrPaidAcc_Plan->plan_code, 9, 'right') . '' . pad($emp->institution, 3) . '' . pad($emp->branch, 3);
+            $accrPaidAcc = Account::getAccountBy(['accnumb' => $accrPaidAcc_Numb]);
+            if ($accrPaidAcc === null) {
+                $accrPaidAcc = new Account();
+
+                $accrPaidAcc->idplan = $accrPaidAcc_Plan->idaccplan;
+                $accrPaidAcc->accnumb = $accrPaidAcc_Numb;
+                $accrPaidAcc->labelfr = $accrPaidAcc_Plan->labelfr;
+                $accrPaidAcc->labeleng = $accrPaidAcc_Plan->labeleng;
+                $accrPaidAcc->class = $accrPaidAcc_Plan->class;
+                $accrPaidAcc->acctype = $accrPaidAcc_Plan->acc_type;
+                $accrPaidAcc->network = $emp->network;
+                $accrPaidAcc->zone = $emp->zone;
+                $accrPaidAcc->institution = $emp->institution;
+                $accrPaidAcc->branch = $emp->branch;
+
+                $accrPaidAcc->save();
+            }
+            $loan_type->accr_paid_acc = $accrPaidAcc->idaccount;
+
+            $loan_type->seicomaker = $seicomaker;
+            $loan_type->block_acc = $block_acc;
 
             if ((int)Request::input('pay_tax_rate') > 0 AND Request::input('pay_tax_acc') !== null) {
                 $loan_type->pay_tax_rate = trimOver(Request::input('pay_tax_rate'), ' ');

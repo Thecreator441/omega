@@ -128,7 +128,7 @@ if ($emp->lang == 'fr') {
                 </div>
 
                 <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <div class="form-group has-error">
                             <label for="loan_acc" class="col-xl-3 col-lg-3 col-md-4 col-sm-4 control-label">@lang('label.loan_acc')<span class="text-red text-bold">*</span></label>
                             <div class="col-xl-9 col-lg-9 col-md-8 col-sm-8">
@@ -144,7 +144,7 @@ if ($emp->lang == 'fr') {
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <div class="form-group has-error">
                             <label for="trans_acc" class="col-xl-3 col-lg-3 col-md-4 col-sm-4 control-label">@lang('label.trans_acc')<span class="text-red text-bold">*</span></label>
                             <div class="col-xl-9 col-lg-9 col-md-8 col-sm-8">
@@ -160,10 +160,13 @@ if ($emp->lang == 'fr') {
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <div class="form-group has-error">
-                            <label for="int_paid_acc" class="col-xl-4 col-lg-4 col-md-4 col-sm-4 control-label">@lang('label.int_paid_acc')<span class="text-red text-bold">*</span></label>
-                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
+                            <label for="int_paid_acc" class="col-xl-3 col-lg-3 col-md-4 col-sm-4 control-label">@lang('label.int_paid_acc')<span class="text-red text-bold">*</span></label>
+                            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-8">
                                 <select name="int_paid_acc" id="int_paid_acc" class="select2" required>
                                     <option value=""></option>
                                     @foreach ($accplans as $accplan)
@@ -171,6 +174,20 @@ if ($emp->lang == 'fr') {
                                     @endforeach
                                 </select>
                                 <div class="help-block">@lang('placeholder.int_paid_acc')</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <div class="form-group has-error">
+                            <label for="accr_paid_acc" class="col-xl-3 col-lg-3 col-md-4 col-sm-4 control-label">@lang('label.accr_paid_acc')<span class="text-red text-bold">*</span></label>
+                            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-8">
+                                <select name="accr_paid_acc" id="accr_paid_acc" class="select2" required>
+                                    <option value=""></option>
+                                    @foreach ($accplans as $accplan)
+                                        <option value="{{ $accplan->idaccplan }}">{{ substrWords($accplan->plan_code, 6) }} : @if($emp->lang == 'fr') {{ $accplan->labelfr }} @else {{ $accplan->labeleng }} @endif </option>
+                                    @endforeach
+                                </select>
+                                <div class="help-block">@lang('placeholder.accr_paid_acc')</div>
                             </div>
                         </div>
                     </div>
@@ -387,6 +404,7 @@ if ($emp->lang == 'fr') {
                 <th>@lang('label.loan_acc')</th>
                 <th>@lang('label.trans_acc')</th>
                 <th>@lang('label.int_paid_acc')</th>
+                <th>@lang('label.accr_paid_acc')</th>
                 <th>@lang('label.loan_per')</th>
                 <th>@lang('label.max_amt')</th>
                 <th>@lang('label.date')</th>
@@ -401,6 +419,7 @@ if ($emp->lang == 'fr') {
                     <td class="text-center">{{ $loan_type->laccnumb }}</td>
                     <td class="text-center">{{ $loan_type->taccnumb }}</td>
                     <td class="text-center">{{ $loan_type->iaccnumb }}</td>
+                    <td class="text-center">{{ $loan_type->aaccnumb }}</td>
                     <td>
                         @if ($loan_type->loan_per === 'D')
                             @lang('label.daily')
@@ -527,6 +546,17 @@ if ($emp->lang == 'fr') {
                         }
                     });
 
+                    $.ajax({
+                        url: "{{ url('getAccount') }}",
+                        method: 'get',
+                        data: {
+                            id: loan_type.accr_paid_acc
+                        },
+                        success: function (accr_paid_Acc) {
+                            $('#accr_paid_acc').val(accr_paid_Acc.idplan).select2();
+                        }
+                    });
+
                     $('.seicomaker').each(function () {
                         if ($(this).val() === loan_type.seicomaker) {
                             $(this).prop('checked', true)
@@ -589,8 +619,8 @@ if ($emp->lang == 'fr') {
                     }
                     
 
-                    $('#save').replaceWith('<button type="submit" id="save" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit" style="display: none"></button>');
-                    $('.edit').replaceWith('<button type="submit" id="save" class="btn btn-sm bg-blue pull-right btn-raised fa fa-save" style="display: none"></button>');
+                    $('#save').replaceWith('<button type="submit" id="edit" class="edit btn btn-sm bg-aqua pull-right btn-raised fa fa-edit" style="display: none"></button>');
+                    $('.edit').replaceWith('<button type="submit" id="save" class="save btn btn-sm bg-blue pull-right btn-raised fa fa-save" style="display: none"></button>');
 
                     $('#form').show();
                 }
@@ -622,6 +652,28 @@ if ($emp->lang == 'fr') {
                         url: "{{ url('getAccount') }}",
                         method: 'get',
                         data: {
+                            id: loan_type.loan_acc
+                        },
+                        success: function (loan_Acc) {
+                            $('#loan_acc').val(loan_Acc.idplan).select2();
+                        }
+                    });
+
+                    $.ajax({
+                        url: "{{ url('getAccount') }}",
+                        method: 'get',
+                        data: {
+                            id: loan_type.trans_acc
+                        },
+                        success: function (trans_Acc) {
+                            $('#trans_acc').val(trans_Acc.idplan).select2();
+                        }
+                    });
+
+                    $.ajax({
+                        url: "{{ url('getAccount') }}",
+                        method: 'get',
+                        data: {
                             id: loan_type.int_paid_acc
                         },
                         success: function (int_paid_Acc) {
@@ -633,10 +685,10 @@ if ($emp->lang == 'fr') {
                         url: "{{ url('getAccount') }}",
                         method: 'get',
                         data: {
-                            id: loan_type.loan_acc
+                            id: loan_type.accr_paid_acc
                         },
-                        success: function (loan_Acc) {
-                            $('#loan_acc').val(loan_Acc.idplan).select2();
+                        success: function (accr_paid_Acc) {
+                            $('#accr_paid_acc').val(accr_paid_Acc.idplan).select2();
                         }
                     });
 

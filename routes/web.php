@@ -11,6 +11,8 @@
 |
 */
 
+use App\Http\Middleware\VerifyAccDate;
+use App\Http\Middleware\VerifyCash;
 use App\Http\Middleware\VerifySessionPrivilege;
 use App\Models\Account;
 use App\Models\AccPlan;
@@ -70,11 +72,6 @@ use Illuminate\Support\Facades\Session;
 
 Route::get('/', 'Omega\LoginController@index')->name('/');
 Route::post('login', 'Omega\LoginController@login')->name('login');
-Route::get('to_home', 'Omega\LoginController@toHome')->name('to_home');
-Route::get('lang/{lang}', 'Omega\LoginController@changeLanguage')->name('lang/{lang}');
-Route::get('edit_logout', 'Omega\LoginController@editLogout')->name('edit_logout');
-Route::post('logout', 'Omega\LoginController@logout')->name('logout');
-Route::get('change_logout', 'Omega\LoginController@changeLogout')->name('change_logout');
 
 
 /***************************************************************
@@ -85,126 +82,341 @@ Route::get('change_logout', 'Omega\LoginController@changeLogout')->name('change_
 
 Route::middleware([VerifySessionPrivilege::class])->group(function () {
 
+    Route::middleware([VerifyAccDate::class])->group(function () {
+
+        Route::middleware([VerifyCash::class])->group(function () {
+            //    Membership
+            Route::prefix('membership')->group(static function () {
+                Route::get('/', 'Omega\MembershipController@index')->name('membership');
+                Route::post('store', 'Omega\MembershipController@store')->name('membership/store');
+            });
+
+            //    Cash Open, Close Initialisation and Closing
+            Route::prefix('cash_open')->group(static function () {
+                Route::get('/', 'Omega\CashOpenController@index')->name('cash_open');
+                Route::post('store', 'Omega\CashOpenController@store')->name('cash_open/store');
+            });
+            Route::prefix('cash_close_init')->group(static function () {
+                Route::get('/', 'Omega\CashCloseInitController@index')->name('cash_close_init');
+                Route::post('store', 'Omega\CashCloseInitController@store')->name('cash_close_init/store');
+            });
+            Route::prefix('cash_close')->group(static function () {
+                Route::get('/', 'Omega\CashCloseController@index')->name('cash_close');
+                Route::post('store', 'Omega\CashCloseController@store')->name('cash_close/store');
+            });
+
+            //    Cash In and Out
+            Route::prefix('cash_in')->group(static function () {
+                Route::get('/', 'Omega\CashInController@index')->name('cash_in');
+                Route::post('store', 'Omega\CashInController@store')->name('cash_in/store');
+            });
+            Route::prefix('cash_out')->group(static function () {
+                Route::get('/', 'Omega\CashOutController@index')->name('cash_out');
+                Route::post('store', 'Omega\CashOutController@store')->name('cash_out/store');
+            });
+
+            //     Cash To and From Bank
+            Route::prefix('cash_to')->group(static function () {
+                Route::get('/', 'Omega\CashToController@index')->name('cash_to');
+                Route::post('store', 'Omega\CashToController@store')->name('cash_to/store');
+            });
+            Route::prefix('cash_from')->group(static function () {
+                Route::get('/', 'Omega\CashFromController@index')->name('cash_from');
+                Route::post('store', 'Omega\CashFromController@store')->name('cash_from/store');
+            });
+
+            //    Other Cash In and Out
+            Route::prefix('other_cash_in')->group(static function () {
+                Route::get('/', 'Omega\OtherCashInController@index')->name('other_cash_in');
+                Route::post('store', 'Omega\OtherCashInController@store')->name('other_cash_in/store');
+            });
+            Route::prefix('other_cash_out')->group(static function () {
+                Route::get('/', 'Omega\OtherCashOutController@index')->name('other_cash_out');
+                Route::post('store', 'Omega\OtherCashOutController@store')->name('other_cash_out/store');
+            });
+
+            //     Funds Replenishment, Funds Reception
+            Route::prefix('replenish')->group(static function () {
+                Route::get('/', 'Omega\ReplenishController@index')->name('replenish');
+                Route::post('store', 'Omega\ReplenishController@store')->name('replenish/store');
+            });
+            Route::prefix('reception')->group(static function () {
+                Route::get('/', 'Omega\ReceptionController@index')->name('reception');
+                Route::post('store', 'Omega\ReceptionController@store')->name('reception/store');
+            });
+
+            //    Cash Situation, Reconciliation and Regularisation
+            Route::prefix('cash_situation')->group(static function () {
+                Route::get('/', 'Omega\CashSituationController@index')->name('cash_situation');
+                Route::post('store', 'Omega\CashSituationController@store')->name('cash_situation/store');
+            });
+            Route::prefix('cash_reconciliation')->group(static function () {
+                Route::get('/', 'Omega\CashReconciliationController@index')->name('cash_reconciliation');
+                Route::post('store', 'Omega\CashReconciliationController@store')->name('cash_reconciliation/store');
+            });
+            Route::prefix('cash_regularisation')->group(static function () {
+                Route::get('/', 'Omega\CashRegularisationController@index')->name('cash_regularisation');
+                Route::post('store', 'Omega\CashRegularisationController@store')->name('cash_regularisation/store');
+            });
+
+            //    Money Exchange
+            Route::prefix('money_exchange')->group(static function () {
+                Route::get('/', 'Omega\MoneyExchangeController@index')->name('money_exchange');
+                Route::post('store', 'Omega\MoneyExchangeController@store')->name('money_exchange/store');
+            });
+
+            //    Check and Other Check Sort
+            Route::prefix('check_sort')->group(static function () {
+                Route::get('/', 'Omega\CheckSortController@index')->name('check_sort');
+                Route::post('store', 'Omega\CheckSortController@store')->name('check_sort/store');
+            });
+            Route::prefix('other_check_sort')->group(static function () {
+                Route::get('/', 'Omega\OtherCheckSortController@index')->name('other_check_sort');
+                Route::post('store', 'Omega\OtherCheckSortController@store')->name('other_check_sort/store');
+            });
+
+
+
+        });
+
+        //    Check In and Out
+        Route::prefix('check_in')->group(static function () {
+            Route::get('/', 'Omega\CheckInController@index')->name('check_in');
+            Route::post('store', 'Omega\CheckInController@store')->name('check_in/store');
+        });
+        Route::prefix('check_out')->group(static function () {
+            Route::get('/', 'Omega\CheckOutController@index')->name('check_out');
+            Route::post('store', 'Omega\CheckOutController@store')->name('check_out/store');
+        });
+
+        //    Other Check In and Out
+        Route::prefix('other_check_in')->group(static function () {
+            Route::get('/', 'Omega\OtherCheckInController@index')->name('other_check_in');
+            Route::post('store', 'Omega\OtherCheckInController@store')->name('other_check_in/store');
+        });
+        Route::prefix('other_check_out')->group(static function () {
+            Route::get('/', 'Omega\OtherCheckOutController@index')->name('other_check_out');
+            Route::post('store', 'Omega\OtherCheckOutController@store')->name('other_check_out/store');
+        });
+
+        //    Check Register and Report
+        Route::prefix('check_register')->group(static function () {
+            Route::get('/', 'Omega\CheckRegisterController@index')->name('check_register');
+            Route::post('store', 'Omega\CheckRegisterController@store')->name('check_register/store');
+        });
+        Route::prefix('check_report')->group(static function () {
+            Route::get('/', 'Omega\CheckReportController@index')->name('check_report');
+            Route::post('store', 'Omega\CheckReportController@store')->name('check_report/store');
+        });
+
+        //     Registration
+        Route::prefix('registration')->group(static function () {
+            Route::get('/', 'Omega\RegistrationController@index')->name('registration');
+            Route::post('store', 'Omega\RegistrationController@store')->name('registration/store');
+        });
+
+        //    Temporal Journal, Journal and Transactions
+        Route::prefix('temp_journal')->group(static function () {
+            Route::get('/', 'Omega\TempJournalController@index')->name('temp_journal');
+        });
+        Route::prefix('journal')->group(static function () {
+            Route::get('/', 'Omega\JournalController@index')->name('journal');
+        });
+        Route::prefix('transaction')->group(static function () {
+            Route::get('/', 'Omega\TransactionController@index')->name('transaction');
+        });
+
+        //  Accounting Day Closing ang Backup
+        Route::prefix('acc_day_close')->group(static function () {
+            Route::get('/', 'Omega\AccDayCloseController@index')->name('acc_day_close');
+            Route::post('store', 'Omega\AccDayCloseController@store')->name('acc_day_close/store');
+        });    
+        Route::prefix('backup')->group(static function () {
+            Route::get('/', 'Omega\BackupController@index')->name('backup');
+            Route::post('store', 'Omega\BackupController@store')->name('backup/store');
+        });
+
+        /****************************************
+         *************** LOANS ******************
+        ****************************************/
+
+        //    Loan Simulation
+        Route::prefix('loan_simulation')->group(static function () {
+            Route::get('/', 'Omega\LoanSimulationController@index')->name('loan_simulation');
+            Route::get('print', 'Omega\LoanSimulationController@print')->name('loan_simulation/print');
+        });
+
+        //    Loan Application
+        Route::prefix('loan_application')->group(static function () {
+            Route::get('/', 'Omega\LoanApplicationController@index')->name('loan_application');
+            Route::post('store', 'Omega\LoanApplicationController@store')->name('loan_application/store');
+        });
+
+        //    Loan Approval and Reject
+        Route::prefix('loan_approval')->group(static function () {
+            Route::get('/', 'Omega\LoanApprovalController@index')->name('loan_approval');
+            Route::post('store', 'Omega\LoanApprovalController@store')->name('loan_approval/store');
+            Route::post('reject', 'Omega\LoanApprovalController@reject')->name('loan_approval/reject');
+        });
+
+        //    Loan Refinancing and Restructuring
+        Route::prefix('refinancing_restructuring')->group(static function () {
+            Route::get('/', 'Omega\RefinancingRestructuringController@index')->name('refinancing');
+            Route::post('store', 'Omega\RefinancingRestructuringController@store')->name('refinancing/store');
+        });
+
+        //    Loan List
+        Route::prefix('loan_list')->group(static function () {
+            Route::get('/', 'Omega\LoanListController@index')->name('loan_list');
+            Route::post('store', 'Omega\LoanListController@store')->name('loan_list/store');
+        });
+
+        //    Loan History
+        Route::prefix('loan_history')->group(static function () {
+            Route::get('/', 'Omega\LoanHistoryController@index')->name('loan_history');
+            Route::post('store', 'Omega\LoanHistoryController@store')->name('loan_history/store');
+        });
+
+        //  Delinquency Report
+        Route::prefix('delinquency_report')->group(static function () {
+            Route::get('/', 'Omega\DelinquencyReportController@index')->name('delinquency_report');
+            Route::post('store', 'Omega\DelinquencyReportController@store')->name('delinquency_report/store');
+        });
+
+        //    Provision Accounting Report
+        Route::prefix('prov_acc_report')->group(static function () {
+            Route::get('/', 'Omega\ProvAccReportController@index')->name('prov_acc_report');
+            Route::post('store', 'Omega\ProvAccReportController@store')->name('prov_acc_report/store');
+        });
+
+        //    Provision Report
+        Route::prefix('provision_report')->group(static function () {
+            Route::get('/', 'Omega\ProvisionReportController@index')->name('provision_report');
+            Route::post('store', 'Omega\ProvisionReportController@store')->name('provision_report/store');
+        });
+
+        //    Statistics Report
+        Route::prefix('statistics_report')->group(static function () {
+            Route::get('/', 'Omega\StatisticsReportController@index')->name('statistics_report');
+            Route::post('store', 'Omega\StatisticsReportController@store')->name('statistics_report/store');
+        });
+
+
+        /****************************************
+         ********* FINANCIAL STATEMENTS *********
+        ****************************************/
+
+        //    Trial Balance
+        Route::prefix('trial_balance')->group(static function () {
+            Route::get('/', 'Omega\TrialBalanceController@index')->name('trial_balance');
+            Route::post('store', 'Omega\TrialBalanceController@store')->name('trial_balance/store');
+        });
+
+        //    Balance Sheet
+        Route::prefix('balance_sheet')->group(static function () {
+            Route::get('/', 'Omega\BalanceSheetController@index')->name('balance_sheet');
+            Route::post('store', 'Omega\BalanceSheetController@store')->name('balance_sheet/store');
+        });
+
+        //    Income/Expenses
+        Route::prefix('inc_exp')->group(static function () {
+            Route::get('/', 'Omega\IncExpController@index')->name('inc_exp');
+            Route::post('store', 'Omega\IncExpController@store')->name('inc_exp/store');
+        });
+
+        //    Account Schedule Balance Sheet and Income/Expenses
+        Route::prefix('acc_bal_sheet')->group(static function () {
+            Route::get('/', 'Omega\AccBalSheetController@index')->name('acc_bal_sheet');
+            Route::post('store', 'Omega\AccBalSheetController@store')->name('acc_bal_sheet/store');
+        });
+        Route::prefix('acc_inc_exp')->group(static function () {
+            Route::get('/', 'Omega\AccIncExpController@index')->name('acc_inc_exp');
+            Route::post('store', 'Omega\AccIncExpController@store')->name('acc_inc_exp/store');
+        });
+
+        //    Share Savings and Loans Insurance
+        Route::prefix('share_savings_ins')->group(static function () {
+            Route::get('/', 'Omega\ShareSavingsInsController@index')->name('share_savings_ins');
+            Route::post('store', 'Omega\ShareSavingsInsController@store')->name('share_savings_ins/store');
+        });
+        Route::prefix('loan_insurance')->group(static function () {
+            Route::get('/', 'Omega\LoanInsuranceController@index')->name('loan_insurance');
+            Route::post('store', 'Omega\LoanInsuranceController@store')->name('loan_insurance/store');
+        });
+
+        //    Payroll Deduction Initialisation , Distribution and Validation
+        Route::prefix('pay_deduct_init')->group(static function () {
+            Route::get('/', 'Omega\PayDeductInitController@index')->name('pay_deduct_init');
+            Route::post('store', 'Omega\PayDeductInitController@store')->name('pay_deduct_init/store');
+        });
+        Route::prefix('pay_deduct_dist')->group(static function () {
+            Route::get('/', 'Omega\PayDeductDistController@index')->name('pay_deduct_dist');
+            Route::post('store', 'Omega\PayDeductDistController@store')->name('pay_deduct_dist/store');
+        });
+        Route::prefix('pay_deduct_valid')->group(static function () {
+            Route::get('/', 'Omega\PayDeductValidController@index')->name('pay_deduct_valid');
+            Route::post('store', 'Omega\PayDeductValidController@store')->name('pay_deduct_valid/store');
+        });
+
+        //      Budget Initialisation and Control Sheet
+        Route::prefix('budget_init')->group(static function () {
+            Route::get('/', 'Omega\BudgetInitController@index')->name('budget_init');
+            Route::post('store', 'Omega\BudgetInitController@store')->name('budget_init/store');
+        });
+        Route::prefix('budget_con_sheet')->group(static function () {
+            Route::get('/', 'Omega\BudgetConSheetController@index')->name('budget_con_sheet');
+            Route::post('store', 'Omega\BudgetConSheetController@store')->name('budget_con_sheet/store');
+        });
+
+        //      Assets Initialisation, Accounting and Control Sheet
+        Route::prefix('assets_init')->group(static function () {
+            Route::get('/', 'Omega\AssetsInitController@index')->name('assets_init');
+            Route::post('store', 'Omega\AssetsInitController@store')->name('assets_init/store');
+        });
+        Route::prefix('assets_acc')->group(static function () {
+            Route::get('/', 'Omega\AssetsAccController@index')->name('assets_acc');
+            Route::post('store', 'Omega\AssetsAccController@store')->name('assets_acc/store');
+        });
+        Route::prefix('assets_con_sheet')->group(static function () {
+            Route::get('/', 'Omega\AssetsConSheetController@index')->name('assets_con_sheet');
+            Route::post('store', 'Omega\AssetsConSheetController@store')->name('assets_con_sheet/store');
+        });
+    
+
+    });
+
+    /***************************
+     ******** RESOURCES ********
+    ***************************/
+
+    Route::get('lang/{lang}', 'Omega\LoginController@changeLanguage')->name('lang/{lang}');
+    Route::get('edit_logout', 'Omega\LoginController@editLogout')->name('edit_logout');
+    Route::post('logout', 'Omega\LoginController@logout')->name('logout');
+    Route::get('change_logout', 'Omega\LoginController@changeLogout')->name('change_logout');
+
+    
     /***************************
      ******** DASHBOARD ********
     ***************************/
 
+    Route::get('to_home', 'Omega\LoginController@toHome')->name('to_home');
     Route::get('omega', 'Omega\OmegaController@index')->name('omega');
-
-
-
 
     
     /****************************
      ******** OPERATIONS ********
     ****************************/
 
-    //     Registration
-    Route::prefix('registration')->group(static function () {
-        Route::get('/', 'Omega\RegistrationController@index')->name('registration');
-        Route::post('store', 'Omega\RegistrationController@store')->name('registration/store');
+    //    Accounting Day Opening and Adjustment
+    Route::prefix('acc_day_open')->group(static function () {
+        Route::get('/', 'Omega\AccDayOpenController@index')->name('acc_day_open');
+        Route::post('store', 'Omega\AccDayOpenController@store')->name('acc_day_open/store');
     });
-
-    //    Membership
-    Route::prefix('membership')->group(static function () {
-        Route::get('/', 'Omega\MembershipController@index')->name('membership');
-        Route::post('store', 'Omega\MembershipController@store')->name('membership/store');
+    Route::prefix('acc_day_adj')->group(static function () {
+        Route::get('/', 'Omega\AccDayAdjustController@index')->name('acc_day_adj');
+        Route::post('store', 'Omega\AccDayAdjustController@store')->name('acc_day_adj/store');
     });
-
-    //    Cash Open, Close Initialisation and Closing
-    Route::prefix('cash_open')->group(static function () {
-        Route::get('/', 'Omega\CashOpenController@index')->name('cash_open');
-        Route::post('store', 'Omega\CashOpenController@store')->name('cash_open/store');
-    });
-    Route::prefix('cash_close_init')->group(static function () {
-        Route::get('/', 'Omega\CashCloseInitController@index')->name('cash_close_init');
-        Route::post('store', 'Omega\CashCloseInitController@store')->name('cash_close_init/store');
-    });
-    Route::prefix('cash_close')->group(static function () {
-        Route::get('/', 'Omega\CashCloseController@index')->name('cash_close');
-        Route::post('store', 'Omega\CashCloseController@store')->name('cash_close/store');
-    });
-
-    //    Cash In and Out
-    Route::prefix('cash_in')->group(static function () {
-        Route::get('/', 'Omega\CashInController@index')->name('cash_in');
-        Route::post('store', 'Omega\CashInController@store')->name('cash_in/store');
-    });
-    Route::prefix('cash_out')->group(static function () {
-        Route::get('/', 'Omega\CashOutController@index')->name('cash_out');
-        Route::post('store', 'Omega\CashOutController@store')->name('cash_out/store');
-    });
-
-    //     Cash To and From Bank
-    Route::prefix('cash_to')->group(static function () {
-        Route::get('/', 'Omega\CashToController@index')->name('cash_to');
-        Route::post('store', 'Omega\CashToController@store')->name('cash_to/store');
-    });
-    Route::prefix('cash_from')->group(static function () {
-        Route::get('/', 'Omega\CashFromController@index')->name('cash_from');
-        Route::post('store', 'Omega\CashFromController@store')->name('cash_from/store');
-    });
-
-    //    Other Cash In and Out
-    Route::prefix('other_cash_in')->group(static function () {
-        Route::get('/', 'Omega\OtherCashInController@index')->name('other_cash_in');
-        Route::post('store', 'Omega\OtherCashInController@store')->name('other_cash_in/store');
-    });
-    Route::prefix('other_cash_out')->group(static function () {
-        Route::get('/', 'Omega\OtherCashOutController@index')->name('other_cash_out');
-        Route::post('store', 'Omega\OtherCashOutController@store')->name('other_cash_out/store');
-    });
-
-    //    Check In and Out
-    Route::prefix('check_in')->group(static function () {
-        Route::get('/', 'Omega\CheckInController@index')->name('check_in');
-        Route::post('store', 'Omega\CheckInController@store')->name('check_in/store');
-    });
-    Route::prefix('check_out')->group(static function () {
-        Route::get('/', 'Omega\CheckOutController@index')->name('check_out');
-        Route::post('store', 'Omega\CheckOutController@store')->name('check_out/store');
-    });
-
-    //    Other Check In and Out
-    Route::prefix('other_check_in')->group(static function () {
-        Route::get('/', 'Omega\OtherCheckInController@index')->name('other_check_in');
-        Route::post('store', 'Omega\OtherCheckInController@store')->name('other_check_in/store');
-    });
-    Route::prefix('other_check_out')->group(static function () {
-        Route::get('/', 'Omega\OtherCheckOutController@index')->name('other_check_out');
-        Route::post('store', 'Omega\OtherCheckOutController@store')->name('other_check_out/store');
-    });
-
-    //     Funds Replenishment, Funds Reception
-    Route::prefix('replenish')->group(static function () {
-        Route::get('/', 'Omega\ReplenishController@index')->name('replenish');
-        Route::post('store', 'Omega\ReplenishController@store')->name('replenish/store');
-    });
-    Route::prefix('reception')->group(static function () {
-        Route::get('/', 'Omega\ReceptionController@index')->name('reception');
-        Route::post('store', 'Omega\ReceptionController@store')->name('reception/store');
-    });
-
-    //    Cash Situation, Reconciliation and Regularisation
-    Route::prefix('cash_situation')->group(static function () {
-        Route::get('/', 'Omega\CashSituationController@index')->name('cash_situation');
-        Route::post('store', 'Omega\CashSituationController@store')->name('cash_situation/store');
-    });
-    Route::prefix('cash_reconciliation')->group(static function () {
-        Route::get('/', 'Omega\CashReconciliationController@index')->name('cash_reconciliation');
-        Route::post('store', 'Omega\CashReconciliationController@store')->name('cash_reconciliation/store');
-    });
-    Route::prefix('cash_regularisation')->group(static function () {
-        Route::get('/', 'Omega\CashRegularisationController@index')->name('cash_regularisation');
-        Route::post('store', 'Omega\CashRegularisationController@store')->name('cash_regularisation/store');
-    });
-
-    //    Money Exchange
-    Route::prefix('money_exchange')->group(static function () {
-        Route::get('/', 'Omega\MoneyExchangeController@index')->name('money_exchange');
-        Route::post('store', 'Omega\MoneyExchangeController@store')->name('money_exchange/store');
-    });
-
+    
     //    General, Auxiliary Account and Account FIle
     Route::prefix('gen_account')->group(static function () {
         Route::get('/', 'Omega\GenAccountController@index')->name('gen_account');
@@ -283,34 +495,7 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
         Route::post('store', 'Omega\AccClassBalHistoryController@store')->name('acc_class_bal_history/store');
     });
 
-    //    Accounting Day Opening, Closing, Adjustment and Backup
-    Route::prefix('acc_day_open')->group(static function () {
-        Route::get('/', 'Omega\AccDayOpenController@index')->name('acc_day_open');
-        Route::post('store', 'Omega\AccDayOpenController@store')->name('acc_day_open/store');
-    });
-    Route::prefix('acc_day_close')->group(static function () {
-        Route::get('/', 'Omega\AccDayCloseController@index')->name('acc_day_close');
-        Route::post('store', 'Omega\AccDayCloseController@store')->name('acc_day_close/store');
-    });
-    Route::prefix('acc_day_adj')->group(static function () {
-        Route::get('/', 'Omega\AccDayAdjustController@index')->name('acc_day_adj');
-        Route::post('store', 'Omega\AccDayAdjustController@store')->name('acc_day_adj/store');
-    });
-    Route::prefix('backup')->group(static function () {
-        Route::get('/', 'Omega\BackupController@index')->name('backup');
-        Route::post('store', 'Omega\BackupController@store')->name('backup/store');
-    });
-
-    //    Temporal Journal, Journal and Transactions
-    Route::prefix('temp_journal')->group(static function () {
-        Route::get('/', 'Omega\TempJournalController@index')->name('temp_journal');
-    });
-    Route::prefix('journal')->group(static function () {
-        Route::get('/', 'Omega\JournalController@index')->name('journal');
-    });
-    Route::prefix('transaction')->group(static function () {
-        Route::get('/', 'Omega\TransactionController@index')->name('transaction');
-    });
+    
 
     //    Commission Sharing
     Route::prefix('com_sharing')->group(static function () {
@@ -318,188 +503,7 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
         Route::post('store', 'Omega\ComSharingController@store')->name('com_sharing/store');
     });
 
-    //    Share Savings and Loans Insurance
-    Route::prefix('share_savings_ins')->group(static function () {
-        Route::get('/', 'Omega\ShareSavingsInsController@index')->name('share_savings_ins');
-        Route::post('store', 'Omega\ShareSavingsInsController@store')->name('share_savings_ins/store');
-    });
-    Route::prefix('loan_insurance')->group(static function () {
-        Route::get('/', 'Omega\LoanInsuranceController@index')->name('loan_insurance');
-        Route::post('store', 'Omega\LoanInsuranceController@store')->name('loan_insurance/store');
-    });
-
-    //    Check Register, Sort and Report
-    Route::prefix('check_register')->group(static function () {
-        Route::get('/', 'Omega\CheckRegisterController@index')->name('check_register');
-        Route::post('store', 'Omega\CheckRegisterController@store')->name('check_register/store');
-    });
-    Route::prefix('check_sort')->group(static function () {
-        Route::get('/', 'Omega\CheckSortController@index')->name('check_sort');
-        Route::post('store', 'Omega\CheckSortController@store')->name('check_sort/store');
-    });
-    Route::prefix('other_check_sort')->group(static function () {
-        Route::get('/', 'Omega\OtherCheckSortController@index')->name('other_check_sort');
-        Route::post('store', 'Omega\OtherCheckSortController@store')->name('other_check_sort/store');
-    });
-    Route::prefix('check_report')->group(static function () {
-        Route::get('/', 'Omega\CheckReportController@index')->name('check_report');
-        Route::post('store', 'Omega\CheckReportController@store')->name('check_report/store');
-    });
-
-    //    Payroll Deduction Initialisation , Distribution and Validation
-    Route::prefix('pay_deduct_init')->group(static function () {
-        Route::get('/', 'Omega\PayDeductInitController@index')->name('pay_deduct_init');
-        Route::post('store', 'Omega\PayDeductInitController@store')->name('pay_deduct_init/store');
-    });
-    Route::prefix('pay_deduct_dist')->group(static function () {
-        Route::get('/', 'Omega\PayDeductDistController@index')->name('pay_deduct_dist');
-        Route::post('store', 'Omega\PayDeductDistController@store')->name('pay_deduct_dist/store');
-    });
-    Route::prefix('pay_deduct_valid')->group(static function () {
-        Route::get('/', 'Omega\PayDeductValidController@index')->name('pay_deduct_valid');
-        Route::post('store', 'Omega\PayDeductValidController@store')->name('pay_deduct_valid/store');
-    });
-
-    //      Budget Initialisation and Control Sheet
-    Route::prefix('budget_init')->group(static function () {
-        Route::get('/', 'Omega\BudgetInitController@index')->name('budget_init');
-        Route::post('store', 'Omega\BudgetInitController@store')->name('budget_init/store');
-    });
-    Route::prefix('budget_con_sheet')->group(static function () {
-        Route::get('/', 'Omega\BudgetConSheetController@index')->name('budget_con_sheet');
-        Route::post('store', 'Omega\BudgetConSheetController@store')->name('budget_con_sheet/store');
-    });
-
-    //      Assets Initialisation, Accounting and Control Sheet
-    Route::prefix('assets_init')->group(static function () {
-        Route::get('/', 'Omega\AssetsInitController@index')->name('assets_init');
-        Route::post('store', 'Omega\AssetsInitController@store')->name('assets_init/store');
-    });
-    Route::prefix('assets_acc')->group(static function () {
-        Route::get('/', 'Omega\AssetsAccController@index')->name('assets_acc');
-        Route::post('store', 'Omega\AssetsAccController@store')->name('assets_acc/store');
-    });
-    Route::prefix('assets_con_sheet')->group(static function () {
-        Route::get('/', 'Omega\AssetsConSheetController@index')->name('assets_con_sheet');
-        Route::post('store', 'Omega\AssetsConSheetController@store')->name('assets_con_sheet/store');
-    });
-
-
-    /****************************************
-     *************** LOANS ******************
-    ****************************************/
-
-    //    Loan Simulation
-    Route::prefix('loan_simulation')->group(static function () {
-        Route::get('/', 'Omega\LoanSimulationController@index')->name('loan_simulation');
-        Route::get('print', 'Omega\LoanSimulationController@print')->name('loan_simulation/print');
-    });
-
-    //    Loan Application
-    Route::prefix('loan_application')->group(static function () {
-        Route::get('/', 'Omega\LoanApplicationController@index')->name('loan_application');
-        Route::post('store', 'Omega\LoanApplicationController@store')->name('loan_application/store');
-    });
-
-    //    Loan Approval
-    Route::prefix('loan_approval')->group(static function () {
-        Route::get('/', 'Omega\LoanApprovalController@index')->name('loan_approval');
-        Route::post('store', 'Omega\LoanApprovalController@store')->name('loan_approval/store');
-    });
-
-    //    Loan Rollback
-    Route::prefix('rollback')->group(static function () {
-        Route::get('/', 'Omega\RollbackController@index')->name('loan_rollback');
-        Route::post('store', 'Omega\RollbackController@store')->name('loan_rollback/store');
-    });
-
-    //    Loan Reject
-    Route::prefix('loan_reject')->group(static function () {
-        Route::get('/', 'Omega\LoanRejectController@index')->name('loan_reject');
-        Route::post('store', 'Omega\LoanRejectController@store')->name('loan_reject/store');
-    });
-
-    //    Refinancing
-    Route::prefix('refinancing_restructuring')->group(static function () {
-        Route::get('/', 'Omega\RefinancingRestructuringController@index')->name('refinancing');
-        Route::post('store', 'Omega\RefinancingRestructuringController@store')->name('refinancing/store');
-    });
-
-    //    Restructuring
-    Route::prefix('restructuring')->group(static function () {
-        Route::get('/', 'Omega\RestructuringController@index')->name('restructuring');
-        Route::post('store', 'Omega\RestructuringController@store')->name('restructuring/store');
-    });
-
-    //    Loan List
-    Route::prefix('loan_list')->group(static function () {
-        Route::get('/', 'Omega\LoanListController@index')->name('loan_list');
-        Route::post('store', 'Omega\LoanListController@store')->name('loan_list/store');
-    });
-
-    //    Loan History
-    Route::prefix('loan_history')->group(static function () {
-        Route::get('/', 'Omega\LoanHistoryController@index')->name('loan_history');
-        Route::post('store', 'Omega\LoanHistoryController@store')->name('loan_history/store');
-    });
-
-    //  Delinquency Report
-    Route::prefix('delinquency_report')->group(static function () {
-        Route::get('/', 'Omega\DelinquencyReportController@index')->name('delinquency_report');
-        Route::post('store', 'Omega\DelinquencyReportController@store')->name('delinquency_report/store');
-    });
-
-    //    Provision Accounting Report
-    Route::prefix('prov_acc_report')->group(static function () {
-        Route::get('/', 'Omega\ProvAccReportController@index')->name('prov_acc_report');
-        Route::post('store', 'Omega\ProvAccReportController@store')->name('prov_acc_report/store');
-    });
-
-    //    Provision Report
-    Route::prefix('provision_report')->group(static function () {
-        Route::get('/', 'Omega\ProvisionReportController@index')->name('provision_report');
-        Route::post('store', 'Omega\ProvisionReportController@store')->name('provision_report/store');
-    });
-
-    //    Statistics Report
-    Route::prefix('statistics_report')->group(static function () {
-        Route::get('/', 'Omega\StatisticsReportController@index')->name('statistics_report');
-        Route::post('store', 'Omega\StatisticsReportController@store')->name('statistics_report/store');
-    });
-
-
-    /****************************************
-     ********* FINANCIAL STATEMENTS *********
-    ****************************************/
-
-    //    Trial Balance
-    Route::prefix('trial_balance')->group(static function () {
-        Route::get('/', 'Omega\TrialBalanceController@index')->name('trial_balance');
-        Route::post('store', 'Omega\TrialBalanceController@store')->name('trial_balance/store');
-    });
-
-    //    Balance Sheet
-    Route::prefix('balance_sheet')->group(static function () {
-        Route::get('/', 'Omega\BalanceSheetController@index')->name('balance_sheet');
-        Route::post('store', 'Omega\BalanceSheetController@store')->name('balance_sheet/store');
-    });
-
-    //    Income/Expenses
-    Route::prefix('inc_exp')->group(static function () {
-        Route::get('/', 'Omega\IncExpController@index')->name('inc_exp');
-        Route::post('store', 'Omega\IncExpController@store')->name('inc_exp/store');
-    });
-
-    //    Account Schedule Balance Sheet and Income/Expenses
-    Route::prefix('acc_bal_sheet')->group(static function () {
-        Route::get('/', 'Omega\AccBalSheetController@index')->name('acc_bal_sheet');
-        Route::post('store', 'Omega\AccBalSheetController@store')->name('acc_bal_sheet/store');
-    });
-    Route::prefix('acc_inc_exp')->group(static function () {
-        Route::get('/', 'Omega\AccIncExpController@index')->name('acc_inc_exp');
-        Route::post('store', 'Omega\AccIncExpController@store')->name('acc_inc_exp/store');
-    });
-
+    
 
     /****************************************
      *************** REPORTS ****************
@@ -884,86 +888,100 @@ Route::get('getAccPlanCommis', static function () {
 //  GetMenu
 Route::get('getMenu', static function () {
     $level = Request::input("level");
+    $result = null;
+
     switch ($level) {
         case 1:
-            return Menu_Level_I::getMenu(Request::input("id"));
+            $result = Menu_Level_I::getMenu(Request::input("id"));
             break;
         case 2:
-            return Menu_Level_II::getMenu(Request::input("id"));
+            $result = Menu_Level_II::getMenu(Request::input("id"));
             break;
         case 3:
-            return Menu_Level_III::getMenu(Request::input("id"));
+            $result = Menu_Level_III::getMenu(Request::input("id"));
             break;
         case 4:
-            return Menu_Level_IV::getMenu(Request::input("id"));
+            $result = Menu_Level_IV::getMenu(Request::input("id"));
             break;
         default:
-            return null;
+            $result = null;
             break;
     }
+
+    return $result;
 });
 
 //  GetPrevMenus
 Route::get('getPrevMenus', static function () {
     $level = Request::input("level");
+    $result = null;
+
     switch ($level) {
         case 2:
-            return Menu_Level_II::getMenus(null, ['menu_1' => Request::input("id")]);
+            $result = Menu_Level_II::getMenus(null, ['menu_1' => Request::input("id")]);
             break;
         case 3:
-            return Menu_Level_III::getMenus(null, ['menu_2' => Request::input("id")]);
+            $result = Menu_Level_III::getMenus(null, ['menu_2' => Request::input("id")]);
             break;
         case 4:
-            return Menu_Level_IV::getMenus(null, ['menu_3' => Request::input("id")]);
+            $result = Menu_Level_IV::getMenus(null, ['menu_3' => Request::input("id")]);
             break;
         default:
-            return null;
+            $result = null;
             break;
     }
+
+    return $result;
 });
 
 //  GetNextMenus
 Route::get('getNextMenus', static function () {
     $level = Request::input("level");
+    $result = null;
+
     switch ($level) {
         case 1:
-            return Menu_Level_II::getMenus(null, ['menu_1' => Request::input("id")]);
+            $result = Menu_Level_II::getMenus(null, ['menu_1' => Request::input("id")]);
             break;
         case 2:
-            return Menu_Level_III::getMenus(null, ['menu_2' => Request::input("id")]);
+            $result = Menu_Level_III::getMenus(null, ['menu_2' => Request::input("id")]);
             break;
         case 3:
-            return Menu_Level_IV::getMenus(null, ['menu_3' => Request::input("id")]);
+            $result = Menu_Level_IV::getMenus(null, ['menu_3' => Request::input("id")]);
             break;
         default:
-            return null;
+            $result = null;
             break;
     }
+
+    return $result;
 });
 
 //  getPrivMenusAside
 Route::get('getPrivMenusAside', static function () {
     $level = Request::input("level");
     $privi = Request::input("privilege");
-    $menu = Request::input("menu");
+    $result = null;
 
     switch ($level) {
         case 1:
-            return Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_1');
+            $result = Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_1');
             break;
         case 2:
-            return Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_2');
+            $result = Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_2');
             break;
         case 3:
-            return Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_3');
+            $result = Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_3');
             break;
         case 4:
-            return Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_4');
+            $result = Priv_Menu::getPrivMenusAside(['privilege' => $privi], 'menu_4');
             break;
         default:
-            return null;
+            $result = null;
             break;
     }
+
+    return $result;
 });
 
 //      Get Currency

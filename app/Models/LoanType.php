@@ -20,11 +20,12 @@ class LoanType extends Model
      */
     public static function getLoanType(int $id)
     {
-        return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb', 'tA.accnumb AS taccnumb')
-            ->join('accounts AS iA', 'int_paid_acc', '=', 'iA.idaccount')
-            ->join('accounts AS lA', 'loan_acc', '=', 'lA.idaccount')
-            ->join('accounts AS tA', 'trans_acc', '=', 'tA.idaccount')
-            ->where('idltype', $id)->first();
+        return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb', 'tA.accnumb AS taccnumb', 'aA.accnumb AS aaccnumb')
+        ->join('accounts AS iA', 'int_paid_acc', '=', 'iA.idaccount')
+        ->join('accounts AS lA', 'loan_acc', '=', 'lA.idaccount')
+        ->join('accounts AS tA', 'trans_acc', '=', 'tA.idaccount')
+        ->join('accounts AS aA', 'accr_paid_acc', '=', 'aA.idaccount')
+        ->where('idltype', $id)->first();
     }
 
     /**
@@ -33,11 +34,12 @@ class LoanType extends Model
      */
     public static function getLoanTypeBy(array $where)
     {
-        return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb', 'tA.accnumb AS taccnumb')
-            ->join('accounts AS iA', 'int_paid_acc', '=', 'iA.idaccount')
-            ->join('accounts AS lA', 'loan_acc', '=', 'lA.idaccount')
-            ->join('accounts AS tA', 'trans_acc', '=', 'tA.idaccount')
-            ->where($where)->orderBy('loan_type_code')->first();
+        return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb', 'tA.accnumb AS taccnumb', 'aA.accnumb AS aaccnumb')
+        ->join('accounts AS iA', 'int_paid_acc', '=', 'iA.idaccount')
+        ->join('accounts AS lA', 'loan_acc', '=', 'lA.idaccount')
+        ->join('accounts AS tA', 'trans_acc', '=', 'tA.idaccount')
+        ->join('accounts AS aA', 'accr_paid_acc', '=', 'aA.idaccount')
+        ->where($where)->orderBy('loan_type_code')->first();
     }
 
     /**
@@ -49,29 +51,11 @@ class LoanType extends Model
         $emp = Session::get('employee');
 
         if ($where !== null) {
-            return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb', 'tA.accnumb AS taccnumb')
-                ->join('accounts AS iA', 'int_paid_acc', '=', 'iA.idaccount')
-                ->join('accounts AS lA', 'loan_acc', '=', 'lA.idaccount')
-                ->join('accounts AS tA', 'trans_acc', '=', 'tA.idaccount')
-                ->where(static function ($query) use ($emp) {
-                    if ($emp->level === 'N') {
-                        $query->where('loan_types.network', $emp->network);
-                    }
-                    if ($emp->level === 'Z') {
-                        $query->where('loan_types.zone', $emp->zone);
-                    }
-                    if ($emp->level === 'I') {
-                        $query->where('loan_types.institution', $emp->institution);
-                    }
-                    if ($emp->level === 'B') {
-                        $query->where('loan_types.branch', $emp->branch);
-                    }
-                })->where($where)->orderBy('loan_type_code')->get();
-        }
-        return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb', 'tA.accnumb AS taccnumb')
+            return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb', 'tA.accnumb AS taccnumb', 'aA.accnumb AS aaccnumb')
             ->join('accounts AS iA', 'int_paid_acc', '=', 'iA.idaccount')
             ->join('accounts AS lA', 'loan_acc', '=', 'lA.idaccount')
             ->join('accounts AS tA', 'trans_acc', '=', 'tA.idaccount')
+            ->join('accounts AS aA', 'accr_paid_acc', '=', 'aA.idaccount')
             ->where(static function ($query) use ($emp) {
                 if ($emp->level === 'N') {
                     $query->where('loan_types.network', $emp->network);
@@ -85,6 +69,27 @@ class LoanType extends Model
                 if ($emp->level === 'B') {
                     $query->where('loan_types.branch', $emp->branch);
                 }
-            })->orderBy('loan_type_code')->get();
+            })->where($where)->orderBy('loan_type_code')->get();
+        }
+        
+        return self::query()->select('loan_types.*', 'iA.accnumb AS iaccnumb', 'lA.accnumb AS laccnumb', 'tA.accnumb AS taccnumb', 'aA.accnumb AS aaccnumb')
+        ->join('accounts AS iA', 'int_paid_acc', '=', 'iA.idaccount')
+        ->join('accounts AS lA', 'loan_acc', '=', 'lA.idaccount')
+        ->join('accounts AS tA', 'trans_acc', '=', 'tA.idaccount')
+        ->join('accounts AS aA', 'accr_paid_acc', '=', 'aA.idaccount')
+        ->where(static function ($query) use ($emp) {
+            if ($emp->level === 'N') {
+                $query->where('loan_types.network', $emp->network);
+            }
+            if ($emp->level === 'Z') {
+                $query->where('loan_types.zone', $emp->zone);
+            }
+            if ($emp->level === 'I') {
+                $query->where('loan_types.institution', $emp->institution);
+            }
+            if ($emp->level === 'B') {
+                $query->where('loan_types.branch', $emp->branch);
+            }
+        })->orderBy('loan_type_code')->get();
     }
 }

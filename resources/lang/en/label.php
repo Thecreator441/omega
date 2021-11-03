@@ -108,7 +108,7 @@ return [
 	'max_amt' => 'Max Amount',
     'rejloan' => 'Rejected Loans',
 	'inst_pen_day_space' => 'Installment Day Diff & Pen',
-    'int_paid_acc' => 'Interest Paid Account',
+    'int_paid_acc' => 'Interest Account',
 	'loan_accc' => 'Loan Account Chart',
     'loan_acc' => 'Loan Account',
 	'seicomaker' => $member . ' Avaliste Account Seizure',
@@ -549,6 +549,7 @@ return [
     'paid_checks' => 'Paid Checks',
     'unpaid_checks' => 'Unpaid Checks',
     'drop_checks' => 'Dropped Checks',
+    'accr_paid_acc' => 'Accrual Account',
 
 
 

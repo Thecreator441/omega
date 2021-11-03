@@ -229,7 +229,7 @@ return [
 	'max_dur' => 'Durée Max',
 	'max_amt' => 'Montant Max',
 	'inst_pen_day_space' => 'Écart Jour Éch et Pén',
-	'int_paid_acc' => 'Compte Paiement Intérêt',
+	'int_paid_acc' => 'Compte Intérêt',
 	'loan_accc' => 'Schema Compte Prêt',
     'loan_acc' => 'Compte Prêt',
 	'seicomaker' => 'Saisie Compte Avalistes ' . $member,
@@ -543,6 +543,7 @@ return [
     'paid_checks' => 'Chèques Payés',
     'unpaid_checks' => 'Chèques Impayés',
     'drop_checks' => 'Chèques Déposés',
+	'int_accr_acc' => 'Compte Accrual',
 
 
 

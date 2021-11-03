@@ -34,6 +34,11 @@ return [
     */
 
     'channels' => [
+        'database' => [
+            'driver' => 'custom',
+            'via' => danielme85\LaravelLogToDB\LogToDbHandler::class
+        ],
+        
         'stack' => [
             'driver' => 'stack',
             'channels' => ['daily'],

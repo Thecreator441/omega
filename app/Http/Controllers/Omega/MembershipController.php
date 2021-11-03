@@ -24,20 +24,14 @@ class MembershipController extends Controller
 {
     public function index()
     {
-        if (dateOpen()) {
-            if (cashOpen()) {
-                $emp = Session::get('employee');
-                $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
-                $registers = Register::getRegisters();
-                $moneys = Money::getMoneys();
-                $mem_sets = MemSetting::getMemSettings();
-                $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+        $emp = Session::get('employee');
+        $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
+        $registers = Register::getRegisters();
+        $moneys = Money::getMoneys();
+        $mem_sets = MemSetting::getMemSettings();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-                return view('omega.pages.membership', compact('menu', 'registers', 'cash', 'moneys', 'mem_sets'));
-            }
-            return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
-        }
-        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+        return view('omega.pages.membership', compact('menu', 'registers', 'cash', 'moneys', 'mem_sets'));
     }
 
     public function store()
@@ -47,13 +41,6 @@ class MembershipController extends Controller
             
             $emp = Session::get('employee');
 
-            if (!dateOpen()) {
-                return Redirect::back()->with('danger', trans('alertDanger.opdate'));
-                if (!cashOpen()) {
-                    return Redirect::back()->with('danger', trans('alertDanger.opencash'));   
-                }
-            }
-            
             $idreg = Request::input('register');
             $memnumb = 1;
 

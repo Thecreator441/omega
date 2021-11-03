@@ -23,32 +23,20 @@ class AccDate extends Model
     }
 
     /**
+     * @param array $where
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getAccDateBy(array $where)
+    {
+        return self::query()->where($where)->first();
+    }
+
+    /**
      * @param int|null $branch
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
     public static function getOpenAccDate(int $branch = null)
     {
-        /*
-		$emp = Session::get('employee');
-
-        if ($branch === null) {
-            return self::query()->where('status', 'O')
-                ->where(static function ($query) use ($emp) {
-                    if ($emp->level === 'B') {
-                        $query->where('acc_dates.branch', $emp->branch);
-                    }
-                    if ($emp->level === 'I') {
-                        $query->where('acc_dates.institution', $emp->institution);
-                    }
-                    if ($emp->level === 'Z') {
-                        $query->where('acc_dates.zone', $emp->zone);
-                    }
-                    if ($emp->level === 'N') {
-                        $query->where('acc_dates.network', $emp->network);
-                    }
-                })->first();
-        }
-*/
         return self::query()->where([
             'status' => 'O',
             'branch' => $branch
@@ -58,25 +46,12 @@ class AccDate extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public static function getCloseAccDate()
+    public static function getCloseAccDate(int $branch = null)
     {
-        $emp = Session::get('employee');
-
-        return self::query()->where('status', 'C')
-            ->where(static function ($query) use ($emp) {
-                if ($emp->level === 'B') {
-                    $query->where('acc_dates.branch', $emp->branch);
-                }
-                if ($emp->level === 'I') {
-                    $query->where('acc_dates.institution', $emp->institution);
-                }
-                if ($emp->level === 'Z') {
-                    $query->where('acc_dates.zone', $emp->zone);
-                }
-                if ($emp->level === 'N') {
-                    $query->where('acc_dates.network', $emp->network);
-                }
-            })->first();
+        return self::query()->where([
+            'status' => 'C',
+            'branch' => $branch
+        ])->first();
     }
 
 }

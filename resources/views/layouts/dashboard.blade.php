@@ -105,6 +105,9 @@ if ($emp->lang === 'fr') {
         <link rel="stylesheet" href="{{ asset('plugins/datatables/FixedHeader-3.1.6/css/fixedHeader.bootstrap.min.css') }}"/>
         <link rel="stylesheet" href="{{ asset('plugins/datatables/Responsive-2.2.3/css/responsive.bootstrap.min.css') }}"/>
 
+        <!-- printJS -->
+        <link href="{{ asset('plugins/printKS/css/print.min.css') }}" rel="stylesheet">
+
         <!-- Custom-->
         <link href="{{ asset('css/myStyle.css') }}" rel="stylesheet">
 
@@ -377,6 +380,9 @@ if ($emp->lang === 'fr') {
 
         <!-- Sisyphus -->
         <script src="{{ asset('plugins/sisyphus/sisyphus.min.js') }}"></script>
+
+        <!-- printJS -->
+        <script src="{{ asset('plugins/printJS/js/print.min.js') }}"></script>
 
         <!-- Custom -->
         <script src="{{ asset('js/myScript.js') }}"></script>
