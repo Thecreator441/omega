@@ -24,7 +24,7 @@ class VerifySessionPrivilege
                 if (verifPriv(Request::input("level"), Request::input("menu"), $emp->privilege)) {
                     return $next($request);
                 }
-                return Redirect::route('omega')->with('danger', trans('auth.unauthorised'));
+                return Redirect::back()->with('danger', trans('auth.unauthorised'));
             }
             return $next($request);
         }

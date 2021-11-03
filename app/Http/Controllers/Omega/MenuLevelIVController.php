@@ -62,7 +62,7 @@ class MenuLevelIVController extends Controller
             $main_menu->labelfr = ucwords(strtolower(Request::input('labelfr')));
             $main_menu->labeleng = ucwords(strtolower(Request::input('labeleng')));
             $main_menu->menu_3 = Request::input('menu_level_3');
-            $main_menu->level = Request::input('level');
+            $main_menu->level = Request::input('menu_level');
             $main_menu->view_icon = strtolower(Request::input('view_icon'));
             $main_menu->view_path = strtolower(Request::input('view_path'));
 // dd($main_menu);

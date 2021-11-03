@@ -1,4 +1,11 @@
-<?php $emp = Session::get('employee');
+<?php 
+$emp = Session::get('employee');
+
+$cash_out = null;
+if(Session::has('cash_out')) {
+    $cash_out = asset(Session::get('cash_out'));
+    // dd($cash_out);
+}
 
 $title = $menu->labeleng;
 if ($emp->lang == 'fr') {
@@ -198,6 +205,14 @@ if ($emp->lang == 'fr') {
 
 @section('script')
     <script>
+        $(document).ready(function () {
+            if ("{{$cash_out}}" !== '') {
+                window.alert("{{$cash_out}}");
+                //window.open("{{$cash_out}}");
+                printJS("{{$cash_out}}");
+            }
+        });
+
         $('#member').change(function () {
             if (!isNaN($(this).val())) {
                 $.ajax({

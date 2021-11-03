@@ -31,19 +31,13 @@ class CashInController extends Controller
 {
     public function index()
     {
-        if (dateOpen()) {
-            if (cashOpen()) {
-                $emp = Session::get('employee');
-                $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
-                $members = Member::getMembers(['members.memstatus' => 'A']);
-                $moneys = Money::getMoneys();
-                $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+        $emp = Session::get('employee');
+        $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
+        $members = Member::getMembers(['members.memstatus' => 'A']);
+        $moneys = Money::getMoneys();
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-                return view('omega.pages.cash_in', compact('menu', 'members', 'cash', 'moneys'));
-            }
-            return Redirect::route('omega')->with('danger', trans('alertDanger.opencash'));
-        }
-        return Redirect::route('omega')->with('danger', trans('alertDanger.opdate'));
+        return view('omega.pages.cash_in', compact('menu', 'members', 'cash', 'moneys'));
     }
 
     public function store()
@@ -52,13 +46,6 @@ class CashInController extends Controller
         try {
             DB::beginTransaction();
 
-            if (!dateOpen()) {
-                return Redirect::back()->with('danger', trans('alertDanger.opdate'));
-                if (!cashOpen()) {
-                    return Redirect::back()->with('danger', trans('alertDanger.opencash'));   
-                }
-            }
-            
             $emp = Session::get('employee');
 
             $writnumb = getWritNumb();
@@ -74,13 +61,13 @@ class CashInController extends Controller
             $amounts = Request::input('amounts');
             $represent = Request::input('represent');
 
-            // $loans = Request::input('loans');
-            // $ints = Request::input('ints');
-            // $pens = Request::input('pens');
-            // $accrs = Request::input('accrs');
-            // $totints = Request::input('totints');
-            // $intamts = Request::input('intamts');
-            // $loanamts = Request::input('loanamts');
+            $loans = Request::input('loans');
+            $ints = Request::input('ints');
+            $pens = Request::input('pens');
+            $accrs = Request::input('accrs');
+            $totints = Request::input('totints');
+            $intamts = Request::input('intamts');
+            $loanamts = Request::input('loanamts');
 
             $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
             $cash->mon1 += (int)trimOver(Request::input('B1'), ' ');
@@ -120,7 +107,7 @@ class CashInController extends Controller
             foreach ($accounts as $key => $account) {
                 $amount = (int)trimOver($amounts[$key], ' ');
 
-                if ($amount !== 0) {
+                if ($amount > 0) {
                     $writing = new Writing();
                     $writing->writnumb = $writnumb;
                     $writing->account = $account;
@@ -151,276 +138,236 @@ class CashInController extends Controller
                 }
             }
 
-            // if (isset($loans)) {
-            //     foreach ($loans as $key => $loan) {
-            //         $memLoan = Loan::getLoan($loan);
-            //         $loanType = LoanType::getLoanType($memLoan->loantype);
-            //         $memLoanAmt = (int)$memLoan->amount;
-            //         if ((int)$memLoan->refamt > 0) {
-            //             $memLoanAmt = (int)$memLoan->refamt;
-            //         }
+            if (isset($loans)) {
+                foreach ($loans as $key => $loan) {
+                    $memLoan = Loan::getLoan($loan);
+                    $loanType = LoanType::getLoanType($memLoan->loantype);
+                    // dd($loanType);
+                    $memLoanAmt = (int)$memLoan->amount;
+                    if ((int)$memLoan->refamt > 0) {
+                        $memLoanAmt = (int)$memLoan->refamt;
+                    }
 
-            //         $totints = (int)trimOver($totints[$key], ' ');
+                    $totints = (int)trimOver($totints[$key], ' ');
+                    $intAmt = (int)trimOver($intamts[$key], ' ');
+                    if ($intAmt > 0) {
+                        /**
+                         * Penalty Payment
+                         */
+                        $pen = (int)trimOver($pens[$key], ' ');
+                        if ((int)$pen > 0) {
+                            if ($pen > $intAmt) {
+                                $pen = $intAmt;
+                            }
 
-            //         if (!empty($intamts[$key]) && $intamts[$key] !== null && $intamts[$key] !== '0') {
-            //             $intAmt = (int)trimOver($intamts[$key], ' ');
+                            $writing = new Writing();
+                            $writing->writnumb = $writnumb;
+                            $writing->account = $loanType->pen_req_acc;
+                            $writing->mem_aux = Request::input('member');
+                            $writing->operation = $opera3->idoper;
+                            $writing->creditamt = $pen;
+                            $writing->accdate = $accdate->accdate;
+                            $writing->employee = $emp->iduser;
+                            $writing->cash = $cash->idcash;
+                            $writing->network = $emp->network;
+                            $writing->zone = $emp->zone;
+                            $writing->institution = $emp->institution;
+                            $writing->branch = $emp->branch;
+                            $writing->represent = $represent;
+                            $writing->writ_type = 'I';
+                            $writing->save();
 
-            //             /**
-            //              * Penalty Payment
-            //              */
-            //             $pen = (int)trimOver($pens[$key], ' ');
-            //             if ((int)$pen !== 0) {
-            //                 if ($pen > $intAmt) {
-            //                     $pen = $intAmt;
-            //                 }
+                            $penBal = Account::getAccount($loanType->pen_req_acc);
+                            $penBal->available += $pen;
+                            $penBal->update((array)$penBal);
 
-            //                 $writing = new Writing();
-            //                 $writing->writnumb = $writnumb;
-            //                 $writing->account = $loanType->penacc;
-            //                 $writing->mem_aux = Request::input('member');
-            //                 $writing->operation = $opera3->idoper;
-            //                 $writing->creditamt = $pen;
-            //                 $writing->accdate = $accdate->accdate;
-            //                 $writing->employee = $emp->iduser;
-            //                 $writing->cash = $cash->idcash;
-            //                 $writing->network = $emp->network;
-            //                 $writing->zone = $emp->zone;
-            //                 $writing->institution = $emp->institution;
-            //                 $writing->branch = $emp->branch;
-            //                 $writing->represent = $represent;
-            //                 $writing->writ_type = 'I';
-            //                 $writing->save();
+                            // if ($emp->lang === 'fr') {
+                            //     Log::info($opera3->labelfr);
+                            // } else {
+                            //     Log::info($opera3->labeleng);
+                            // }
+                        }
 
-            //                 $penBal = Account::getAccount($loanType->penacc);
-            //                 $penBal->available += $pen;
-            //                 $penBal->update((array)$penBal);
+                        $reste = $intAmt - $pen;
 
-            //                 if ($emp->lang === 'fr') {
-            //                     Log::info($opera3->labelfr);
-            //                 } else {
-            //                     Log::info($opera3->labeleng);
-            //                 }
-            //             }
+                        if ($reste > 0) {
+                            /**
+                             * Accrued Payment
+                             */
+                            $accr = (int)trimOver($accrs[$key], ' ');
+                            if ((int)$accr > 0) {
+                                if ($accr > $reste) {
+                                    $accr = $reste;
+                                }
 
-            //             $reste = $intAmt - $pen;
+                                $writing = new Writing();
+                                $writing->writnumb = $writnumb;
+                                $writing->account = $loanType->accr_paid_acc;
+                                $writing->mem_aux = Request::input('member');
+                                $writing->operation = $opera4->idoper;
+                                $writing->creditamt = $accr;
+                                $writing->accdate = $accdate->accdate;
+                                $writing->employee = $emp->iduser;
+                                $writing->cash = $cash->idcash;
+                                $writing->network = $emp->network;
+                                $writing->zone = $emp->zone;
+                                $writing->institution = $emp->institution;
+                                $writing->branch = $emp->branch;
+                                $writing->represent = $represent;
+                                $writing->writ_type = 'I';
+                                $writing->save();
 
-            //             if ($reste > 0) {
-            //                 /**
-            //                  * Accrued Payment
-            //                  */
-            //                 $accr = (int)trimOver($accrs[$key], ' ');
-            //                 if ((int)$accr !== 0) {
-            //                     if ($accr > $reste) {
-            //                         $accr = $reste;
-            //                     }
+                                $accrBal = Account::getAccount($loanType->accr_paid_acc);
+                                $accrBal->available += $accr;
+                                $accrBal->update((array)$accrBal);
 
-            //                     $writing = new Writing();
-            //                     $writing->writnumb = $writnumb;
-            //                     $writing->account = $loanType->accracc;
-            //                     $writing->mem_aux = Request::input('member');
-            //                     $writing->operation = $opera4->idoper;
-            //                     $writing->creditamt = $accr;
-            //                     $writing->accdate = $accdate->accdate;
-            //                     $writing->employee = $emp->iduser;
-            //                     $writing->cash = $cash->idcash;
-            //                     $writing->network = $emp->network;
-            //                     $writing->zone = $emp->zone;
-            //                     $writing->institution = $emp->institution;
-            //                     $writing->branch = $emp->branch;
-            //                     $writing->represent = $represent;
-            //                     $writing->writ_type = 'I';
-            //                     $writing->save();
+                                // if ($emp->lang === 'fr') {
+                                //     Log::info($opera4->labelfr);
+                                // } else {
+                                //     Log::info($opera4->labeleng);
+                                // }
+                            }
 
-            //                     $accrBal = Account::getAccount($loanType->accracc);
-            //                     $accrBal->available += $accr;
-            //                     $accrBal->update((array)$accrBal);
+                            $reste2 = $reste - $accr;
 
-            //                     if ($emp->lang === 'fr') {
-            //                         Log::info($opera4->labelfr);
-            //                     } else {
-            //                         Log::info($opera4->labeleng);
-            //                     }
-            //                 }
+                            if ($reste2 > 0) {
+                                /**
+                                 * Interest Payment
+                                 */
+                                $int = (int)trimOver($ints[$key], ' ');
+                                if ((int)$int > 0) {
+                                    if ($int > $reste2) {
+                                        $int = $reste2;
+                                    }
 
-            //                 $reste2 = $reste - $accr;
+                                    $writing = new Writing();
+                                    $writing->writnumb = $writnumb;
+                                    $writing->account = $loanType->int_paid_acc;
+                                    $writing->mem_aux = Request::input('member');
+                                    $writing->operation = $opera2->idoper;
+                                    $writing->creditamt = $int;
+                                    $writing->accdate = $accdate->accdate;
+                                    $writing->employee = $emp->iduser;
+                                    $writing->cash = $cash->idcash;
+                                    $writing->network = $emp->network;
+                                    $writing->zone = $emp->zone;
+                                    $writing->institution = $emp->institution;
+                                    $writing->branch = $emp->branch;
+                                    $writing->represent = $represent;
+                                    $writing->writ_type = 'I';
+                                    $writing->save();
 
-            //                 if ($reste2 > 0) {
-            //                     /**
-            //                      * Interest Payment
-            //                      */
-            //                     $int = (int)trimOver($ints[$key], ' ');
-            //                     if ((int)$int !== 0) {
-            //                         if ($int > $reste2) {
-            //                             $int = $reste2;
-            //                         }
+                                    $intBal = Account::getAccount($loanType->int_paid_acc);
+                                    $intBal->available += $int;
+                                    $intBal->update((array)$intBal);
 
-            //                         $writing = new Writing();
-            //                         $writing->writnumb = $writnumb;
-            //                         $writing->account = $loanType->intacc;
-            //                         $writing->mem_aux = Request::input('member');
-            //                         $writing->operation = $opera2->idoper;
-            //                         $writing->creditamt = $int;
-            //                         $writing->accdate = $accdate->accdate;
-            //                         $writing->employee = $emp->iduser;
-            //                         $writing->cash = $cash->idcash;
-            //                         $writing->network = $emp->network;
-            //                         $writing->zone = $emp->zone;
-            //                         $writing->institution = $emp->institution;
-            //                         $writing->branch = $emp->branch;
-            //                         $writing->represent = $represent;
-            //                         $writing->writ_type = 'I';
-            //                         $writing->save();
+                                    // if ($emp->lang === 'fr') {
+                                    //     Log::info($opera2->labelfr);
+                                    // } else {
+                                    //     Log::info($opera2->labeleng);
+                                    // }
+                                }
+                            }
+                        }
+                        if ($totints >= $intAmt) {
+                            $memLoan->accramt = $totints - $intAmt;
+                        }
+                    } else {
+                        $memLoan->accramt = $totints;
+                    }
 
-            //                         $intBal = Account::getAccount($loanType->intacc);
-            //                         $intBal->available += $int;
-            //                         $intBal->update((array)$intBal);
+                    $loanAmt = (int)trimOver($loanamts[$key], ' ');
+                    if ($loanAmt > 0) {
+                        /**
+                         * Reimbursement of Loan
+                         */
+                        $writing = new Writing();
+                        $writing->writnumb = $writnumb;
+                        $writing->mem_aux = Request::input('member');
+                        $writing->account = $loanType->loan_acc;
+                        $writing->operation = $opera1->idoper;
+                        $writing->creditamt = $loanAmt;
+                        $writing->accdate = $accdate->accdate;
+                        $writing->employee = $emp->iduser;
+                        $writing->cash = $cash->idcash;
+                        $writing->network = $emp->network;
+                        $writing->zone = $emp->zone;
+                        $writing->institution = $emp->institution;
+                        $writing->branch = $emp->branch;
+                        $writing->represent = $represent;
+                        $writing->writ_type = 'I';
+                        $writing->save();
 
-            //                         if ($emp->lang === 'fr') {
-            //                             Log::info($opera2->labelfr);
-            //                         } else {
-            //                             Log::info($opera2->labeleng);
-            //                         }
-            //                     }
-            //                 }
-            //             }
-            //             if ($totints >= $intAmt) {
-            //                 $memLoan->accramt = $totints - $intAmt;
-            //             }
-            //         } else {
-            //             $memLoan->accramt = $totints;
-            //         }
+                        if ($memLoan->guarantee === 'F' || $memLoan->guarantee === 'F&M') {
+                            $comakers = $memLoan->comakers;
 
-            //         if (!empty($loanamts[$key]) && $loanamts[$key] !== null && $loanamts[$key] !== '0') {
-            //             $loanAmt = (int)trimOver($loanamts[$key], ' ');
+                            if ((int)$comakers->count() > 0) {
+                                $comakersSum = Comaker::getComakersSum(['loan' => $memLoan->idloan]);
+                                $comakersPaidSum = Comaker::getComakersPaidSum(['loan' => $memLoan->idloan]);
+                                if ((int)$comakersPaidSum !== 0) {
+                                    $comakersSum -= $comakersPaidSum;
+                                }
 
-            //             /**
-            //              * Reimbursement of Loan
-            //              */
-            //             $writing = new Writing();
-            //             $writing->writnumb = $writnumb;
-            //             $writing->mem_aux = Request::input('member');
-            //             $writing->account = $loanType->loanacc;
-            //             $writing->operation = $opera1->idoper;
-            //             $writing->creditamt = $loanAmt;
-            //             $writing->accdate = $accdate->accdate;
-            //             $writing->employee = $emp->iduser;
-            //             $writing->cash = $cash->idcash;
-            //             $writing->network = $emp->network;
-            //             $writing->zone = $emp->zone;
-            //             $writing->institution = $emp->institution;
-            //             $writing->branch = $emp->branch;
-            //             $writing->represent = $represent;
-            //             $writing->writ_type = 'I';
-            //             $writing->save();
+                                if ($comakersSum <= $loanAmt) {
+                                    foreach ($comakers as $comaker) {
+                                        $comaker->paidguar = $comaker->guaramt;
+                                        $comaker->status = 'C';
+                                        $comaker->update((array)$comaker);
+                                    }
+                                } else {
+                                    foreach ($comakers as $comaker) {
+                                        $comAmt = (int)$comaker->guaramt;
+                                        if ((int)$comaker->paidguar !== 0) {
+                                            $comAmt = (int)$comaker->paidguar;
+                                        }
 
-            //             if ($memLoan->guarantee === 'F') {
-            //                 $comakers = Comaker::getComakersDesc(['loan' => $memLoan->idloan]);
-            //                 $comakersSum = Comaker::getComakersSum(['loan' => $memLoan->idloan]);
-            //                 $comakersPaidSum = Comaker::getComakersPaidSum(['loan' => $memLoan->idloan]);
-            //                 if ((int)$comakersPaidSum !== 0) {
-            //                     $comakersSum -= $comakersPaidSum;
-            //                 }
+                                        $reste = $comAmt;
+                                        if ($comAmt < $loanAmt) {
+                                            $comaker->paidguar = $comAmt;
+                                            $comaker->status = 'C';
+                                            $loanAmt -= $comAmt;
+                                        } else {
+                                            $comaker->paidguar += $loanAmt;
+                                        }
+                                        $comaker->update((array)$comaker);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if ($memLoan->guarantee === 'M' || $memLoan->guarantee === 'F&M') {
+                            $mortgages = $memLoan->mortgages;
 
-            //                 if ($comakersSum <= $loanAmt) {
-            //                     foreach ($comakers as $comaker) {
-            //                         $comaker->paidguar = $comaker->guaramt;
-            //                         $comaker->status = 'C';
-            //                         $comaker->update((array)$comaker);
-            //                     }
-            //                 } else {
-            //                     foreach ($comakers as $comaker) {
-            //                         $comAmt = (int)$comaker->guaramt;
-            //                         if ((int)$comaker->paidguar !== 0) {
-            //                             $comAmt = (int)$comaker->paidguar;
-            //                         }
+                            if ((int)$mortgages->count() > 0) {
+                                $memPaidLoan = $memLoan->paidamt + $loanAmt;
+                                if ($memLoanAmt === (int)$memPaidLoan) {
+                                    foreach ($mortgages as $mortgage) {
+                                        $mortgage->status = 'C';
+                                        $mortgage->update((array)$mortgage);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        $memLoan->paidamt += $loanAmt;
+                        $memLoan->lastdate = getsDate(now());
+                        if ($memLoanAmt === (int)$memLoan->paidamt && (int)$memLoan->accramt === 0) {
+                            $memLoan->loanstat = 'C';
+                        }
+                        $memLoan->update((array)$memLoan);
 
-            //                         $reste = $comAmt;
-            //                         if ($comAmt < $loanAmt) {
-            //                             $comaker->paidguar = $comAmt;
-            //                             $comaker->status = 'C';
-            //                             $loanAmt -= $comAmt;
-            //                         } else {
-            //                             $comaker->paidguar += $loanAmt;
-            //                         }
-            //                         $comaker->update((array)$comaker);
-            //                     }
-            //                 }
-            //             }
-            //             if ($memLoan->guarantee === 'M') {
-            //                 $loanMortgages = Mortgage::getMortgages($memLoan->idloan);
-            //                 $memPaidLoan = $memLoan->paidamt + $loanAmt;
-            //                 if ($memLoanAmt === (int)$memPaidLoan) {
-            //                     foreach ($loanMortgages as $loanMortgage) {
-            //                         $loanMortgage->status = 'C';
-            //                         $loanMortgage->update((array)$loanMortgage);
-            //                     }
-            //                 }
-            //             }
-            //             if ($memLoan->guarantee === 'F&M') {
-            //                 $comakers = Comaker::getComakersDesc(['loan' => $memLoan->idloan]);
-            //                 if ($comakers !== null) {
-            //                     $comakersSum = Comaker::getComakersSum(['loan' => $memLoan->idloan]);
-            //                     $comakersPaidSum = Comaker::getComakersPaidSum(['loan' => $memLoan->idloan]);
-            //                     if ((int)$comakersPaidSum !== 0) {
-            //                         $comakersSum -= $comakersPaidSum;
-            //                     }
+                        $loanBal = Account::getAccount($loanType->loan_acc);
+                        $loanBal->available += $loanAmt;
+                        $loanBal->update((array)$loanBal);
 
-            //                     if ($comakersSum <= $loanAmt) {
-            //                         foreach ($comakers as $comaker) {
-            //                             $comaker->paidguar = $comaker->guaramt;
-            //                             $comaker->status = 'C';
-            //                             $comaker->update((array)$comaker);
-            //                         }
-            //                     } else {
-            //                         foreach ($comakers as $comaker) {
-            //                             $comAmt = (int)$comaker->guaramt;
-            //                             if ((int)$comaker->paidguar !== 0) {
-            //                                 $comAmt = (int)$comaker->paidguar;
-            //                             }
-
-            //                             if ($comAmt < $loanAmt) {
-            //                                 $comaker->paidguar = $comAmt;
-            //                                 $comaker->status = 'C';
-            //                                 $loanAmt -= $comAmt;
-            //                             } else {
-            //                                 $comaker->paidguar += $loanAmt;
-            //                             }
-            //                             $comaker->update((array)$comaker);
-            //                         }
-            //                     }
-            //                 }
-
-            //                 $loanMortgages = Mortgage::getMortgages($memLoan->idloan);
-            //                 if ($loanMortgages !== null) {
-            //                     $memPaidLoan = $memLoan->paidamt + $loanAmt;
-            //                     if ($memLoanAmt === (int)$memPaidLoan) {
-            //                         foreach ($loanMortgages as $loanMortgage) {
-            //                             $loanMortgage->status = 'C';
-            //                             $loanMortgage->update((array)$loanMortgage);
-            //                         }
-            //                     }
-            //                 }
-            //             }
-
-            //             $memLoan->paidamt += $loanAmt;
-            //             $memLoan->lastdate = getsDate(now());
-            //             if ($memLoanAmt === (int)$memLoan->paidamt && (int)$memLoan->accramt === 0) {
-            //                 $memLoan->loanstat = 'C';
-            //             }
-            //             $memLoan->update((array)$memLoan);
-
-            //             $loanBal = Account::getAccount($loanType->loanacc);
-            //             $loanBal->available += $loanAmt;
-            //             $loanBal->update((array)$loanBal);
-
-            //             if ($emp->lang === 'fr') {
-            //                 Log::info($opera1->labelfr);
-            //             } else {
-            //                 Log::info($opera1->labeleng);
-            //             }
-            //         }
-            //     }
-            // }
+                        // if ($emp->lang === 'fr') {
+                        //     Log::info($opera1->labelfr);
+                        // } else {
+                        //     Log::info($opera1->labeleng);
+                        // }
+                    }
+                }
+            }
 
             // if ($emp->lang === 'fr') {
             //     Log::info($opera1->labelfr);
