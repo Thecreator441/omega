@@ -544,6 +544,10 @@ return [
     'unpaid_checks' => 'Chèques Impayés',
     'drop_checks' => 'Chèques Déposés',
 	'int_accr_acc' => 'Compte Accrual',
+    'input_tax' => 'Tax',
+    'input_sms' => 'SMS',
+    'printed_by' => 'Imprimé Par',
+    'tellersign' => 'Signature Caissiere',
 
 
 

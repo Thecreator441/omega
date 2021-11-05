@@ -15,7 +15,7 @@ if ($emp->lang == 'fr')
             <h3 class="box-title text-bold"> @lang('label.inst_param') </h3>
         </div>
         <div class="box-body">
-            <form action="{{ url('institution/store') }}" method="post" role="form" id="cinForm" class="needs-validation">
+            <form action="{{ url('institution_param/store') }}" method="post" role="form" id="cinForm" class="needs-validation">
                 {{ csrf_field() }}
 
                 @if($param === null)

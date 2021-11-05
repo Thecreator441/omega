@@ -21,10 +21,7 @@ class InstitutionController extends Controller
     public function index()
     {
         $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
-
+        
         $networks = Network::getNetworks();
         $zones = Zone::getZones();
         $institutions = Institution::getInstitutions();
@@ -67,7 +64,7 @@ class InstitutionController extends Controller
             }
 
             if (Request::hasFile('profile')) {
-                $reference = $network . '' . $zone . '' . $last_id;
+                $reference = pad($network, 2) . '' . pad($zone, 2) . '' . pad($last_id, 3);
                 $pic = Request::file('profile');
                 $logo = $reference . '.' . $pic->getClientOriginalExtension();
 
@@ -96,9 +93,10 @@ class InstitutionController extends Controller
             $inst->town = Request::input('town');
             $inst->address = Request::input('address');
             $inst->postcode = Request::input('postal');
-            $inst->strategy = Request::input('strategy');
-            $inst->comm_remove = Request::input('comm_remove');
+            // $inst->strategy = Request::input('strategy');
+            // $inst->comm_remove = Request::input('comm_remove');
             $inst->input_tax = Request::input('input_tax');
+            $inst->input_sms = Request::input('input_sms');
 
             if ($idinst === null) {
                 $inst->save();

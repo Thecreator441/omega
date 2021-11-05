@@ -550,6 +550,11 @@ return [
     'unpaid_checks' => 'Unpaid Checks',
     'drop_checks' => 'Dropped Checks',
     'accr_paid_acc' => 'Accrual Account',
+    'input_tax' => 'Tax',
+    'input_sms' => 'SMS',
+    'printed_by' => 'Printed By',
+    'tellersign' => 'Teller Signature',
+
 
 
 
