@@ -170,7 +170,7 @@ return [
 	'bank' => 'Banque',
 	'carrier' => 'Porteur',
 	'memotacc' => 'Autre Compte Membre',
-	'entitle' => 'Entitle',
+	'entitle' => 'Titre',
 	'fines' => 'Amande',
 	'finint' => 'Intérêt Amande',
 	'fees' => 'Frais',
@@ -548,6 +548,7 @@ return [
     'input_sms' => 'SMS',
     'printed_by' => 'Imprimé Par',
     'tellersign' => 'Signature Caissiere',
+    'num' => 'Nombre',
 
 
 

@@ -9,14 +9,14 @@ use Illuminate\Support\Facades\Session;
 
 $emp = Session::get('employee');
 $title = env('APP_NAME');
-$logo = base_path('storage/logos/logo.png');
+$logo = public_path('storage/logos/logo.png');
 $printed_by = trans('label.printed_by');
 $date = trans('label.date');
 $oper = trans('label.opera');
 
 $operation = null;
 if (Session::has('operation')) {
-    $operation = Session::get('operation');
+    $operation = "Operation : " . Session::get('operation');
 }
 
 if ($emp->level === 'B') {
@@ -25,7 +25,7 @@ if ($emp->level === 'B') {
     $zone = Zone::getZone($emp->zone);
     $network = Network::getNetwork($emp->network);
     $title = $branch->name;
-    $logo = base_path('storage/logos/' . $institution->logo);
+    $logo = public_path('storage/logos/' . $institution->logo);
 }
 
 if ($emp->level === 'I') {
@@ -34,7 +34,7 @@ if ($emp->level === 'I') {
     $zone = Zone::getZone($emp->zone);
     $network = Network::getNetwork($emp->network);
     $title = $institution->abbr;
-    $logo = base_path('storage/logos/' . $institution->logo);
+    $logo = public_path('storage/logos/' . $institution->logo);
 }
 
 if ($emp->level === 'Z') {
@@ -44,7 +44,7 @@ if ($emp->level === 'Z') {
     $network = Network::getNetwork($emp->network);
     $title = $zone->name;
     if ($institution !== null) {
-        $logo = base_path('storage/logos/' . $institution->logo);
+        $logo = public_path('storage/logos/' . $institution->logo);
     }
 }
 
@@ -55,7 +55,7 @@ if ($emp->level === 'N') {
     $network = Network::getNetwork($emp->network);
     $title = $network->abbr;
     if ($institution !== null) {
-        $logo = base_path('storage/logos/' . $institution->logo);
+        $logo = public_path('storage/logos/' . $institution->logo);
     }
 }
 ?>
@@ -72,14 +72,16 @@ if ($emp->level === 'N') {
 
     <style>
         html {
-            font-family: Arial;
+            font-family: 'arial';
             -webkit-text-size-adjust: 100%;
             -ms-text-size-adjust: 100%
-            font-size: 10px !important;
+            font-size: 8px !important;
         }
 
         body {
-            margin: 0
+            margin: 0;
+            font-family: 'arial' !important;
+            font-size: 8px !important;
         }
 
         article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
@@ -1409,13 +1411,13 @@ if ($emp->level === 'N') {
         }
 
         html {
-            font-size: 10px;
+            font-size: 8px;
             -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
         }
 
         body {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 14px;
+            font-size: 8px;
             line-height: 1.42857143;
             color: #333;
             background-color: #fff
@@ -1475,7 +1477,9 @@ if ($emp->level === 'N') {
         }
 
         .img-circle {
-            border-radius: 50%
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
         }
 
         hr {
@@ -7292,67 +7296,80 @@ if ($emp->level === 'N') {
     </style>
 </head>
 
-<body style="background: white">
-    <div class="row">
-        <table class="table no-padding table-condensed">
-            <thead>
-                <tr>
-                    <td class="text-center">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <strong>{{ $network->abbr }}</strong>
-                                <div class="help-block text-muted">
-                                    {{ $network->email }}
-                                </div>
+<body style="background: white; font-fanily: 'arial' !important; font-size: 7px !important">
+    <table class="table no-padding table-condensed">
+        <thead>
+            <tr>
+                <td class="text-center" style="width: 33%">
+                    {{-- <div class="row">
+                        <div class="col-md-12">
+                            <strong>{{ $network->abbr }}</strong>
+                            <div class="help-block text-muted">
+                                {{ $network->email }}
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <strong>{{ $zone->name }}</strong>
-                                <div class="help-block text-muted">
-                                    {{ $zone->email }}
-                                </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <strong>{{ $zone->name }}</strong>
+                            <div class="help-block text-muted">
+                                {{ $zone->email }}
                             </div>
                         </div>
-                    </td>
-                    <td class="text-center">
-                        <img src="{{ $logo }}" class="img-circle" alt="{{ $title }}">
-                    </td>
-                    <td class="text-center">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <strong>{{ $institution->abbr }}</strong>
-                                <div class="help-block text-muted">
-                                    {{ $institution->email }}
-                                </div>
+                    </div> --}}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="text-bold">{{ $institution->abbr }}</div>
+                            <small class="text-muted">{{ $institution->email }}</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="text-bold">{{ $branch->name }}</div>
+                            <small class="text-muted">{{ $branch->email }}</small>
+                         </div>
+                    </div>
+                </td>
+                </td>
+                <td class="text-center" style="width: 34%">
+                    <img src="{{ $logo }}" class="img-circle" alt="{{ $title }}">
+                </td>
+                <td class="text-center" style="width: 33%">
+                    <div class="row">
+                        <div class="col-md-12 help-block">
+                            {{ $operation }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 help-block">
+                            {{ $printed_by }} : {{ $emp->name }} {{ $emp->surname }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 help-block">
+                            {{ $date }} : {{ \Carbon\Carbon::now()->format("d/m/Y") }}
+                        </div>
+                    </div>
+                    {{-- <div class="row">
+                        <div class="col-md-12">
+                            <strong>{{ $institution->abbr }}</strong>
+                            <div class="help-block text-muted">
+                                {{ $institution->email }}
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <strong>{{ $branch->name }}</strong>
-                                <div class="help-block text-muted">
-                                    {{ $branch->email }}
-                                </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <strong>{{ $branch->name }}</strong>
+                            <div class="help-block text-muted">
+                                {{ $branch->email }}
                             </div>
                         </div>
-                    </td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th class="text-center">
-                        {{ $printed_by }} : {{ $emp->name }} {{ $emp->surname }}
-                    </th>
-                    <th class="text-center">
-                        {{ $oper }} : {{ $operation }}
-                    </th>
-                    <th class="text-center">
-                        {{ $date }} : {{ \Carbon\Carbon::now()->format("d/m/Y") }}
-                    </th>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                    </div> --}}
+                </td>
+            </tr>
+        </thead>
+    </table>
 
     @yield('content')
 </body>

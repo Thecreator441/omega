@@ -554,6 +554,7 @@ return [
     'input_sms' => 'SMS',
     'printed_by' => 'Printed By',
     'tellersign' => 'Teller Signature',
+    'num' => 'Number',
 
 
 
