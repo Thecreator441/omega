@@ -21,6 +21,25 @@ if ($emp->lang == 'fr') {
                 <td style="width: 80%">
                     <table class="table no-padding table-condensed">
                         <thead>
+                            <tr>
+                                <td class="text-bold">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            @lang('label.refer') : {{ $userCash->writnumb }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            @lang('label.member') : {{ $member->name }} {{ $member->surname }}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
+
+                    <table class="table no-padding table-condensed">
+                        <thead>
                             <tr class="text-bold text-center">
                                 <th>@lang('label.account')</th>
                                 <th>@lang('label.entitle')</th>
@@ -57,7 +76,7 @@ if ($emp->lang == 'fr') {
                             <tr class="text-bold text-center">
                                 <th>@lang('label.value')</th>
                                 <th>@lang('label.num')</th>
-                                <th> @lang('label.amount')</th>
+                                <th>@lang('label.amount')</th>
                             </tr>
                         </thead>
                         <tbody>

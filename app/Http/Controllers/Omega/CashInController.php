@@ -20,12 +20,14 @@ use App\Models\Money;
 use App\Models\Mortgage;
 use App\Models\Operation;
 use App\Models\Priv_Menu;
+use App\Models\ReceiptPrint;
 use App\Models\Writing;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use PDF;
 
 class CashInController extends Controller
 {
@@ -47,14 +49,17 @@ class CashInController extends Controller
             DB::beginTransaction();
 
             $emp = Session::get('employee');
-
+            
             $writnumb = getWritNumb();
             $accdate = AccDate::getOpenAccDate();
-            
-            $opera1 = Operation::getByCode(54);
-            $opera2 = Operation::getByCode(55);
-            $opera3 = Operation::getByCode(56);
-            $opera4 = Operation::getByCode(57);
+            $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
+            $operation = Operation::getOperation(Request::input('menu_level_operation'));
+            $member = Member::getMember(Request::input('member'));
+
+            $opera1 = Operation::getByCode(48);
+            $opera2 = Operation::getByCode(49);
+            $opera3 = Operation::getByCode(50);
+            $opera4 = Operation::getByCode(51);
 
             $accounts = Request::input('accounts');
             $operations = Request::input('operations');
@@ -69,7 +74,6 @@ class CashInController extends Controller
             $intamts = Request::input('intamts');
             $loanamts = Request::input('loanamts');
 
-            $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
             $cash->mon1 += (int)trimOver(Request::input('B1'), ' ');
             $cash->mon2 += (int)trimOver(Request::input('B2'), ' ');
             $cash->mon3 += (int)trimOver(Request::input('B3'), ' ');
@@ -104,6 +108,7 @@ class CashInController extends Controller
             $cashBal->available += (int)trimOver(Request::input('totrans'), ' ');
             $cashBal->update((array)$cashBal);
 
+            $accs = [];
             foreach ($accounts as $key => $account) {
                 $amount = (int)trimOver($amounts[$key], ' ');
 
@@ -129,20 +134,35 @@ class CashInController extends Controller
                     $memBal->available += $amount;
                     $memBal->update((array)$memBal);
 
-                    // $oper = Operation::getOperation($operations[$key]);
-                    // if ($emp->lang === 'fr') {
-                    //     Log::info($oper->labelfr);
-                    // } else {
-                    //     Log::info($oper->labeleng);
-                    // }
+                    $oper = Operation::getOperation($operations[$key]);
+                    if ($emp->lang === 'fr') {
+                        Log::info($oper->labelfr);
+                    } else {
+                        Log::info($oper->labeleng);
+                    }
+
+                    $acc = [];
+
+                    $acc['amount'] = (int)trimOver($amounts[$key], ' ');
+                    $accBal = MemBalance::getMemAcc(Request::input('member'), $account);
+                    $acc['balance'] = (int)$accBal->available;
+
+                    $accInfo = Account::getAccount($account);
+                    $acc['accnumb'] = $accInfo->accnumb;
+                    $acc['entitle'] = $operation->labeleng . ' ' . $accInfo->labeleng;
+                    if ($emp->lang === 'fr') {
+                        $acc['entitle'] = $operation->labelfr . ' ' . $accInfo->labelfr;
+                    }
+
+                    $accs[] = $acc;
                 }
             }
 
             if (isset($loans)) {
                 foreach ($loans as $key => $loan) {
-                    $memLoan = Loan::getLoan($loan);
+                    $memLoan = Loan::getCashInLoan($loan);
                     $loanType = LoanType::getLoanType($memLoan->loantype);
-                    // dd($loanType);
+                    
                     $memLoanAmt = (int)$memLoan->amount;
                     if ((int)$memLoan->refamt > 0) {
                         $memLoanAmt = (int)$memLoan->refamt;
@@ -181,11 +201,24 @@ class CashInController extends Controller
                             $penBal->available += $pen;
                             $penBal->update((array)$penBal);
 
-                            // if ($emp->lang === 'fr') {
-                            //     Log::info($opera3->labelfr);
-                            // } else {
-                            //     Log::info($opera3->labeleng);
-                            // }
+                            if ($emp->lang === 'fr') {
+                                Log::info($opera3->labelfr);
+                            } else {
+                                Log::info($opera3->labeleng);
+                            }
+
+                            $acc = [];
+
+                            $acc['amount'] = (int)$pen;
+                            $accInfo = Account::getAccount($loanType->pen_req_acc);
+                            $acc['balance'] = 0;
+                            $acc['accnumb'] = $accInfo->accnumb;
+                            $acc['entitle'] = $operation->labeleng . ' ' . $opera3->labeleng;
+                            if ($emp->lang === 'fr') {
+                                $acc['entitle'] = $operation->labelfr . ' ' . $opera3->labelfr;
+                            }
+
+                            $accs[] = $acc;
                         }
 
                         $reste = $intAmt - $pen;
@@ -221,11 +254,24 @@ class CashInController extends Controller
                                 $accrBal->available += $accr;
                                 $accrBal->update((array)$accrBal);
 
-                                // if ($emp->lang === 'fr') {
-                                //     Log::info($opera4->labelfr);
-                                // } else {
-                                //     Log::info($opera4->labeleng);
-                                // }
+                                if ($emp->lang === 'fr') {
+                                    Log::info($opera4->labelfr);
+                                } else {
+                                    Log::info($opera4->labeleng);
+                                }
+
+                                $acc = [];
+
+                                $acc['amount'] = (int)$accr;
+                                $accInfo = Account::getAccount($loanType->accr_paid_acc);
+                                $acc['balance'] = 0;
+                                $acc['accnumb'] = $accInfo->accnumb;
+                                $acc['entitle'] = $operation->labeleng . ' ' . $opera4->labeleng;
+                                if ($emp->lang === 'fr') {
+                                    $acc['entitle'] = $operation->labelfr . ' ' . $opera4->labelfr;
+                                }
+
+                                $accs[] = $acc;
                             }
 
                             $reste2 = $reste - $accr;
@@ -261,11 +307,24 @@ class CashInController extends Controller
                                     $intBal->available += $int;
                                     $intBal->update((array)$intBal);
 
-                                    // if ($emp->lang === 'fr') {
-                                    //     Log::info($opera2->labelfr);
-                                    // } else {
-                                    //     Log::info($opera2->labeleng);
-                                    // }
+                                    if ($emp->lang === 'fr') {
+                                        Log::info($opera2->labelfr);
+                                    } else {
+                                        Log::info($opera2->labeleng);
+                                    }
+
+                                    $acc = [];
+
+                                    $acc['amount'] = (int)$int;
+                                    $accInfo = Account::getAccount($loanType->int_paid_acc);
+                                    $acc['balance'] = 0;
+                                    $acc['accnumb'] = $accInfo->accnumb;
+                                    $acc['entitle'] = $operation->labeleng . ' ' . $opera2->labeleng;
+                                    if ($emp->lang === 'fr') {
+                                        $acc['entitle'] = $operation->labelfr . ' ' . $opera2->labelfr;
+                                    }
+
+                                    $accs[] = $acc;
                                 }
                             }
                         }
@@ -299,7 +358,7 @@ class CashInController extends Controller
                         $writing->save();
 
                         if ($memLoan->guarantee === 'F' || $memLoan->guarantee === 'F&M') {
-                            $comakers = $memLoan->comakers;
+                            $comakers = Comaker::getComakers(['loan' => $memLoan->idloan]);
 
                             if ((int)$comakers->count() > 0) {
                                 $comakersSum = Comaker::getComakersSum(['loan' => $memLoan->idloan]);
@@ -336,9 +395,42 @@ class CashInController extends Controller
                         }
                         
                         if ($memLoan->guarantee === 'M' || $memLoan->guarantee === 'F&M') {
-                            $mortgages = $memLoan->mortgages;
+                            $mortgages = Mortgage::getMortgages(['loan' => $memLoan->idloan]);
 
                             if ((int)$mortgages->count() > 0) {
+                                /*
+                                    $mortgagesSum = Mortgage::getMortgagesSum(['loan' => $memLoan->idloan]);
+                                    $mortgagesPaidSum = Mortgage::getMortgagesPaidSum(['loan' => $memLoan->idloan]);
+                                    if ((int)$mortgagesPaidSum !== 0) {
+                                        $mortgagesSum -= $mortgagesPaidSum;
+                                    }
+
+                                    if ($mortgagesSum <= $loanAmt) {
+                                        foreach ($mortgages as $mortgage) {
+                                            $mortgage->paidmort = $mortgage->amount;
+                                            $mortgage->status = 'C';
+                                            $mortgage->update((array)$mortgage);
+                                        }
+                                    } else {
+                                        foreach ($comakers as $mortgage) {
+                                            $comAmt = (int)$mortgage->guaramt;
+                                            if ((int)$mortgage->paidguar !== 0) {
+                                                $comAmt = (int)$mortgage->paidguar;
+                                            }
+
+                                            $reste = $comAmt;
+                                            if ($comAmt < $loanAmt) {
+                                                $mortgage->paidguar = $comAmt;
+                                                $mortgage->status = 'C';
+                                                $loanAmt -= $comAmt;
+                                            } else {
+                                                $mortgage->paidguar += $loanAmt;
+                                            }
+                                            $mortgage->update((array)$mortgage);
+                                        }
+                                    }
+                                */
+
                                 $memPaidLoan = $memLoan->paidamt + $loanAmt;
                                 if ($memLoanAmt === (int)$memPaidLoan) {
                                     foreach ($mortgages as $mortgage) {
@@ -360,22 +452,89 @@ class CashInController extends Controller
                         $loanBal->available += $loanAmt;
                         $loanBal->update((array)$loanBal);
 
-                        // if ($emp->lang === 'fr') {
-                        //     Log::info($opera1->labelfr);
-                        // } else {
-                        //     Log::info($opera1->labeleng);
-                        // }
+                        if ($emp->lang === 'fr') {
+                            Log::info($opera1->labelfr);
+                        } else {
+                            Log::info($opera1->labeleng);
+                        }
+
+                        $acc = [];
+
+                        $acc['amount'] = (int)$loanAmt;
+                        $accInfo = Account::getAccount($loanType->loan_acc);
+                        $acc['balance'] = 0;
+                        $acc['accnumb'] = $accInfo->accnumb;
+                        $acc['entitle'] = $operation->labeleng . ' ' . $opera1->labeleng;
+                        if ($emp->lang === 'fr') {
+                            $acc['entitle'] = $operation->labelfr . ' ' . $opera1->labelfr;
+                        }
+
+                        $accs[] = $acc;
                     }
                 }
             }
 
-            // if ($emp->lang === 'fr') {
-            //     Log::info($opera1->labelfr);
-            // } else {
-            //     Log::info($opera1->labeleng);
-            // }
+            /***************************
+             ******** PRINTING ********
+            ***************************/
+            $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+            $moneys = Money::getMoneys();
+
+            $userCash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
+            $userCash->mon1 = (int)trimOver(Request::input('B1'), ' ');
+            $userCash->mon2 = (int)trimOver(Request::input('B2'), ' ');
+            $userCash->mon3 = (int)trimOver(Request::input('B3'), ' ');
+            $userCash->mon4 = (int)trimOver(Request::input('B4'), ' ');
+            $userCash->mon5 = (int)trimOver(Request::input('B5'), ' ');
+            $userCash->mon6 = (int)trimOver(Request::input('P1'), ' ');
+            $userCash->mon7 = (int)trimOver(Request::input('P2'), ' ');
+            $userCash->mon8 = (int)trimOver(Request::input('P3'), ' ');
+            $userCash->mon9 = (int)trimOver(Request::input('P4'), ' ');
+            $userCash->mon10 = (int)trimOver(Request::input('P5'), ' ');
+            $userCash->mon11 = (int)trimOver(Request::input('P6'), ' ');
+            $userCash->mon12 = (int)trimOver(Request::input('P7'), ' ');
+            $userCash->total = (int)trimOver(Request::input('totrans'), ' ');
+            $userCash->totalWord = Request::input('totalWord');
+            $userCash->writnumb = formWriting($accdate->accdate, $emp->network, $emp->zone, $emp->institution, $emp->branch, $writnumb);
+
+            $date = date("d.m.Y");
+            $time = date("H.i.s");
+            
+            $file_name = formWriting($accdate->accdate, $emp->network, $emp->zone, $emp->institution, $emp->branch, $writnumb) . "_{$date}_{$time}.pdf";
+
+            $file = "storage/files/printings/" . $file_name;
+            $pdf = PDF::loadView('omega.printings.cash_in', compact('accs', 'menu', 'moneys', 'userCash', 'member'))->setPaper([0, 0, 595.276, 420.94488], 'portrait');
+
+            if($pdf->save($file)) {
+                $print = new ReceiptPrint();
+
+                $print->print_no = 1;
+                $print->path = $file;
+                $print->file_name = $file_name;
+                $print->user = $emp->iduser;
+                $print->network = $emp->network;
+                $print->zone = $emp->zone;
+                $print->institution = $emp->institution;
+                $print->branch = $emp->branch;
+                $print->operation = Request::input('menu_level_operation');
+                $print->member = Request::input('member');
+
+                $print->save();
+            }
+
+            $opera = null;
+            if ($emp->lang === 'fr') {
+                $opera = $operation->labelfr;
+            } else {
+                $opera = $operation->labeleng;
+            }
+            Log::info($opera);
+
+            Session::flash('cash_in', $file);
+            Session::put('operation', $opera);
 
             DB::commit();
+
             return Redirect::back()->with('success', trans('alertSuccess.cash_in'));
         } catch (\Exception $ex) {
             dd($ex);

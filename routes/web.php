@@ -226,12 +226,14 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
         //    Temporal Journal, Journal and Transactions
         Route::prefix('temp_journal')->group(static function () {
             Route::get('/', 'Omega\TempJournalController@index')->name('temp_journal');
+            Route::get('print', 'Omega\TempJournalController@print')->name('temp_journal');
         });
         Route::prefix('journal')->group(static function () {
             Route::get('/', 'Omega\JournalController@index')->name('journal');
         });
         Route::prefix('transaction')->group(static function () {
             Route::get('/', 'Omega\TransactionController@index')->name('transaction');
+            Route::get('print', 'Omega\TransactionController@print')->name('transaction/print');
         });
 
         //  Accounting Day Closing ang Backup
@@ -1841,3 +1843,5 @@ Route::get('getJournals', static function () {
 Route::get('getValidJournals', static function () {
     return ValWriting::getValidJournals(Request::input('network'), Request::input('zone'), Request::input('institution'), Request::input('branch'), Request::input('user'), Request::input('state'), Request::input('from'), Request::input('to'), Request::input('lang'));
 });
+
+// Route::get('temp_journal/print', 'Omega\TempJournalController@print');

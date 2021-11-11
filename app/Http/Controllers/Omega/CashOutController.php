@@ -11,6 +11,7 @@ use App\Models\Member;
 use App\Models\Money;
 use App\Models\Operation;
 use App\Models\Priv_Menu;
+use App\Models\ReceiptPrint;
 use App\Models\Writing;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -43,6 +44,7 @@ class CashOutController extends Controller
             $accdate = AccDate::getOpenAccDate();
             $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
             $operation = Operation::getOperation(Request::input('menu_level_operation'));
+            $member = Member::getMember(Request::input('member'));
 
             $accounts = Request::input('accounts');
             $operations = Request::input('operations');
@@ -110,7 +112,9 @@ class CashOutController extends Controller
                 }
             }
 
-            // Printing
+            /***************************
+             ******** PRINTING ********
+            ***************************/
             $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
             $moneys = Money::getMoneys();
 
@@ -129,6 +133,7 @@ class CashOutController extends Controller
             $userCash->mon12 = (int)trimOver(Request::input('P7'), ' ');
             $userCash->total = (int)trimOver(Request::input('totrans'), ' ');
             $userCash->totalWord = Request::input('totalWord');
+            $userCash->writnumb = formWriting($accdate->accdate, $emp->network, $emp->zone, $emp->institution, $emp->branch, $writnumb);
 
             $accs = [];
             foreach ($accounts as $key => $account) {
@@ -158,10 +163,28 @@ class CashOutController extends Controller
 
             $date = date("d.m.Y");
             $time = date("H.i.s");
-            $file = "storage/files/printings/{$emp->name}_{$date}_{$time}.pdf";
-            $pdf = PDF::loadView('omega.printings.cash_out', compact('accs', 'menu', 'moneys', 'userCash'))->setPaper([0, 0, 595.276, 420.94488], 'portrait');
+            
+            $file_name = formWriting($accdate->accdate, $emp->network, $emp->zone, $emp->institution, $emp->branch, $writnumb) . "_{$date}_{$time}.pdf";
 
-            $pdf->save($file);
+            $file = "storage/files/printings/" . $file_name;
+            $pdf = PDF::loadView('omega.printings.cash_out', compact('accs', 'menu', 'moneys', 'userCash', 'member'))->setPaper([0, 0, 595.276, 420.94488], 'portrait');
+
+            if($pdf->save($file)) {
+                $print = new ReceiptPrint();
+
+                $print->print_no = 1;
+                $print->path = $file;
+                $print->file_name = $file_name;
+                $print->user = $emp->iduser;
+                $print->network = $emp->network;
+                $print->zone = $emp->zone;
+                $print->institution = $emp->institution;
+                $print->branch = $emp->branch;
+                $print->operation = Request::input('menu_level_operation');
+                $print->member = Request::input('member');
+
+                $print->save();
+            }
 
             $opera = null;
             if ($emp->lang === 'fr') {
@@ -171,10 +194,11 @@ class CashOutController extends Controller
             }
             Log::info($opera);
 
-            DB::commit();
             Session::flash('cash_out', $file);
             Session::put('operation', $opera);
 
+            DB::commit();
+            
             return Redirect::back()->with('success', trans('alertSuccess.cash_out'));
         } catch (\Exception $ex) {
             dd($ex);

@@ -381,16 +381,8 @@ if ($emp->lang === 'fr') {
         <!-- Sisyphus -->
         <script src="{{ asset('plugins/sisyphus/sisyphus.min.js') }}"></script>
 
-        <!-- printJS -->
-        <script src="{{ asset('plugins/printJS/js/print.min.js') }}"></script>
-
         <!-- Custom -->
         <script src="{{ asset('js/myScript.js') }}"></script>
-
-        <!-- Custom -->
-        <script src="{{ asset('plugins/jsPDF/jspdf.min.js') }}"></script>
-        <script src="{{ asset('plugins/jsPDF/jspdf.debug.js') }}"></script>
-        <script src="{{ asset('plugins/jsPDF/jspdf.plugin.autotable.js') }}"></script>
 
         <script>
             // let plat_param = JSON.parse(localStorage.getItem('plat_param'));

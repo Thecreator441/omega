@@ -8,16 +8,13 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 
 $emp = Session::get('employee');
+$operation = "Operation : " . Session::get('operation');
 $title = env('APP_NAME');
 $logo = public_path('storage/logos/logo.png');
 $printed_by = trans('label.printed_by');
 $date = trans('label.date');
 $oper = trans('label.opera');
-
-$operation = null;
-if (Session::has('operation')) {
-    $operation = "Operation : " . Session::get('operation');
-}
+$refer = trans('label.refer');
 
 if ($emp->level === 'B') {
     $branch = Branch::getBranch($emp->branch);
@@ -68,7 +65,7 @@ if ($emp->level === 'N') {
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
-    <title>{{ $title }} | @yield('title')</title>
+    <title>{{ $title }} | @yield('title') {{ \Carbon\Carbon::now()->format("d/m/Y") }}</title>
 
     <style>
         html {
@@ -7301,29 +7298,13 @@ if ($emp->level === 'N') {
         <thead>
             <tr>
                 <td class="text-center" style="width: 33%">
-                    {{-- <div class="row">
-                        <div class="col-md-12">
-                            <strong>{{ $network->abbr }}</strong>
-                            <div class="help-block text-muted">
-                                {{ $network->email }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <strong>{{ $zone->name }}</strong>
-                            <div class="help-block text-muted">
-                                {{ $zone->email }}
-                            </div>
-                        </div>
-                    </div> --}}
                     <div class="row">
                         <div class="col-md-12">
                             <div class="text-bold">{{ $institution->abbr }}</div>
                             <small class="text-muted">{{ $institution->email }}</small>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row help-block">
                         <div class="col-md-12">
                             <div class="text-bold">{{ $branch->name }}</div>
                             <small class="text-muted">{{ $branch->email }}</small>
@@ -7337,7 +7318,7 @@ if ($emp->level === 'N') {
                 <td class="text-center" style="width: 33%">
                     <div class="row">
                         <div class="col-md-12 help-block">
-                            {{ $operation }}
+                            @yield('title')
                         </div>
                     </div>
                     <div class="row">
@@ -7350,25 +7331,10 @@ if ($emp->level === 'N') {
                             {{ $date }} : {{ \Carbon\Carbon::now()->format("d/m/Y") }}
                         </div>
                     </div>
-                    {{-- <div class="row">
-                        <div class="col-md-12">
-                            <strong>{{ $institution->abbr }}</strong>
-                            <div class="help-block text-muted">
-                                {{ $institution->email }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <strong>{{ $branch->name }}</strong>
-                            <div class="help-block text-muted">
-                                {{ $branch->email }}
-                            </div>
-                        </div>
-                    </div> --}}
                 </td>
             </tr>
         </thead>
+        </tbody>
     </table>
 
     @yield('content')
