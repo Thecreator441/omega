@@ -224,19 +224,23 @@ if ($emp->lang == 'fr') {
                 </div>
 
                 <div class="row">
-                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-10 col-xs-12">
-                        <div class="form-group">
-                            <label for="user" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.user')</label>
-                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
-                                <select name="user" id="user" class="from-control select2">
-                                    <option value=""></option>
-                                    @foreach ($employees as $employee)
-                                        <option value="{{ $employee->employee }}">{{ $employee->name }} {{ $employee->surname }}</option>
-                                    @endforeach
-                                </select>
+                    @if ($emp->collector === null && ((int)$emp->code !== 1 && (int)$emp->code !== 2))
+                        <div class="col-xl-6 col-lg-6 col-md-8 col-sm-10 col-xs-12">
+                            <div class="form-group">
+                                <label for="user" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 control-label">@lang('label.user')</label>
+                                <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+                                    <select name="user" id="user" class="from-control select2">
+                                        <option value=""></option>
+                                        @foreach ($employees as $employee)
+                                            <option value="{{ $employee->employee }}">{{ $employee->name }} {{ $employee->surname }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @else
+                        <input type="hidden" name="user" id="user" value="{{ $emp->iduser }}">
+                    @endif
                     <div class="col-xl-6 col-lg-6 col-md-4 col-sm-2 col-xs-12">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <div class="form-group">
@@ -402,6 +406,7 @@ if ($emp->lang == 'fr') {
                     lang: "{{ $emp->lang }}"
                 },
                 success: function (file) {
+                    printJS(file);
                 }
             });
         });

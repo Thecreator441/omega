@@ -1839,9 +1839,7 @@ Route::get('getJournals', static function () {
     return Writing::getJournals(Request::input('network'), Request::input('zone'), Request::input('institution'), Request::input('branch'), Request::input('user'), Request::input('state'), Request::input('lang'));
 });
 
-//  Get Journals
+//  Get getValidJournals
 Route::get('getValidJournals', static function () {
     return ValWriting::getValidJournals(Request::input('network'), Request::input('zone'), Request::input('institution'), Request::input('branch'), Request::input('user'), Request::input('state'), Request::input('from'), Request::input('to'), Request::input('lang'));
 });
-
-// Route::get('temp_journal/print', 'Omega\TempJournalController@print');

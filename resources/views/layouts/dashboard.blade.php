@@ -381,6 +381,9 @@ if ($emp->lang === 'fr') {
         <!-- Sisyphus -->
         <script src="{{ asset('plugins/sisyphus/sisyphus.min.js') }}"></script>
 
+        <!-- printJS -->
+        <script src="{{ asset('plugins/printJS/js/print.min.js') }}"></script>
+
         <!-- Custom -->
         <script src="{{ asset('js/myScript.js') }}"></script>
 

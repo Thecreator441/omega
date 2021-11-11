@@ -198,6 +198,7 @@ if ($emp->lang == 'fr') {
         </div>
     </div>
 @stop
+
 @section('script')
     <script>
         $(document).ready(function () {

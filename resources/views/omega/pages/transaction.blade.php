@@ -239,21 +239,19 @@ if ($emp->lang == 'fr') {
                 @if ($emp->collector === null && ((int)$emp->code !== 1 && (int)$emp->code !== 2))
                     <div class="col-md-5">
                         <div class="form-group">
-                            @if ($emp->collector === null && ((int)$emp->code !== 1 && (int)$emp->code !== 2))
-                                <label for="user" class="col-md-3 control-label">@lang('label.user')</label>
-                                <div class="col-md-9">
-                                    <select name="user" id="user" class="from-control select2">
-                                        <option value=""></option>
-                                        @foreach ($employees as $employee)
-                                            <option value="{{$employee->iduser}}">{{$employee->username}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @else
-                                <input type="hidden" name="user" id="user" value="{{$emp->iduser}}">
-                            @endif
+                            <label for="user" class="col-md-3 control-label">@lang('label.user')</label>
+                            <div class="col-md-9">
+                                <select name="user" id="user" class="from-control select2">
+                                    <option value=""></option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->employee }}">{{ $employee->name }} {{ $employee->surname }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
+                @else
+                    <input type="hidden" name="user" id="user" value="{{ $emp->iduser }}">
                 @endif
             </div>
 
@@ -461,7 +459,7 @@ if ($emp->lang == 'fr') {
                     lang: "{{ $emp->lang }}"
                 },
                 success: function (file) {
-                    console.log(file);
+                    printJS(file);
                 }
             });
         });

@@ -22,54 +22,60 @@ class TransactionController extends Controller
     {
         $emp = Session::get('employee');
 
-        $cashes = null;
-        $employees = null;
-        $writings = null;
-        $credit = null;
-        $debit = null;
-
-        if ($emp->collector !== null || (int)$emp->code === 2) {
-            $cashes = Cash::getEmpCashOpen();
-            $writings = ValWriting::getValJournal(['writings.employee' => $emp->iduser]);
-            $debit = ValWriting::getSumDebit(['writings.employee' => $emp->iduser]);
-            $credit = ValWriting::getSumCredit(['writings.employee' => $emp->iduser]);
-        } else {
-            $cashes = Cash::getCashes();
-            $employees = ValWriting::getEmployees();
-            $writings = ValWriting::getValJournal();
-            $debit = ValWriting::getSumDebit();
-            $credit = ValWriting::getSumCredit();
+        $cash = Cash::getCashBy(['cashes.status' => 'O', 'cashes.employee' => $emp->iduser]);
+        $writings = ValWriting::getValJournal();
+        $debit = ValWriting::getSumDebit();
+        $credit = ValWriting::getSumCredit();
+        if ($cash !== null) {
+            if ($cash->view_other_tills === 'N') {
+                $writings = ValWriting::getValJournal(['val_writings.employee' => $emp->iduser]);
+                $debit = ValWriting::getSumDebit(['val_writings.employee' => $emp->iduser]);
+                $credit = ValWriting::getSumCredit(['val_writings.employee' => $emp->iduser]);
+            }
         }
-
-        $collectors = Collector::getCollectorsCash();
-        $accounts = Account::getAccounts();
-        $operas = Operation::getOperations();
-        $members = Member::getMembers();
-        $coll_members = Collect_Mem::getMembers();
+        
+        $employees = Cash::getCashes();
         $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
 
-        return view('omega.pages.transaction', compact(
-            'writings',
-            'debit',
-            'credit',
-            'accounts',
-            'cashes',
-            'employees',
-            'operas',
-            'members',
-            'collectors',
-            'coll_members',
-            'menu'
-        ));
+        foreach ($writings as $writing) {
+            $aux = null;
+            if ($writing->mem_aux !== null) {
+                $member = Member::getMember($writing->mem_aux);
+                $writing->code = pad($member->memnumb, 6);
+                $writing->name = $member->name;
+                $writing->surname = $member->surname;
+            } elseif ($writing->emp_aux !== null) {
+                $employee = Employee::getEmployee($writing->emp_aux);
+                $writing->code = pad($employee->empmat, 6);
+                $writing->name = $employee->name;
+                $writing->surname = $employee->surname;
+            }
+            
+            if (is_numeric($writing->operation)) {
+                $opera = Operation::getOperation($writing->operation);
+                $writing->operation = $opera->labeleng;
+                if ($emp->lang === 'fr') {
+                    $writing->operation = $opera->labelfr;
+                }
+            }
+        }
+        
+        return view('omega.pages.transaction', compact('writings', 'debit', 'credit', 'cash', 'employees', 'menu'));
     }
 
     public function print() {
         // return Request::all();
+        $user = null;
+        if (Request::input('user') !== null) {
+            $user = User::getUserInfos(Request::input('user'));
+        } else {
+            $user =  Session::get('employee');
+        }
+        
         $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
         $result = ValWriting::getValidJournals(Request::input('network'), Request::input('zone'), Request::input('institution'), Request::input('branch'), Request::input('user'), Request::input('state'), Request::input('from'), Request::input('to'), Request::input('lang'));
 
         $writings = $result['data'];
-        
         if ((int)count($writings) > 0) {
             $sumCredit = $result['sumCredit'];
             $sumDebit = $result['sumDebit'];
@@ -78,11 +84,13 @@ class TransactionController extends Controller
             $date = date("d.m.Y");
             $time = date("H.i.s");
             
-            $file_name = "{$date}_{$time}.pdf";
-
+            $file_name = pad($user->network) . "" . pad($user->zone) . "" . pad($user->institution) . "" . pad($user->branch) . "-{$date}_{$time}.pdf";
+            $file = "storage/files/printings/reports/" . $file_name;
             $pdf = PDF::loadView('omega.printings.transaction', compact('writings', 'sumCredit', 'sumDebit', 'sumBal', 'menu'));
         
-            return $pdf->stream($file_name);
+            if($pdf->save($file)) {
+                return $file;
+            }
         }
     }
 }
