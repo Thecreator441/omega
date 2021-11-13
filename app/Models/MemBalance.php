@@ -77,7 +77,7 @@ class MemBalance extends Model
                 $member->block_acc = $block_acc;
             }
 
-            if ($member->accabbr === 'Or' || $member->accabbr === 'Co') {
+            if ($member->accabbr === 'Or' || $member->accabbr === 'Co' && ($member->availabel + $member->block_amt) > 0) {
                 $membals[] = $member;
             }
         }

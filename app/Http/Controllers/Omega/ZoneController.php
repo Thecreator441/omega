@@ -14,16 +14,14 @@ use App\Models\Zone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 class ZoneController extends Controller
 {
     public function index()
     {
-        $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
-
+        $emp = Session::get('employee');
+        
         $networks = Network::getNetworks();
         $zones = Zone::getZones();
         if ($emp->level === 'N') {

@@ -239,21 +239,19 @@ if ($emp->lang == 'fr') {
                 @if ($emp->collector === null && ((int)$emp->code !== 1 && (int)$emp->code !== 2))
                     <div class="col-md-5">
                         <div class="form-group">
-                            @if ($emp->collector === null && ((int)$emp->code !== 1 && (int)$emp->code !== 2))
-                                <label for="user" class="col-md-3 control-label">@lang('label.user')</label>
-                                <div class="col-md-9">
-                                    <select name="user" id="user" class="from-control select2">
-                                        <option value=""></option>
-                                        @foreach ($employees as $employee)
-                                            <option value="{{$employee->iduser}}">{{$employee->username}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @else
-                                <input type="hidden" name="user" id="user" value="{{$emp->iduser}}">
-                            @endif
+                            <label for="user" class="col-md-3 control-label">@lang('label.user')</label>
+                            <div class="col-md-9">
+                                <select name="user" id="user" class="from-control select2">
+                                    <option value=""></option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->employee }}">{{ $employee->name }} {{ $employee->surname }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
+                @else
+                    <input type="hidden" name="user" id="user" value="{{ $emp->iduser }}">
                 @endif
             </div>
 
@@ -352,18 +350,9 @@ if ($emp->lang == 'fr') {
                 </div>
             </div>
 
-            <input type="hidden" id="net">
-            <input type="hidden" id="netTel">
-            <input type="hidden" id="zon">
-            <input type="hidden" id="zonTel">
-            <input type="hidden" id="ins">
-            <input type="hidden" id="insTel">
-            <input type="hidden" id="bra">
-            <input type="hidden" id="braTel">
-
-            {{-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <button type="button" id="print" class="btn btn-sm bg-default pull-right btn-raised fa fa-print"></button>
-            </div> --}}
+            </div>
         </div>
     </div>
 @stop
@@ -450,6 +439,30 @@ if ($emp->lang == 'fr') {
                 },
             });
         }
+
+        $('#print').click(function () {
+            $.ajax({
+                url: "{{ url('transaction/print') }}",
+                method: 'GET',
+                data: {
+                    level: 4,
+                    menu: "{{ $menu->idmenus_4 }}",
+                    operation: "{{ $title }}",
+                    network: $('#network').val(),
+                    zone: $('#zone').val(),
+                    institution: $('#institution').val(),
+                    branch: $('#branch').val(),
+                    user: $('#user').val(),
+                    state: $('input[name="state"]:checked').val(),
+                    from: $('#date1').val(),
+                    to: $('#date2').val(),
+                    lang: "{{ $emp->lang }}"
+                },
+                success: function (file) {
+                    printJS(file);
+                }
+            });
+        });
 
         /**
          * Get the zones based on the network

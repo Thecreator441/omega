@@ -236,35 +236,6 @@ if ($emp->lang == 'fr') {
                         </div>
                         <div class="col-md-4 col-sm-4 col-xs-6">
                             <div class="form-group has-info">
-                                <label for="strategy" class="col-md-4 control-label">@lang('label.strategy')</label>
-                                <div class="col-md-8">
-                                    <select class="select2 form-control" name="strategy" id="strategy">
-                                        <option value=""></option>
-                                        <option value="I">@lang('label.syndicate')</option>
-                                        <option value="II" selected>@lang('label.non_syndicate')</option>
-                                    </select>
-                                    <span class="help-block">@lang('placeholder.strategy')</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-sm-4 col-xs-6">
-                            <div class="form-group has-info">
-                                <label for="comm_remove" class="col-md-4 control-label">@lang('label.comm_remove')</label>
-                                <div class="col-md-8">
-                                    <select class="select2 form-control" name="comm_remove" id="comm_remove">
-                                        <option value=""></option>
-                                        <option value="T" selected>@lang('label.transly')</option>
-                                        <option value="M">@lang('label.month_end')</option>
-                                    </select>
-                                    <span class="help-block">@lang('placeholder.comm_remove')</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-4 col-sm-4 col-xs-6">
-                            <div class="form-group has-info">
                                 <label for="input_tax" class="col-md-4 control-label">@lang('label.input_tax')</label>
                                 <div class="col-md-8">
                                     <select class="select2 form-control" name="input_tax" id="input_tax">
@@ -290,12 +261,11 @@ if ($emp->lang == 'fr') {
                             </div>
                         </div>
                     </div>
-
+                    
                     <div class="row">
                         <div class="col-md-12">
                             <div class="col-md-12">
-                                <button type="submit" id="save"
-                                        class="btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
+                                <button type="submit" id="save" class="save btn btn-sm bg-blue pull-right btn-raised fa fa-save"></button>
                             </div>
                         </div>
                     </div>
@@ -324,7 +294,6 @@ if ($emp->lang == 'fr') {
                             <tr>
                                 <th> @lang('label.abbr') </th>
                                 <th> @lang('label.name') </th>
-                                <th> @lang('label.strategy') </th>
                                 <th> @lang('label.phone') </th>
                                 <th> @lang('label.@') </th>
                                 <th> @lang('label.country') </th>
@@ -338,13 +307,6 @@ if ($emp->lang == 'fr') {
                                 <tr>
                                     <td>{{$inst->abbr}}</td>
                                     <td>{{$inst->name}}</td>
-                                    <td>
-                                        @if ($inst->strategy === 'I')
-                                            @lang('label.syndicate')
-                                        @elseif  ($inst->strategy === 'II')
-                                            @lang('label.non_syndicate')
-                                        @endif
-                                    </td>
                                     <td>{{$inst->phone1}}</td>
                                     <td>{{$inst->email}}</td>
                                     <td>
@@ -412,8 +374,8 @@ if ($emp->lang == 'fr') {
                     $('#town').val(inst.town).select2();
                     $('#address').val(inst.address);
                     $('#postal').val(inst.postcode);
-                    $('#strategy').val(inst.strategy).select2();
-                    $('#comm_remove').val(inst.comm_remove).select2();
+                    //$('#strategy').val(inst.strategy).select2();
+                    //$('#comm_remove').val(inst.comm_remove).select2();
                     $('#input_tax').val(inst.input_tax).select2();
                     $('#input_sms').val(inst.input_sms).select2();
 
@@ -428,7 +390,7 @@ if ($emp->lang == 'fr') {
                         });
                     }
 
-                    $('#save').replaceWith('<button type="submit" id="edit" class="btn btn-sm bg-aqua pull-right btn-raised fa fa-edit edit"></button>');
+                    $('.save').replaceWith('<button type="submit" id="edit" class="edit btn btn-sm bg-aqua pull-right btn-raised fa fa-edit edit"></button>');
 
                     $('#form').show();
                 }
@@ -583,7 +545,7 @@ if ($emp->lang == 'fr') {
                 text = '@lang('confirm.instedit_text')';
             }
 
-            mySwal("{{$title}}", text, '@lang('confirm.no')', '@lang('confirm.yes')', '#instForm');
+            mySwal("{{ $title }}", text, '@lang('confirm.no')', '@lang('confirm.yes')', '#instForm');
         }
 
         function chooseFile() {

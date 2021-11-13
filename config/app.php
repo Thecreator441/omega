@@ -166,7 +166,6 @@ return [
         browner12\helpers\HelperServiceProvider::class,
         Riverskies\Laravel\MobileDetect\MobileDetectServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
-        Barryvdh\Snappy\ServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -234,8 +233,6 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'MobileDetect' => Riverskies\Laravel\MobileDetect\Facades\MobileDetect::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
-        'SnappyPDF' => Barryvdh\Snappy\Facades\SnappyPdf::class,
-        'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
 
     ],
 

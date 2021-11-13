@@ -22,10 +22,7 @@ class BranchController extends Controller
     public function index()
     {
         $emp = verifSession('employee');
-        if($emp === null) {
-            return Redirect::route('/')->with('backURI', $_SERVER["REQUEST_URI"]);
-        }
-
+        
         $countries = Country::getCountries();
         $regions = Region::getRegions();
         $divisions = Division::getDivisions();

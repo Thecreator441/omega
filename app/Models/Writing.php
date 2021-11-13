@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Session;
+use PDF;
 
 class Writing extends Model
 {
@@ -114,6 +115,207 @@ class Writing extends Model
                 }
             })->where($where)->orderBy('writnumb')->get();
     }
+
+    public static function getJournals(int $network = null, int $zone = null, int $institution = null, int $branch = null, int $user = null, string $state = null, string $lang = 'eng')
+    {
+        $writings = '';
+        $sumDebit = '';
+        $sumCredit = '';
+
+        $writings = self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'C.cashcode')
+        ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
+        ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
+        ->where(static function ($query) use ($user, $state) {
+            if ($user !== null && $state === null) {
+                $query->where('writings.employee', $user);
+            }
+            if ($user === null && $state !== null) {
+                $query->where('writings.writ_type', $state);
+            }
+            if ($user !== null && $state !== null) {
+                $query->where([
+                    'writings.employee' => $user,
+                    'writings.writ_type' => $state,
+                ]);
+            }
+        })->where(static function ($query) use ($network, $zone, $institution, $branch) {
+            $query->orWhere([
+                'writings.branch' => $branch,
+                'writings.institution' => $institution,
+                'writings.zone' => $zone,
+                'writings.network' => $network
+            ]);
+        })->orderBy('writnumb')->get();
+
+        $sumDebit = self::query()->where(static function ($query) use ($user, $state) {
+            if ($user !== null && $state === null) {
+                $query->where('writings.employee', $user);
+            }
+            if ($user === null && $state !== null) {
+                $query->where('writings.writ_type', $state);
+            }
+            if ($user !== null && $state !== null) {
+                $query->where([
+                    'writings.employee' => $user,
+                    'writings.writ_type' => $state,
+                ]);
+            }
+        })->where(static function ($query) use ($network, $zone, $institution, $branch) {
+            $query->orWhere([
+                'writings.branch' => $branch,
+                'writings.institution' => $institution,
+                'writings.zone' => $zone,
+                'writings.network' => $network
+            ]);
+        })->sum('debitamt');
+
+        $sumCredit = self::query()->where(static function ($query) use ($user, $state) {
+            if ($user !== null && $state === null) {
+                $query->where('writings.employee', $user);
+            }
+            if ($user === null && $state !== null) {
+                $query->where('writings.writ_type', $state);
+            }
+            if ($user !== null && $state !== null) {
+                $query->where([
+                    'writings.employee' => $user,
+                    'writings.writ_type' => $state,
+                ]);
+            }
+        })->where(static function ($query) use ($network, $zone, $institution, $branch) {
+            $query->orWhere([
+                'writings.branch' => $branch,
+                'writings.institution' => $institution,
+                'writings.zone' => $zone,
+                'writings.network' => $network
+            ]);
+        })->sum('creditamt');
+
+        foreach ($writings as $writing) {
+            $writing->refs = formWriting($writing->accdate, $writing->network, $writing->zone, $writing->institution, $writing->branch, $writing->writnumb);
+
+            $aux = null;
+            if ($writing->mem_aux !== null) {
+                $member = Member::getMember($writing->mem_aux);
+                $writing->code = pad($member->memnumb, 6);
+                $writing->name = $member->name;
+                $writing->surname = $member->surname;
+            } elseif ($writing->emp_aux !== null) {
+                $employee = Employee::getEmployee($writing->emp_aux);
+                $writing->code = pad($employee->empmat, 6);
+                $writing->name = $employee->name;
+                $writing->surname = $employee->surname;
+            }
+
+            if (is_numeric($writing->operation)) {
+                $opera = Operation::getOperation($writing->operation);
+                $writing->operation = $opera->labeleng;
+                if ($lang === 'fr') {
+                    $writing->operation = $opera->labelfr;
+                }
+            }
+
+            $writing->account = $writing->accnumb;
+            $writing->aux = $writing->code . ' - ' . $writing->name . ' ' . $writing->surname;
+            // $writing->aux = $writing->code . ' - ' . explode(' ', $writing->name)[0] . ' ' . explode(' ', $writing->surname)[0];
+            $writing->debit = money((int)$writing->debitamt);
+            $writing->credit = money((int)$writing->creditamt);
+            $writing->accdate = changeFormat($writing->accdate);
+            $writing->time = getsTime($writing->created_at);
+        }
+
+        return [
+            'data' => $writings,
+            'sumDebit' => money((int)$sumDebit),
+            'sumCredit' => money((int)$sumCredit),
+            'sumBal' => money((int)$sumDebit - (int)$sumCredit)
+        ];
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getSumDebit(array $where = [])
+    {
+        $emp = Session::get('employee');
+
+        if ($where === null) {
+            return self::query()->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('writings.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('writings.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('writings.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('writings.network', $emp->network);
+                }
+            })->sum('debitamt');
+        }
+
+        return self::query()->where($where)
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('writings.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('writings.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('writings.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('writings.network', $emp->network);
+                }
+            })->sum('debitamt');
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getSumCredit(array $where = [])
+    {
+        $emp = Session::get('employee');
+
+        if ($where === null) {
+            return self::query()->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('writings.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('writings.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('writings.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('writings.network', $emp->network);
+                }
+            })->sum('creditamt');
+        }
+
+        return self::query()->where($where)
+            ->where(static function ($query) use ($emp) {
+                if ($emp->level === 'B') {
+                    $query->where('writings.branch', $emp->branch);
+                }
+                if ($emp->level === 'I') {
+                    $query->where('writings.institution', $emp->institution);
+                }
+                if ($emp->level === 'Z') {
+                    $query->where('writings.zone', $emp->zone);
+                }
+                if ($emp->level === 'N') {
+                    $query->where('writings.network', $emp->network);
+                }
+            })->sum('creditamt');
+    }
+
+
+
 
     /**
      * @param int $member
@@ -1074,7 +1276,7 @@ class Writing extends Model
      * @param string $lang
      * @return array
      */
-    public static function getJournalsByColl(int $network, int $collector, int $idcollect, string $lang)
+    public static function getJournalsByColl(int $network = null, int $collector = null, int $idcollect = null, string $lang = 'eng')
     {
         $writings = self::query()->select('writings.*')
             ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
@@ -1342,15 +1544,15 @@ class Writing extends Model
 
         $writings = ValWriting::getCustStatements($customer, $lang);
 
-//        if ((int)$writings->count() === 0) {
-//            foreach ($val_writings as $val_writing) {
-//                $writings->add($val_writing);
-//            }
-//        } else {
-//            foreach ($val_writings as $val_writing) {
-//                $writings->prepend($val_writing);
-//            }
-//        }
+        // if ((int)$writings->count() === 0) {
+        //     foreach ($val_writings as $val_writing) {
+        //         $writings->add($val_writing);
+        //     }
+        // } else {
+        //     foreach ($val_writings as $val_writing) {
+        //         $writings->prepend($val_writing);
+        //     }
+        // }
 
         foreach ($val_writings as $val_writing) {
             $writings->add($val_writing);
@@ -1359,7 +1561,7 @@ class Writing extends Model
         $first = self::query()->where('writings.aux', $customer)->first();
 
         if ($first === null) {
-//            $first = DB::table('val_writings')->where('writings.aux', $customer)->first();
+            // $first = DB::table('val_writings')->where('writings.aux', $customer)->first();
             $first = new self();
 
             $first->idwrit = null;
@@ -1637,204 +1839,6 @@ class Writing extends Model
         return ['data' => $writings];
     }
 
-    public static function getJournals(int $network = null, int $zone = null, int $institution = null, int $branch = null, int $user = null, string $state = null, string $lang = 'eng')
-    {
-        $writings = '';
-        $sumDebit = '';
-        $sumCredit = '';
-
-        $writings = self::query()->select('writings.*', 'A.accnumb', 'A.labelfr AS acclabelfr', 'A.labeleng AS acclabeleng', 'C.cashcode')
-        ->join('accounts AS A', 'writings.account', '=', 'A.idaccount')
-        ->join('cashes AS C', 'writings.cash', '=', 'C.idcash')
-        ->where(static function ($query) use ($user, $state) {
-            if ($user !== null && $state === null) {
-                $query->where('writings.employee', $user);
-            }
-            if ($user === null && $state !== null) {
-                $query->where('writings.writ_type', $state);
-            }
-            if ($user !== null && $state !== null) {
-                $query->where([
-                    'writings.employee' => $user,
-                    'writings.writ_type' => $state,
-                ]);
-            }
-        })->where(static function ($query) use ($network, $zone, $institution, $branch) {
-            $query->orWhere([
-                'writings.branch' => $branch,
-                'writings.institution' => $institution,
-                'writings.zone' => $zone,
-                'writings.network' => $network
-            ]);
-        })->orderBy('writnumb')->get();
-
-        $sumDebit = self::query()->where(static function ($query) use ($user, $state) {
-            if ($user !== null && $state === null) {
-                $query->where('writings.employee', $user);
-            }
-            if ($user === null && $state !== null) {
-                $query->where('writings.writ_type', $state);
-            }
-            if ($user !== null && $state !== null) {
-                $query->where([
-                    'writings.employee' => $user,
-                    'writings.writ_type' => $state,
-                ]);
-            }
-        })->where(static function ($query) use ($network, $zone, $institution, $branch) {
-            $query->orWhere([
-                'writings.branch' => $branch,
-                'writings.institution' => $institution,
-                'writings.zone' => $zone,
-                'writings.network' => $network
-            ]);
-        })->sum('debitamt');
-
-        $sumCredit = self::query()->where(static function ($query) use ($user, $state) {
-            if ($user !== null && $state === null) {
-                $query->where('writings.employee', $user);
-            }
-            if ($user === null && $state !== null) {
-                $query->where('writings.writ_type', $state);
-            }
-            if ($user !== null && $state !== null) {
-                $query->where([
-                    'writings.employee' => $user,
-                    'writings.writ_type' => $state,
-                ]);
-            }
-        })->where(static function ($query) use ($network, $zone, $institution, $branch) {
-            $query->orWhere([
-                'writings.branch' => $branch,
-                'writings.institution' => $institution,
-                'writings.zone' => $zone,
-                'writings.network' => $network
-            ]);
-        })->sum('creditamt');
-
-        foreach ($writings as $writing) {
-            $writing->refs = formWriting($writing->accdate, $writing->network, $writing->zone, $writing->institution, $writing->branch, $writing->writnumb);
-
-            $aux = null;
-            if ($writing->mem_aux !== null) {
-                $member = Member::getMember($writing->mem_aux);
-                $writing->code = pad($member->memnumb, 6);
-                $writing->name = $member->name;
-                $writing->surname = $member->surname;
-            } elseif ($writing->emp_aux !== null) {
-                $employee = Employee::getEmployee($writing->emp_aux);
-                $writing->code = pad($employee->empmat, 6);
-                $writing->name = $employee->name;
-                $writing->surname = $employee->surname;
-            }
-
-            if (is_numeric($writing->operation)) {
-                $opera = Operation::getOperation($writing->operation);
-                $writing->operation = $opera->labeleng;
-                if ($lang === 'fr') {
-                    $writing->operation = $opera->labelfr;
-                }
-            }
-
-            $writing->account = $writing->accnumb;
-            $writing->aux = $writing->code . ' - ' . $writing->name . ' ' . $writing->surname;
-            // $writing->aux = $writing->code . ' - ' . explode(' ', $writing->name)[0] . ' ' . explode(' ', $writing->surname)[0];
-            $writing->debit = money((int)$writing->debitamt);
-            $writing->credit = money((int)$writing->creditamt);
-            $writing->accdate = changeFormat($writing->accdate);
-            $writing->time = getsTime($writing->created_at);
-        }
-
-        return [
-            'data' => $writings,
-            'sumDebit' => money((int)$sumDebit),
-            'sumCredit' => money((int)$sumCredit),
-            'sumBal' => money((int)$sumDebit - (int)$sumCredit)
-        ];
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function getSumDebit(array $where = [])
-    {
-        $emp = Session::get('employee');
-
-        if ($where === null) {
-            return self::query()->where(static function ($query) use ($emp) {
-                if ($emp->level === 'B') {
-                    $query->where('writings.branch', $emp->branch);
-                }
-                if ($emp->level === 'I') {
-                    $query->where('writings.institution', $emp->institution);
-                }
-                if ($emp->level === 'Z') {
-                    $query->where('writings.zone', $emp->zone);
-                }
-                if ($emp->level === 'N') {
-                    $query->where('writings.network', $emp->network);
-                }
-            })->sum('debitamt');
-        }
-
-        return self::query()->where($where)
-            ->where(static function ($query) use ($emp) {
-                if ($emp->level === 'B') {
-                    $query->where('writings.branch', $emp->branch);
-                }
-                if ($emp->level === 'I') {
-                    $query->where('writings.institution', $emp->institution);
-                }
-                if ($emp->level === 'Z') {
-                    $query->where('writings.zone', $emp->zone);
-                }
-                if ($emp->level === 'N') {
-                    $query->where('writings.network', $emp->network);
-                }
-            })->sum('debitamt');
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function getSumCredit(array $where = [])
-    {
-        $emp = Session::get('employee');
-
-        if ($where === null) {
-            return self::query()->where(static function ($query) use ($emp) {
-                if ($emp->level === 'B') {
-                    $query->where('writings.branch', $emp->branch);
-                }
-                if ($emp->level === 'I') {
-                    $query->where('writings.institution', $emp->institution);
-                }
-                if ($emp->level === 'Z') {
-                    $query->where('writings.zone', $emp->zone);
-                }
-                if ($emp->level === 'N') {
-                    $query->where('writings.network', $emp->network);
-                }
-            })->sum('creditamt');
-        }
-
-        return self::query()->where($where)
-            ->where(static function ($query) use ($emp) {
-                if ($emp->level === 'B') {
-                    $query->where('writings.branch', $emp->branch);
-                }
-                if ($emp->level === 'I') {
-                    $query->where('writings.institution', $emp->institution);
-                }
-                if ($emp->level === 'Z') {
-                    $query->where('writings.zone', $emp->zone);
-                }
-                if ($emp->level === 'N') {
-                    $query->where('writings.network', $emp->network);
-                }
-            })->sum('creditamt');
-    }
-
     /**
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
@@ -1903,5 +1907,4 @@ class Writing extends Model
                 }
             })->orderBy('U.username')->get();
     }
-
 }

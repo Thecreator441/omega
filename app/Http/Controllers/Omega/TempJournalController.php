@@ -8,9 +8,12 @@ use App\Models\Employee;
 use App\Models\Member;
 use App\Models\Operation;
 use App\Models\Priv_Menu;
+use App\Models\User;
 use App\Models\Writing;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use PDF;
 
 class TempJournalController extends Controller
 {
@@ -56,6 +59,37 @@ class TempJournalController extends Controller
             }
         }
         
-        return view('omega.pages.temp_journal', compact('menu', 'writings', 'debit', 'credit', 'employees'));
+        return view('omega.pages.temp_journal', compact('menu', 'writings', 'cash', 'debit', 'credit', 'employees'));
+    }
+
+    public function print() {
+        // return Request::all();
+        $user = null;
+        if (Request::input('user') !== null) {
+            $user = User::getUserInfos(Request::input('user'));
+        } else {
+            $user =  Session::get('employee');
+        }
+        
+        $menu = Priv_Menu::getMenu(Request::input("level"), Request::input("menu"));
+        $result = Writing::getJournals(Request::input('network'), Request::input('zone'), Request::input('institution'), Request::input('branch'), Request::input('user'), Request::input('state'), Request::input('lang'));
+
+        $writings = $result['data'];
+        if ((int)count($writings) > 0) {
+            $sumCredit = $result['sumCredit'];
+            $sumDebit = $result['sumDebit'];
+            $sumBal = $result['sumBal'];
+            
+            $date = date("d.m.Y");
+            $time = date("H.i.s");
+            
+            $file_name = pad($user->network) . "" . pad($user->zone) . "" . pad($user->institution) . "" . pad($user->branch) . "-{$date}_{$time}.pdf";
+            $file = "storage/files/printings/reports/" . $file_name;
+            $pdf = PDF::loadView('omega.printings.temp_journal', compact('writings', 'sumCredit', 'sumDebit', 'sumBal', 'menu'));
+        
+            if($pdf->save($file)) {
+                return $file;
+            }
+        }
     }
 }

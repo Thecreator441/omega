@@ -147,6 +147,7 @@ if ($emp->lang == 'fr') {
                                     </th>
                                 </tr>
                                 </tfoot>
+                                <input type="hidden" id="totalWord" name="totalWord">
                             </table>
                         </div>
                     </div>
@@ -207,7 +208,7 @@ if ($emp->lang == 'fr') {
     <script>
         $(document).ready(function () {
             if ("{{$cash_out}}" !== '') {
-                window.alert("{{$cash_out}}");
+                //window.alert("{{$cash_out}}");
                 //window.open("{{$cash_out}}");
                 printJS("{{$cash_out}}");
             }
@@ -330,7 +331,7 @@ if ($emp->lang == 'fr') {
                     sum += parseInt(numb);
             });
             $('#totbil').val(money(sum));
-
+            
             sumAmount();
         }
 
@@ -351,6 +352,7 @@ if ($emp->lang == 'fr') {
             });
 
             $('#totrans').val(money(sumAmt));
+            $('#totalWord').val(toWord(sumAmt, "{{$emp->lang}}"));
 
             let dif = parseInt(trimOver($('#totbil').val(), null)) - sumAmt;
             let diff = $('#diff');
@@ -363,6 +365,8 @@ if ($emp->lang == 'fr') {
                 diff.attr('class', 'text-blue');
             }
             diff.text(money(dif));
+
+
         }
 
         function submitForm() {

@@ -387,11 +387,6 @@ if ($emp->lang === 'fr') {
         <!-- Custom -->
         <script src="{{ asset('js/myScript.js') }}"></script>
 
-        <!-- Custom -->
-        <script src="{{ asset('plugins/jsPDF/jspdf.min.js') }}"></script>
-        <script src="{{ asset('plugins/jsPDF/jspdf.debug.js') }}"></script>
-        <script src="{{ asset('plugins/jsPDF/jspdf.plugin.autotable.js') }}"></script>
-
         <script>
             // let plat_param = JSON.parse(localStorage.getItem('plat_param'));
 

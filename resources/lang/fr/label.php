@@ -170,7 +170,7 @@ return [
 	'bank' => 'Banque',
 	'carrier' => 'Porteur',
 	'memotacc' => 'Autre Compte Membre',
-	'entitle' => 'Entitle',
+	'entitle' => 'Titre',
 	'fines' => 'Amande',
 	'finint' => 'Intérêt Amande',
 	'fees' => 'Frais',
@@ -544,6 +544,11 @@ return [
     'unpaid_checks' => 'Chèques Impayés',
     'drop_checks' => 'Chèques Déposés',
 	'int_accr_acc' => 'Compte Accrual',
+    'input_tax' => 'Tax',
+    'input_sms' => 'SMS',
+    'printed_by' => 'Imprimé Par',
+    'tellersign' => 'Signature Caissiere',
+    'num' => 'Nombre',
 
 
 

@@ -43,6 +43,23 @@ class loan extends Model
     }
 
     /**
+     * @param int $idloan
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
+     */
+    public static function getCashInLoan(int $idloan)
+    {
+        return self::query()->select('loans.*', 'M.memnumb', 'M.name AS M_name', 'M.surname AS m_surname', 'E.empmat', 'E.name AS e_name', 
+        'E.surname AS e_surname', 'LT.loan_type_code', 'LT.labelfr AS lt_labelfr', 'LT.labeleng AS lt_labeleng', 'LP.labelfr AS lp_labelfr', 
+        'LP.labeleng AS lp_labeleng', 'U.iduser')
+        ->join('members AS M', 'loans.member', '=', 'M.idmember')
+        ->join('users AS U', 'loans.employee', '=', 'U.iduser')
+        ->join('employees AS E', 'U.employee', '=', 'E.idemp')
+        ->join('loan_types AS LT', 'loans.loantype', '=', 'LT.idltype')
+        ->join('loan_purs AS LP', 'loans.loanpur', '=', 'LP.idloanpur')
+        ->where('idloan', $idloan)->first();
+    }
+
+    /**
      * @param array|null $where
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */

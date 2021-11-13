@@ -1,4 +1,12 @@
-<?php $emp = Session::get('employee');
+<?php 
+
+$emp = Session::get('employee');
+
+$cash_in = null;
+if(Session::has('cash_in')) {
+    $cash_in = asset(Session::get('cash_in'));
+    // dd($cash_in);
+}
 
 $title = $menu->labeleng;
 if ($emp->lang == 'fr') {
@@ -89,6 +97,7 @@ if ($emp->lang == 'fr') {
                                     </th>
                                 </tr>
                                 </tfoot>
+                                <input type="hidden" id="totalWord" name="totalWord">
                             </table>
                         </div>
                     </div>
@@ -189,9 +198,16 @@ if ($emp->lang == 'fr') {
         </div>
     </div>
 @stop
+
 @section('script')
     <script>
         $(document).ready(function () {
+            if ("{{$cash_in}}" !== '') {
+                //window.alert("{{$cash_in}}");
+                //window.open("{{$cash_in}}");
+                printJS("{{$cash_in}}");
+            }
+
             sumAmount();
         });
 
@@ -397,6 +413,7 @@ if ($emp->lang == 'fr') {
 
             $('#totrans').val(money(sumAmt));
             $('#totopera').text(toWord(sumAmt, '{{$emp->lang}}'));
+            $('#totalWord').val(toWord(sumAmt, "{{$emp->lang}}"));
 
             let dif = parseInt(trimOver($('#totbil').val(), null)) - sumAmt;
             let diff = $('#diff');

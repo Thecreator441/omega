@@ -70,8 +70,16 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
 
-Route::get('/', 'Omega\LoginController@index')->name('/');
-Route::post('login', 'Omega\LoginController@login')->name('login');
+    /***************************
+     ******** RESOURCES ********
+    ***************************/
+    
+    Route::get('/', 'Omega\LoginController@index')->name('/');
+    Route::post('login', 'Omega\LoginController@login')->name('login');
+    Route::get('lang/{lang}', 'Omega\LoginController@changeLanguage')->name('lang/{lang}');
+    Route::get('edit_logout', 'Omega\LoginController@editLogout')->name('edit_logout');
+    Route::post('logout', 'Omega\LoginController@logout')->name('logout');
+    Route::get('change_logout', 'Omega\LoginController@changeLogout')->name('change_logout');
 
 
 /***************************************************************
@@ -218,12 +226,14 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
         //    Temporal Journal, Journal and Transactions
         Route::prefix('temp_journal')->group(static function () {
             Route::get('/', 'Omega\TempJournalController@index')->name('temp_journal');
+            Route::get('print', 'Omega\TempJournalController@print')->name('temp_journal');
         });
         Route::prefix('journal')->group(static function () {
             Route::get('/', 'Omega\JournalController@index')->name('journal');
         });
         Route::prefix('transaction')->group(static function () {
             Route::get('/', 'Omega\TransactionController@index')->name('transaction');
+            Route::get('print', 'Omega\TransactionController@print')->name('transaction/print');
         });
 
         //  Accounting Day Closing ang Backup
@@ -384,16 +394,6 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
     
 
     });
-
-    /***************************
-     ******** RESOURCES ********
-    ***************************/
-
-    Route::get('lang/{lang}', 'Omega\LoginController@changeLanguage')->name('lang/{lang}');
-    Route::get('edit_logout', 'Omega\LoginController@editLogout')->name('edit_logout');
-    Route::post('logout', 'Omega\LoginController@logout')->name('logout');
-    Route::get('change_logout', 'Omega\LoginController@changeLogout')->name('change_logout');
-
     
     /***************************
      ******** DASHBOARD ********
@@ -836,16 +836,16 @@ Route::middleware([VerifySessionPrivilege::class])->group(function () {
 
     //  Branch Param
     Route::prefix('branch_param')->group(function () {
-        Route::get('/', 'Omega\BranchParamController@index')->name('branch');
-        Route::post('store', 'Omega\BranchParamController@store')->name('branch/store');
-        Route::post('delete', 'Omega\BranchParamController@delete')->name('branch/delete');
+        Route::get('/', 'Omega\BranchParamController@index')->name('branch_param');
+        Route::post('store', 'Omega\BranchParamController@store')->name('branch_param/store');
+        Route::post('delete', 'Omega\BranchParamController@delete')->name('branch_param/delete');
     });
 
     //  Institution Param
     Route::prefix('institution_param')->group(function () {
-        Route::get('/', 'Omega\InstitutionParamController@index')->name('institution');
-        Route::post('store', 'Omega\InstitutionParamController@store')->name('institution/store');
-        Route::post('delete', 'Omega\InstitutionParamController@delete')->name('institution/delete');
+        Route::get('/', 'Omega\InstitutionParamController@index')->name('institution_param');
+        Route::post('store', 'Omega\InstitutionParamController@store')->name('institution_param/store');
+        Route::post('delete', 'Omega\InstitutionParamController@delete')->name('institution_param/delete');
     });
 
     //  Account Type
@@ -1839,7 +1839,7 @@ Route::get('getJournals', static function () {
     return Writing::getJournals(Request::input('network'), Request::input('zone'), Request::input('institution'), Request::input('branch'), Request::input('user'), Request::input('state'), Request::input('lang'));
 });
 
-//  Get Journals
+//  Get getValidJournals
 Route::get('getValidJournals', static function () {
     return ValWriting::getValidJournals(Request::input('network'), Request::input('zone'), Request::input('institution'), Request::input('branch'), Request::input('user'), Request::input('state'), Request::input('from'), Request::input('to'), Request::input('lang'));
 });
