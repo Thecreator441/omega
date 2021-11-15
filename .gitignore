@@ -1,7 +1,6 @@
 /node_modules
 /public/hot
-/public/storage/files/printings/reports
-/storage/*.key
+/storage/files/printings/reports
 /vendor
 /.idea
 /.vscode
